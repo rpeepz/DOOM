@@ -1,25 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   resource.h                                         :+:      :+:    :+:   */
+/*   lump.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: smaddox <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/01/19 16:59:54 by smaddox           #+#    #+#             */
-/*   Updated: 2020/01/19 17:23:52 by smaddox          ###   ########.fr       */
+/*   Created: 2020/01/19 17:11:31 by smaddox           #+#    #+#             */
+/*   Updated: 2020/01/19 17:19:17 by smaddox          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef RESOURCE_H
-# define RESOURCE_H
+#ifndef LUMP_H
+# define LUMP_H
 
-#include "generic_structs.h"
-
-typedef struct		s_resource
+typedef struct			s_lump
 {
-	int				size;
-	char			name[8]; // Max Length for resource filename
-	byte			*raw_data;
-}					t_resource;
+	uint32_t			offset;
+	uint32_t			size;
+	char				lump_name[8];
+}						t_lump;
 
 #endif
+
+
+
+
+
