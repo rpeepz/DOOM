@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   resource.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smaddox <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: rpapagna <rpapagna@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/19 16:59:54 by smaddox           #+#    #+#             */
-/*   Updated: 2020/01/19 17:23:52 by smaddox          ###   ########.fr       */
+/*   Updated: 2020/01/20 17:54:48 by rpapagna         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ typedef struct		s_resource
 {
 	int				size;
 	char			name[8]; // Max Length for resource filename
-	byte			*raw_data;
+	uint8_t			*raw_data;
 }					t_resource;
 
 #endif
