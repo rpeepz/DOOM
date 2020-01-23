@@ -40,7 +40,7 @@ typedef struct				s_float_pair
 }							t_float_pair;
 
 typedef enum {FALSE, TRUE}	e_boolean;
-typedef unsigned char		t_byte;
+typedef uint8_t				t_byte;
 
 
 #endif
