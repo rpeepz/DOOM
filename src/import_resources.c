@@ -6,7 +6,7 @@
 /*   By: smaddox <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/22 20:14:57 by smaddox           #+#    #+#             */
-/*   Updated: 2020/01/23 17:49:24 by smaddox          ###   ########.fr       */
+/*   Updated: 2020/01/23 19:21:19 by smaddox          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,3 +75,11 @@ t_resource_table	get_resources(char *directory_path)
 		perror("Resource Import Error");
 	return (rtable);
 }
+
+/*	unit test
+int main(void){
+	t_resource_table t = get_resources("./dummy");
+	int fd = open( t.table[0].name, O_CREAT | O_WRONLY, 0755);
+	write(fd, t.table[0].raw_data, t.table[0].size);
+}
+*/
