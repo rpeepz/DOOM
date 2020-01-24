@@ -6,7 +6,7 @@
 /*   By: rpapagna <rpapagna@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/19 17:44:46 by smaddox           #+#    #+#             */
-/*   Updated: 2020/01/20 17:54:07 by rpapagna         ###   ########.fr       */
+/*   Updated: 2020/01/24 11:45:52 by rpapagna         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@ typedef enum { LINE_BLOCKPLAYER, LINE_BLOCKMONSTER, LINE_TWOSIDES, \
 typedef struct	s_sector_info
 {
 	//value pairs: ceiling, floor
-	t_int_pair	room_heights; 
-	char		flats[2][9]; 
+	t_int_pair	room_heights;
+	char		flats[2][9];
 	uint32_t	light;
 	uint32_t	special;
 	uint32_t	tag;
@@ -35,7 +35,7 @@ typedef struct	s_sector_info
 
 typedef struct		s_sidedef
 {
-	t_int_pair		offset; //row, column
+	t_float_pair	offset; //row, column
 	char			textures[3][9]; //top mid and bottom 0, 1, 2 respectively
 	t_sector_info	sector_info;
 	uint32_t		sector_num;
