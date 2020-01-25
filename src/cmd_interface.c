@@ -6,7 +6,7 @@
 /*   By: rpapagna <rpapagna@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/23 18:03:44 by smaddox           #+#    #+#             */
-/*   Updated: 2020/01/24 12:10:33 by rpapagna         ###   ########.fr       */
+/*   Updated: 2020/01/24 21:50:35 by rpapagna         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,7 @@ void	add_line(void){
 		free(line);
 
 		printf("\nTop Texture: ");
+
 		get_next_line(0, &line);
 		ft_memcpy(linedef->sides[i].textures[0], line ? line : "\0\0\0\0\0\0\0\0", line ? 8 : 2);
 		free(line);
@@ -208,6 +209,7 @@ void	list(void){
 
 int cmd_interface(void)
 {
+	setbuf(stdout, NULL);
 	char *line = "null";
 	char *options[] = { "new line", "new thing", "exit", "clear", "list"};
 	void (*funcs[])(void) = { &add_line, &add_thing, &my_exit, &clear, &list };
