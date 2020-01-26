@@ -3,10 +3,10 @@ BIN = demo
 CC = clang
 
 ifeq ($(shell uname -s), Darwin)
-	SDL2_DIR = ../sdl2/lib
-	SDL2_INC_DIR = ../sdl2/include
-	GLEW_DIR = ../glew/lib
-	GLEW_INC_DIR = ../glew/include
+	SDL2_DIR = $(HOME)/.brew/Cellar/sdl2/2.0.10/lib
+	SDL2_INC_DIR = $(HOME)/.brew/Cellar/sdl2/2.0.10/include
+	GLEW_DIR = $(HOME)/.brew/Cellar/glew/2.1.0_1/lib
+	GLEW_INC_DIR = $(HOME)/.brew/Cellar/glew/2.1.0_1/include
 else
 	SDL2_DIR =.
 	SDL2_INC_DIR =.
@@ -15,8 +15,8 @@ endif
 
 # Flags
 CFLAGS += -std=c99 -pedantic -O2
-CFLAGS += -I$(SDL2_INC_DIR) -I$(SDL2_INC_DIR)
-CFLAGS += -I$(GLEW_INC_DIR) -I$(GLEW_INC_DIR)
+CFLAGS += -I$(SDL2_INC_DIR)/SDL2 -I$(SDL2_INC_DIR)
+CFLAGS += -I$(GLEW_INC_DIR)/GL -I$(GLEW_INC_DIR)
 
 SRC = main.c
 OBJ = $(SRC:.c=.o)
