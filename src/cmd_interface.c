@@ -207,6 +207,8 @@ void	list(void){
 	}
 }
 
+void	calculate_bsp(t_map_data map_data);
+
 int cmd_interface(void)
 {
 	setbuf(stdout, NULL);
@@ -218,6 +220,10 @@ int cmd_interface(void)
 	while (1){
 		write(1, "<$MAPMAKER> ", 12);
 		get_next_line(0, &line);
+		if (!strcmp(line, "BSP")) {
+			calculate_bsp(map_data);
+			continue ;
+		}
 		for (int j = 0; j < y ; ++j){
 			if (!strcmp(line, options[j])){
 					funcs[j]( );
@@ -233,4 +239,60 @@ int cmd_interface(void)
 
 int main(void){
 	return( cmd_interface() );
+}
+
+
+
+int		intersect_points(double x, double y, t_float_pair vector)
+{
+	if (vector.x == x && vector.y == y)
+		return (1);
+	return (0);
+}
+typedef struct	s_sector {
+	int			count; //to count lines in each sector
+	t_linedef	lines[10];
+	/*	It is more prefferable to make a basic linked list of composing linedefs
+		instead of a static array of total lines in a sector
+	*/
+}				t_sector;
+void 	calculate_bsp(t_map_data map_data) {
+
+	printf("HERE IS BSP :)\n");
+
+	int			sector_count = 0;
+	t_sector	sectors[16]; // max test sectors
+
+	for (int i = 0; i < map_data.line_count; i++) {
+
+		t_float_pair vectorS = map_data.lines[i].start_vertex;
+		t_float_pair vectorE = map_data.lines[i].end_vertex;
+
+		for (int j = i + 1; j < map_data.line_count; j++) {
+
+			t_float_pair start = map_data.lines[j].start_vertex;
+			t_float_pair end = map_data.lines[j].end_vertex;
+
+			/* find if the start vertex of inner loop intersects with out line */
+			if (intersect_points(start.x, start.y, vectorS) ||
+				intersect_points(start.x, start.y, vectorE)){
+				++sector_count;
+				//set line as a part of a sector
+
+				//find a way to single out each sector and find when its completely closed.
+				;
+			}
+			/* find if the end vertex of inner loop intersects with out line */
+			else if (intersect_points(end.x, end.y, vectorS) ||
+					intersect_points(end.x, end.y, vectorE)){
+				++sector_count;
+				//set line as a part of a sector
+
+				//find a way to single out each sector and find when its completely closed.
+				;
+			}
+
+		}
+	}
+	return ;
 }
