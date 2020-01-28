@@ -237,15 +237,57 @@ int cmd_interface(void)
 	return(0);
 }
 
-int main(void){
-	return( cmd_interface() );
+typedef struct		s_line
+{
+	t_float_pair	start;
+	t_float_pair	end;
+}					t_line;
+int		intersect_points(t_float_pair point_a, t_float_pair point_b);
+int		intersect_point_line(t_float_pair point, t_line line);
+
+int main(int ac, char *av[]){
+
+	/*
+		Testing intersect formulas
+	*/
+	//point inputs
+	if (ac >= 5) {
+	double x = atof(av[1]), y = atof(av[2]);
+	double x1 = atof(av[3]), y1 = atof(av[4]);
+		if (ac == 7 ) {
+			double x2 = atof(av[5]), y2 = atof(av[6]);
+			printf("point on line? %s\n", intersect_point_line((t_float_pair){x, y}, (t_line){ (t_float_pair){x1, y1}, (t_float_pair){x2, y2}}) ? "yes" : "no");
+			} else {
+			printf("points intersect? %s\n", intersect_points((t_float_pair){x, y}, (t_float_pair){x1, y1}) ? "yes" : "no");
+		}
+	}
+	else
+		return( cmd_interface() );
 }
 
-
-
-int		intersect_points(double x, double y, t_float_pair vector)
+#include <math.h>
+double	distance(t_float_pair p, t_float_pair q)
 {
-	if (vector.x == x && vector.y == y)
+	return (sqrt(pow(fabs(q.x - p.x), 2.0) + pow(fabs(q.y - p.y), 2.0)));
+
+	/* source
+	d = \sqrt{(x_2 - x_1)^2 + (y_2-y_1)^2}
+		https://orion.math.iastate.edu/dept/links/formulas/form2.pdf
+	*/
+}
+
+int		intersect_point_line(t_float_pair point, t_line line)
+{
+//	printf("point %f, %f\n", point.x, point.y);
+//	printf("line  %f, %f - %f, %f\n", line.start.x, line.start.y, line.end.x, line.end.y);
+	if (distance(line.start, point) + distance(line.end, point) == distance(line.start, line.end))
+		return (1);
+	return (0);
+}
+
+int		intersect_points( t_float_pair point_a, t_float_pair point_b)
+{
+	if (point_b.x == point_a.x && point_b.y == point_a.y)
 		return (1);
 	return (0);
 }
@@ -274,8 +316,8 @@ void 	calculate_bsp(t_map_data map_data) {
 			t_float_pair end = map_data.lines[j].end_vertex;
 
 			/* find if the start vertex of inner loop intersects with out line */
-			if (intersect_points(start.x, start.y, vectorS) ||
-				intersect_points(start.x, start.y, vectorE)){
+			if (intersect_points(start, vectorS) ||
+				intersect_points(start, vectorE)){
 				++sector_count;
 				//set line as a part of a sector
 
@@ -283,8 +325,8 @@ void 	calculate_bsp(t_map_data map_data) {
 				;
 			}
 			/* find if the end vertex of inner loop intersects with out line */
-			else if (intersect_points(end.x, end.y, vectorS) ||
-					intersect_points(end.x, end.y, vectorE)){
+			else if (intersect_points(end, vectorS) ||
+					intersect_points(end, vectorE)){
 				++sector_count;
 				//set line as a part of a sector
 
