@@ -1,3 +1,15 @@
+# Mac files
 *._*
-*.o
 .DS_Store
+.swp
+
+# Compile files
+obj/
+*.o
+*.a
+*.gch
+.dSYM
+
+# extra
+.vscode
+make-a-map/ 
