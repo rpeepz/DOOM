@@ -26,8 +26,8 @@
 #include "../Nuklear/nuklear.h"
 #include "nuklear_sdl_gl3.h"
 
-#define WINDOW_WIDTH 1200
-#define WINDOW_HEIGHT 800
+#define WINDOW_WIDTH 1600
+#define WINDOW_HEIGHT 900
 
 #define MAX_VERTEX_MEMORY 512 * 1024
 #define MAX_ELEMENT_MEMORY 128 * 1024
@@ -37,6 +37,11 @@
 #ifdef INCLUDE_NODE_EDITOR
   #include "../node_editor.c"
 #endif
+
+//  robbies testing
+char* ftoa(double number);
+float value = 0.6f;
+//  testing values end
 
 typedef struct		s_vec2f
 {
@@ -137,7 +142,7 @@ int printOnce = 0;
 			if (nk_option_label(ctx, "selection", op == SELECTION)) op = SELECTION;
 		}
 		nk_end(ctx);
-		if (nk_begin(ctx, "Map Maker", nk_rect(0, 0, 800, 600),
+		if (nk_begin(ctx, "Map Maker", nk_rect(400, 0, 800, 600),
 				NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MOVABLE|NK_WINDOW_CLOSABLE))
 		{
 			canvas = nk_window_get_canvas(ctx);
@@ -193,6 +198,36 @@ int printOnce = 0;
 			*/
 		}
 		nk_end(ctx);
+        
+        // testing a display box
+        lines[0].start.x = 40.1;
+        lines[0].start.y = 40.2;
+        lines[1].start.x = 42.6;
+        lines[1].start.y = 42.9;
+        if (nk_begin(ctx, "line list", nk_rect(50, 50, 100, 300), NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MOVABLE|NK_WINDOW_CLOSABLE))
+        {
+            nk_layout_row_begin(ctx, NK_STATIC, 30, 2);
+
+            // nk_layout_row_static(ctx, 300, 100, 4);
+            
+            nk_layout_row_push(ctx, 0);
+            nk_label(ctx, ftoa(value), NK_TEXT_LEFT);
+            // nk_layout_row_push(ctx, 90);
+            // nk_label(ctx, ftoa(lines[0].start.x), NK_TEXT_LEFT);
+            // nk_layout_row_push(ctx, 100);
+            // nk_label(ctx, ftoa(lines[0].start.y), NK_TEXT_LEFT);
+            nk_layout_row_push(ctx, 100);
+            nk_slider_float(ctx, 100, &value, 1.0f, 0.1f);
+
+            nk_layout_row_end(ctx);
+
+            // nk_group_begin(ctx, "widget", NK_WIDGET_VALID);
+            // {
+
+            // }
+            // nk_group_end(ctx);
+        }
+        nk_end(ctx);
         /* -------------- EXAMPLES ---------------- */
         #ifdef INCLUDE_CALCULATOR
           calculator(ctx);
@@ -227,3 +262,33 @@ cleanup:
     return 0;
 }
 
+char* ftoa(double number)
+{
+
+    char* first;
+    char string[50];
+    char string_2[50];
+    double  number_2,change;
+    int  fractional,decimal;
+
+
+    decimal = (int) number;     //extracting decimal part form fractional
+
+    number_2 = (double) decimal;
+
+    change = number - number_2;
+
+    fractional = change*1000; //extracting fractional part and changing it into integer
+
+    // itoa(decimal,first,10);
+    // itoa(fractional,sec,10);
+
+    sprintf(string,"%d",decimal);           //changing both parts into string
+    sprintf(string_2,"%d",fractional);
+
+    strcat(string,".");                     //adding dot between numbers
+    strcat(string,string_2);
+    first = string;
+
+    return first;                           //returning final string
+}

@@ -1,4 +1,5 @@
 # Install
+
 BIN = demo
 CC = clang
 
@@ -33,7 +34,7 @@ else
 	endif
 endif
 
-$(BIN):
+$(BIN): $(OBJ)
 #	@mkdir -p bin
 #	rm -f bin/$(BIN) $(OBJS)
-	$(CC) $(SRC) $(CFLAGS) -o $(BIN) $(LIBS)
+	$(CC) $(OBJ) $(CFLAGS) -o $(BIN) $(LIBS)
