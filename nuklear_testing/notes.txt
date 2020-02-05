@@ -1,0 +1,16 @@
+DOOM Map Maker notes
+
+02-04-20
+Today I studdied the code and the workings of the Nuklear demo:
+	Calculator
+
+The Calculator code was very simple, straight forward, and easy to follow
+how the nuklear api was implemented. Its function was to make a pannel with
+buttons and a display that performed simple math on floating point numbers.
+
+I replicated some of the flags used to make my own pannel that displayed
+items in an array.
+I also made a slider that modified an arbitrary value that was displayed in
+the pannel.
+
+Messed around with making lines using the map maker pannel.
