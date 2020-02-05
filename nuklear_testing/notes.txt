@@ -14,3 +14,17 @@ I also made a slider that modified an arbitrary value that was displayed in
 the pannel.
 
 Messed around with making lines using the map maker pannel.
+
+02-05-20
+Today I tried to change the makefile to be able to compile the map maker
+across multiple files. I ran into an issue that I cant easily find the answer
+for. The error says 'duplicate symbols' and I figured it was because my
+header was not protected against double inclusion. So I fixed it, but that
+didn't fix my problem. So I'll come back later and try something with the
+help of my group mates.
+
+I'll try to make some progress on the map's 'line' and 'thing' editor.
+A few things need to be done with that:
+	- Line pannel to choose flags, specials, textures
+	- Thing pannel: angle
+	- Sector pannel: heights
