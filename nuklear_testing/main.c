@@ -32,17 +32,6 @@
 #define MAX_VERTEX_MEMORY 512 * 1024
 #define MAX_ELEMENT_MEMORY 128 * 1024
 
-/* #define INCLUDE_NODE_EDITOR */
-
-#ifdef INCLUDE_NODE_EDITOR
-  #include "../node_editor.c"
-#endif
-
-//  robbies testing
-char* ftoa(double number);
-float value = 0.6f;
-//  testing values end
-
 typedef struct		s_vec2f
 {
 	float			x;
@@ -73,6 +62,9 @@ struct s_drawing_mode {
 struct s_drawing_mode draw_mode;
 // Use lines for now but switch to a doubly linked list to make deletion easier. Im still curious with why ID put lines in an array in DoomEd.
 t_line lines[10000];
+int    lines_filled = 0;
+float  value = 1.0f;
+
 int main(void)
 {
     /* Platform */
@@ -113,11 +105,16 @@ int main(void)
     #ifdef INCLUDE_STYLE
     /*set_style(ctx, THEME_DARK);*/
     #endif
+
 //    bg.r = 0.10f, bg.g = 0.18f, bg.b = 0.24f, bg.a = 1.0f;
-/* int started_line = 0; */
-/* int ended_line = 0; */
-int printOnce = 0;
-	int drawing_line = 0;
+
+int started_line = 0;
+int ended_line = 0;
+int drawing_line = 0;
+
+
+    int tool_op = 0;     //Tools pannel selected tool
+    enum {SELECT, LINE, THING, MOVE, SECTOR};
 
     while (running)
     {
@@ -132,25 +129,28 @@ int printOnce = 0;
 		struct nk_rect size;
 		struct nk_command_buffer *canvas;
 		const struct nk_input *in = &ctx->input;
-		if (nk_begin(ctx, "Mode Selection", nk_rect(0, 400, 300, 100 ), NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MOVABLE|NK_WINDOW_CLOSABLE))
+
+//Tools pannel
+		if (nk_begin(ctx, "Tools", nk_rect(0, 400, 200, 200), NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MOVABLE|NK_WINDOW_MINIMIZABLE))
 		{
-			enum {LINE, SELECTION};
-            static int op = LINE;
-            static int property = 20;
-			nk_layout_row_static(ctx, 30, 80, 1);
-			if (nk_option_label(ctx, "line", op == LINE)) op = LINE;
-			if (nk_option_label(ctx, "selection", op == SELECTION)) op = SELECTION;
+            // static int property = 20;
+			nk_layout_row_static(ctx, 30, 100, 1);
+			if (nk_option_label(ctx, "Select", tool_op == SELECT)) tool_op = SELECT;
+			if (nk_option_label(ctx, "Line", tool_op == LINE)) tool_op = LINE;
+			if (nk_option_label(ctx, "Thing", tool_op == THING)) tool_op = THING;
+			if (nk_option_label(ctx, "Sector", tool_op == SECTOR)) tool_op = SECTOR;
+			if (nk_option_label(ctx, "Move", tool_op == MOVE)) tool_op = MOVE;
 		}
 		nk_end(ctx);
-		if (nk_begin(ctx, "Map Maker", nk_rect(400, 0, 800, 600),
-				NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MOVABLE|NK_WINDOW_CLOSABLE))
+//End Tools pannel
+
+//Map pannel
+		if (nk_begin(ctx, "Map Maker", nk_rect(400, 10, 800, 600),
+				NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MOVABLE|NK_WINDOW_MINIMIZABLE))
 		{
 			canvas = nk_window_get_canvas(ctx);
 			size = nk_window_get_content_region(ctx);
-			if (!printOnce){
-				printf("size.x: %f, size.y: %f, size.w: %f, size.h: %f\n\n", size.x, size.y, size.w, size.h);
-				printOnce = 1;
-			}
+			
 			//nk_layout_space_begin(ctx, NK_STATIC, total_space.h, nodedit->node_count);
 			/* display grid */
 			/* struct nk_rect size = nk_layout_space_bounds(ctx); */
@@ -168,66 +168,78 @@ int printOnce = 0;
 			struct nk_rect circle2;
 			circle1.w = 8; circle1.h = 8;
 			circle2.w = 8; circle2.h = 8;
-			if (!draw_mode.active && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
-			{
-				draw_mode.active = nk_true;
-			}
-			//
-			/*
-			if (!started_line && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
-			{
-				started_line = 1;
-				line_start = in->mouse.pos;
-				circle1.x = line_start.x;
-				circle1.y = line_start.y;
-			}
-			if (started_line)
-				nk_fill_circle(canvas, circle1, nk_rgb(100, 100, 100));
-			if (started_line && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
-			{
-				ended_line = 1;
-				line_end = in->mouse.pos;
-				circle2.x = line_end.x;
-				circle2.y = line_end.y;
-			}
-			if (ended_line)
-			{
-				nk_fill_circle(canvas, circle2, nk_rgb(100, 100, 100));
-				nk_stroke_line(canvas, line_start.x, line_start.y, line_end.x, line_end.y, 1.0f, nk_rgb(10,10,0));
-			}
-			*/
-		}
-		nk_end(ctx);
-        
-        // testing a display box
-        lines[0].start.x = 40.1;
-        lines[0].start.y = 40.2;
-        lines[1].start.x = 42.6;
-        lines[1].start.y = 42.9;
-        if (nk_begin(ctx, "line list", nk_rect(50, 50, 100, 300), NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MOVABLE|NK_WINDOW_CLOSABLE))
-        {
-            nk_layout_row_begin(ctx, NK_STATIC, 30, 2);
-
-            // nk_layout_row_static(ctx, 300, 100, 4);
             
-            nk_layout_row_push(ctx, 0);
-            nk_label(ctx, ftoa(value), NK_TEXT_LEFT);
-            // nk_layout_row_push(ctx, 90);
-            // nk_label(ctx, ftoa(lines[0].start.x), NK_TEXT_LEFT);
-            // nk_layout_row_push(ctx, 100);
-            // nk_label(ctx, ftoa(lines[0].start.y), NK_TEXT_LEFT);
-            nk_layout_row_push(ctx, 100);
-            nk_slider_float(ctx, 100, &value, 1.0f, 0.1f);
+            if (!draw_mode.active && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
+				draw_mode.active = nk_true;
+			else
+                draw_mode.active = nk_false;
+			
+            if (tool_op == LINE) {
+                int fill_point1 = 0;
+                int fill_point2 = 0;
+                if (!started_line && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
+                {
+                    started_line = 1;
+                    line_start = in->mouse.pos; //set coordinates for beginning of line
+                    printf("point 1\n\tx = %f\n\ty = %f\n",in->mouse.pos.x, in->mouse.pos.y);
+                    circle1.x = line_start.x;
+                    circle1.y = line_start.y;
+                }
+                if (started_line)
+                {
+                    nk_fill_circle(canvas, circle1, nk_rgb(100, 100, 100)); //place cirlce on line start
+                }
+                if (started_line && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
+                {
+                    ended_line = 1;
+                    line_end = in->mouse.pos; //set coordinates for end of line
+                    printf("point 2\n\tx = %f\n\ty = %f\n",in->mouse.pos.x, in->mouse.pos.y);
+                    circle2.x = line_end.x;
+                    circle2.y = line_end.y;
+                }
+                if (ended_line)
+                {
+                    nk_fill_circle(canvas, circle2, nk_rgb(100, 100, 100)); //place cirlce on line end
+                    nk_stroke_line(canvas, line_start.x, line_start.y, line_end.x, line_end.y, 1.0f, nk_rgb(10,10,0));
+                }
+            }
+		}
+        //         //     //reset line points
+        //         //     line_start = (struct nk_vec2){0};
+        //         //     line_end = (struct nk_vec2){0};
+        //         //     ended_line = 0;
+		nk_end(ctx);
+//End Map pannel
 
-            nk_layout_row_end(ctx);
+        // testing a display box
+        lines_filled = 2;
+        if (nk_begin(ctx, "line list", nk_rect(50, 50, 200, 400), NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_CLOSABLE))
+        {
+            for (int lf = 0; lf < lines_filled; lf++){
+                lines[lf].start.x = 40.1 + ((float)lf * .1f);
+                lines[lf].start.y = 40.2 + ((float)lf * .1f);
+            }
+            for (int zx = 0; zx < lines_filled; zx++) {
+                char buffer[16];
+                nk_layout_row_dynamic(ctx, 30, 2);
+                snprintf(buffer, 16, "%d", zx+1);
+                nk_label(ctx, buffer, NK_TEXT_LEFT);
+                snprintf(buffer, 16, "%.2f, %.2f", lines[zx].start.x, lines[zx].start.y);
+                nk_label(ctx, buffer, NK_TEXT_RIGHT);
+            }
 
-            // nk_group_begin(ctx, "widget", NK_WIDGET_VALID);
-            // {
+            //  testing slider display value
+            nk_layout_row_dynamic(ctx, 30, 1);
+            {int len; char buffer[64];
+            len = snprintf(buffer, 64, "%.2f", value);
+            nk_edit_string(ctx, NK_EDIT_READ_ONLY, buffer, &len, 63, nk_filter_float);
+            buffer[len] = 0;
+            value = atof(buffer);}
 
-            // }
-            // nk_group_end(ctx);
+            nk_slider_float(ctx, 100, &value, 0.1f, 0.1f);
         }
         nk_end(ctx);
+
         /* -------------- EXAMPLES ---------------- */
         #ifdef INCLUDE_CALCULATOR
           calculator(ctx);
@@ -260,35 +272,4 @@ cleanup:
     SDL_DestroyWindow(win);
     SDL_Quit();
     return 0;
-}
-
-char* ftoa(double number)
-{
-
-    char* first;
-    char string[50];
-    char string_2[50];
-    double  number_2,change;
-    int  fractional,decimal;
-
-
-    decimal = (int) number;     //extracting decimal part form fractional
-
-    number_2 = (double) decimal;
-
-    change = number - number_2;
-
-    fractional = change*1000; //extracting fractional part and changing it into integer
-
-    // itoa(decimal,first,10);
-    // itoa(fractional,sec,10);
-
-    sprintf(string,"%d",decimal);           //changing both parts into string
-    sprintf(string_2,"%d",fractional);
-
-    strcat(string,".");                     //adding dot between numbers
-    strcat(string,string_2);
-    first = string;
-
-    return first;                           //returning final string
 }
