@@ -3,6 +3,9 @@
 BIN = demo
 CC = clang
 
+INC = demo.h
+OBJ_PATH = obj
+
 ifeq ($(shell uname -s), Darwin)
 	SDL2_DIR = $(HOME)/.brew/Cellar/sdl2/2.0.10/lib
 	SDL2_INC_DIR = $(HOME)/.brew/Cellar/sdl2/2.0.10/include
@@ -19,8 +22,9 @@ CFLAGS += -std=c99 -pedantic -O2
 CFLAGS += -I$(SDL2_INC_DIR)/SDL2 -I$(SDL2_INC_DIR)
 CFLAGS += -I$(GLEW_INC_DIR)/GL -I$(GLEW_INC_DIR)
 
-SRC = main.c
-OBJ = $(SRC:.c=.o)
+SRC = main.c\
+	tool_pannel.c
+OBJ = $(addprefix $(OBJ_PATH)/,$(SRC:.c=.o))
 
 ifeq ($(OS),Windows_NT)
 BIN := $(BIN).exe
@@ -37,4 +41,13 @@ endif
 $(BIN): $(OBJ)
 #	@mkdir -p bin
 #	rm -f bin/$(BIN) $(OBJS)
-	$(CC) $(OBJ) $(CFLAGS) -o $(BIN) $(LIBS)
+	$(CC) $(OBJ_PATH)/*.o $(CFLAGS) -o $(BIN) $(LIBS)
+
+$(OBJ_PATH):
+	mkdir -p $@
+
+$(OBJ_PATH)/%.o: ./%.c demo.h | $(OBJ_PATH)
+	$(CC) -I$(INC) $(CFLAGS) -o $@ -c $<
+
+clean:
+	rm -rf obj
