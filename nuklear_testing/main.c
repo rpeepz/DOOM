@@ -32,6 +32,8 @@
 #define MAX_VERTEX_MEMORY 512 * 1024
 #define MAX_ELEMENT_MEMORY 128 * 1024
 
+//
+
 typedef struct		s_vec2f
 {
 	float			x;
@@ -114,7 +116,10 @@ int drawing_line = 0;
 
 
     int tool_op = 0;     //Tools pannel selected tool
-    enum {SELECT, LINE, THING, MOVE, SECTOR};
+
+	// NUM_TOOLS should remain at the end of the enum to represent
+	// the number of tools present -smaddox
+    enum tools {SELECT, LINE, THING, MOVE, SECTOR, SOME_SHIT, NUM_TOOLS};
 
     while (running)
     {
@@ -131,10 +136,11 @@ int drawing_line = 0;
 		const struct nk_input *in = &ctx->input;
 
 //Tools pannel
-		if (nk_begin(ctx, "Tools", nk_rect(0, 400, 200, 200), NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MOVABLE|NK_WINDOW_MINIMIZABLE))
+		//scale with number of tools
+		if (nk_begin(ctx, "Tools", nk_rect(0, 400, 200,  NUM_TOOLS * 40 ), NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MOVABLE|NK_WINDOW_MINIMIZABLE))
 		{
             // static int property = 20;
-			nk_layout_row_static(ctx, 30, 100, 1);
+			nk_layout_row_static(ctx, 30, 200, 1);
 			if (nk_option_label(ctx, "Select", tool_op == SELECT)) tool_op = SELECT;
 			if (nk_option_label(ctx, "Line", tool_op == LINE)) tool_op = LINE;
 			if (nk_option_label(ctx, "Thing", tool_op == THING)) tool_op = THING;
@@ -151,9 +157,6 @@ int drawing_line = 0;
 			canvas = nk_window_get_canvas(ctx);
 			size = nk_window_get_content_region(ctx);
 			
-			//nk_layout_space_begin(ctx, NK_STATIC, total_space.h, nodedit->node_count);
-			/* display grid */
-			/* struct nk_rect size = nk_layout_space_bounds(ctx); */
 			float x, y;
 			const float grid_size = 32.0f;
 			const struct nk_color grid_color = nk_rgb(50, 50, 50);
@@ -161,54 +164,48 @@ int drawing_line = 0;
 				nk_stroke_line(canvas, x+size.x, size.y, x+size.x, size.y+size.h, 1.0f, grid_color);
 			for (y = (float)fmod(size.y, grid_size); y < size.h; y += grid_size)
 				nk_stroke_line(canvas, size.x, y+size.y, size.x+size.w, y+size.y, 1.0f, grid_color);
+
 			// Draw lines //
 			struct nk_vec2 line_start;
 			struct nk_vec2 line_end;
-			struct nk_rect circle1;
-			struct nk_rect circle2;
-			circle1.w = 8; circle1.h = 8;
-			circle2.w = 8; circle2.h = 8;
-            
+			struct nk_rect circle1 = { .w = 4, .h = 4};
+
+/*            
             if (!draw_mode.active && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
 				draw_mode.active = nk_true;
 			else
                 draw_mode.active = nk_false;
+*/
 			
             if (tool_op == LINE) {
-                int fill_point1 = 0;
-                int fill_point2 = 0;
                 if (!started_line && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
                 {
                     started_line = 1;
                     line_start = in->mouse.pos; //set coordinates for beginning of line
-                    printf("point 1\n\tx = %f\n\ty = %f\n",in->mouse.pos.x, in->mouse.pos.y);
                     circle1.x = line_start.x;
                     circle1.y = line_start.y;
                 }
+
                 if (started_line)
-                {
                     nk_fill_circle(canvas, circle1, nk_rgb(100, 100, 100)); //place cirlce on line start
-                }
+
                 if (started_line && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
                 {
                     ended_line = 1;
                     line_end = in->mouse.pos; //set coordinates for end of line
-                    printf("point 2\n\tx = %f\n\ty = %f\n",in->mouse.pos.x, in->mouse.pos.y);
-                    circle2.x = line_end.x;
-                    circle2.y = line_end.y;
                 }
                 if (ended_line)
-                {
-                    nk_fill_circle(canvas, circle2, nk_rgb(100, 100, 100)); //place cirlce on line end
-                    nk_stroke_line(canvas, line_start.x, line_start.y, line_end.x, line_end.y, 1.0f, nk_rgb(10,10,0));
-                }
+					// add_line( linebank, line_start, line_end);
             }
+			/*
+			 * for node in line_bank
+			 * stroke_my_line(node)
+			 *
+			 */
+
 		}
-        //         //     //reset line points
-        //         //     line_start = (struct nk_vec2){0};
-        //         //     line_end = (struct nk_vec2){0};
-        //         //     ended_line = 0;
 		nk_end(ctx);
+
 //End Map pannel
 
         // testing a display box

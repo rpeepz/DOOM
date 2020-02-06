@@ -14,3 +14,12 @@ I also made a slider that modified an arbitrary value that was displayed in
 the pannel.
 
 Messed around with making lines using the map maker pannel.
+
+
+
+
+smaddox
+-----------------------------------------------------------------------------------------
+adding new a new line
+
+if the tool_op == LINE add a new line to the list
