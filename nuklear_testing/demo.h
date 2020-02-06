@@ -1,4 +1,3 @@
-/* nuklear - 1.32.0 - public domain */
 #ifndef DEMO_H
 # define DEMO_H
 
@@ -16,18 +15,6 @@
 # include <GL/glew.h>
 # include <SDL2/SDL.h>
 # include <SDL2/SDL_opengl.h>
-
-# define NK_INCLUDE_FIXED_TYPES
-# define NK_INCLUDE_STANDARD_IO
-# define NK_INCLUDE_STANDARD_VARARGS
-# define NK_INCLUDE_DEFAULT_ALLOCATOR
-# define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
-# define NK_INCLUDE_FONT_BAKING
-# define NK_INCLUDE_DEFAULT_FONT
-# define NK_IMPLEMENTATION
-# define NK_SDL_GL3_IMPLEMENTATION
-# include "../Nuklear/nuklear.h"
-# include "nuklear_sdl_gl3.h"
 
 typedef struct		s_vec2f
 {
@@ -67,7 +54,5 @@ typedef enum    e_mode
 	MOVE,
 	SECTOR
 }               t_mode;
-
-void tool_pannel(struct nk_context *ctx, void *p);
 
 #endif

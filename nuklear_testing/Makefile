@@ -22,7 +22,8 @@ CFLAGS += -I$(SDL2_INC_DIR)/SDL2 -I$(SDL2_INC_DIR)
 CFLAGS += -I$(GLEW_INC_DIR)/GL -I$(GLEW_INC_DIR)
 
 SRC = main.c\
-	tool_pannel.c
+	tool_pannel.c\
+	map_pannel.c
 OBJ = $(addprefix $(OBJ_PATH)/,$(SRC:.c=.o))
 
 ifeq ($(OS),Windows_NT)
@@ -50,3 +51,4 @@ $(OBJ_PATH)/%.o: ./%.c | $(OBJ_PATH)
 
 clean:
 	rm -rf obj
+	rm -rf $(BIN)
