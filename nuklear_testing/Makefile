@@ -2,7 +2,6 @@
 
 BIN = demo
 CC = clang
-
 INC = demo.h
 OBJ_PATH = obj
 
@@ -46,7 +45,7 @@ $(BIN): $(OBJ)
 $(OBJ_PATH):
 	mkdir -p $@
 
-$(OBJ_PATH)/%.o: ./%.c demo.h | $(OBJ_PATH)
+$(OBJ_PATH)/%.o: ./%.c | $(OBJ_PATH)
 	$(CC) -I$(INC) $(CFLAGS) -o $@ -c $<
 
 clean:

@@ -16,6 +16,9 @@ t_line lines[10000];
 int    lines_filled = 0;
 float  value = 1.0f;
 
+void    calculator(struct nk_context *ctx);
+
+
 int main(void)
 {
     /* Platform */
@@ -81,7 +84,7 @@ int drawing_line = 0;
 		struct nk_command_buffer *canvas;
 		const struct nk_input *in = &ctx->input;
 
-        tool_pannel(ctx, (void*)&tool_op);
+        // tool_pannel(ctx, (void*)&tool_op);
 /*      Tools pannel
 		if (nk_begin(ctx, "Tools", nk_rect(0, 400, 200, 200), NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MOVABLE|NK_WINDOW_MINIMIZABLE))
 		{
