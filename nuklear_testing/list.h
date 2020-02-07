@@ -6,17 +6,25 @@
 /*   By: rpapagna <rpapagna@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/23 22:13:43 by smaddox           #+#    #+#             */
-/*   Updated: 2020/02/07 13:00:51 by rpapagna         ###   ########.fr       */
+/*   Updated: 2020/02/07 13:22:18 by rpapagna         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "map.h"
-//#include "nuklear.h"
+# define NK_INCLUDE_FIXED_TYPES
+# define NK_INCLUDE_STANDARD_IO
+# define NK_INCLUDE_STANDARD_VARARGS
+# define NK_INCLUDE_DEFAULT_ALLOCATOR
+# define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
+# define NK_INCLUDE_FONT_BAKING
+# define NK_INCLUDE_DEFAULT_FONT
+# include "../Nuklear/nuklear.h"
+# include "nuklear_sdl_gl3.h"
 
 typedef struct		s_line_node
 {
 	t_linedef		line;
-//	struct nk_color color;
+	struct nk_color color;
 	t_line_node		*next;
 	t_line_node		*prev;
 }					t_line_node;
