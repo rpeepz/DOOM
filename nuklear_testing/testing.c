@@ -40,7 +40,7 @@ int remove_line(t_line_bank *linebank){
 		linebank -> selected -> prev -> next = linebank -> next;
 		linebank -> selected -> next -> prev = linebank -> prev;
 	}
-	linebank->
+	linebank->count--;
 	//unlink
 	//free
 	return(0);
