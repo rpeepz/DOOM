@@ -1,6 +1,7 @@
 /* nuklear - 1.32.0 - public domain */
 #include "demo.h"
 
+#include "list.h"
 #define NK_INCLUDE_FIXED_TYPES
 #define NK_INCLUDE_STANDARD_IO
 #define NK_INCLUDE_STANDARD_VARARGS
@@ -118,29 +119,36 @@ int main(void)
 
 			// Draw lines //
 			// if lines don't draw try removing the initialization
-			struct nk_vec2 line_start = { 0 };
-			struct nk_vec2 line_end = { 0 };
+			struct nk_vec2 line_start ;
+			struct nk_vec2 line_end ;
 			struct nk_rect circle1 = { .w = 4, .h = 4};
 
-            if (tool_op == LINE) {
+            if (*(draw_mode.tool_op) == LINE) {
                 if (!draw_mode.started_line && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
                 {
                     draw_mode.started_line = 1;
                     line_start = in->mouse.pos; //set coordinates for beginning of line
                     circle1.x = line_start.x;
                     circle1.y = line_start.y;
+					printf("started at: (%f, %f)\n", line_start.x, line_start.y);
                 }
 
-                if (draw_mode.started_line)
+                if (draw_mode.started_line){
                     nk_fill_circle(canvas, circle1, nk_rgb(100, 100, 100)); //place cirlce on line start
-
-                if (draw_mode.started_line && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
+				}
+                if (draw_mode.started_line && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)));
                 {
                     draw_mode.ended_line = 1;
                     line_end = in->mouse.pos; //set coordinates for end of line
+					printf("ended at: (%f, %f)\n", line_end.x, line_end.y);
+
                 }
-                if (draw_mode.ended_line)
+                if (draw_mode.ended_line){
+					draw_mode.started_line = 0;
+					draw_mode.ended_line = 0;
 					add_line( &linebank, line_start, line_end);
+					printf("Added line\n");
+				}
             }
 			
 			for( int i = 0; i < linebank.count; ++i){

@@ -26,7 +26,6 @@
 # include "../Nuklear/nuklear.h"
 # include "nuklear_sdl_gl3.h"
 
-#include "list.h"
 
 typedef struct		s_vec2f
 {
