@@ -6,7 +6,7 @@
 /*   By: rpapagna <rpapagna@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/23 22:13:43 by smaddox           #+#    #+#             */
-/*   Updated: 2020/02/07 14:07:00 by smaddox          ###   ########.fr       */
+/*   Updated: 2020/02/07 15:23:08 by rpapagna         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ typedef struct		s_line_bank
 	t_line_node		*head;
 	t_line_node 	*tail;
 }					t_line_bank;
+
+void    list_pannel(struct nk_context *ctx, t_line_bank *linebank);
 
 /* Given a reference (pointer to pointer) to the head of a list
 	and the linedef, inserts a new node on the front of the list. */
