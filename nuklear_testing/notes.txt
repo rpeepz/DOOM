@@ -38,3 +38,10 @@ been resolved.
 The next step is to develop and integrate new pannnels and have them compile
 with their source-file specific headers, and have these headers include a single
 project-header.
+With work on migrating the existing map pannel, I think I did some pointer
+manipulation incorrectly, which means the current demo is not working as it
+should. That pannel is being worked on by Sam, and it shouldn't make too much of
+an issue at this point. Just know it is broken, and I am aware of that.
+Extra: after some finesse I can now include `nuklear.h` inside the main header
+which means that the project is closer to having a modular development process.
+I guess reading the instructions made more sense today than it did yesterday...
