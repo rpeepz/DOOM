@@ -1,18 +1,5 @@
 /* nuklear - 1.32.0 - public domain */
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdarg.h>
-#include <string.h>
-#include <math.h>
-#include <assert.h>
-#include <math.h>
-#include <limits.h>
-#include <time.h>
-
-#include <GL/glew.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_opengl.h>
+#include "demo.h"
 
 #define NK_INCLUDE_FIXED_TYPES
 #define NK_INCLUDE_STANDARD_IO
@@ -32,6 +19,7 @@
 #define MAX_VERTEX_MEMORY 512 * 1024
 #define MAX_ELEMENT_MEMORY 128 * 1024
 
+<<<<<<< HEAD
 //
 
 typedef struct		s_vec2f
@@ -56,16 +44,15 @@ typedef struct	s_subsec{
 	t_seg *subsec_segments;
 }				t_subsec;
 typedef enum e_mode{Line_mode, Sector_mode, Selecting_mode, Vertex_mode} t_mode;
+=======
+t_map_interface draw_mode;
+>>>>>>> dev-rpapagna
 
-struct s_drawing_mode {
-	int active;
-	t_mode mode;
-};
-struct s_drawing_mode draw_mode;
 // Use lines for now but switch to a doubly linked list to make deletion easier. Im still curious with why ID put lines in an array in DoomEd.
 t_line lines[10000];
 int    lines_filled = 0;
 float  value = 1.0f;
+
 
 int main(void)
 {
@@ -110,16 +97,17 @@ int main(void)
 
 //    bg.r = 0.10f, bg.g = 0.18f, bg.b = 0.24f, bg.a = 1.0f;
 
-int started_line = 0;
-int ended_line = 0;
-int drawing_line = 0;
-
-
     int tool_op = 0;     //Tools pannel selected tool
 
+<<<<<<< HEAD
 	// NUM_TOOLS should remain at the end of the enum to represent
 	// the number of tools present -smaddox
     enum tools {SELECT, LINE, THING, MOVE, SECTOR, SOME_SHIT, NUM_TOOLS};
+=======
+    draw_mode.started_line = 0;
+    draw_mode.ended_line = 0;
+    draw_mode.tool_op = &tool_op;
+>>>>>>> dev-rpapagna
 
     while (running)
     {
@@ -134,7 +122,11 @@ int drawing_line = 0;
 		struct nk_rect size;
 		struct nk_command_buffer *canvas;
 		const struct nk_input *in = &ctx->input;
+        draw_mode.size = &size;
+        draw_mode.canvas = canvas;
+        draw_mode.in = in;
 
+<<<<<<< HEAD
 //Tools pannel
 		//scale with number of tools
 		if (nk_begin(ctx, "Tools", nk_rect(0, 400, 200,  NUM_TOOLS * 40 ), NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MOVABLE|NK_WINDOW_MINIMIZABLE))
@@ -202,6 +194,11 @@ int drawing_line = 0;
 		nk_end(ctx);
 
 //End Map pannel
+=======
+        tool_pannel(ctx, (void*)&tool_op);
+
+		map_pannel(ctx, (void*)&draw_mode);
+>>>>>>> dev-rpapagna
 
         // testing a display box
         lines_filled = 2;

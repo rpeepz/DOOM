@@ -4,17 +4,17 @@ DOOM Map Maker notes
 Today I studdied the code and the workings of the Nuklear demo:
 	Calculator
 
-The Calculator code was very simple, straight forward, and easy to follow
-how the nuklear api was implemented. Its function was to make a pannel with
-buttons and a display that performed simple math on floating point numbers.
+The Calculator code was very simple, straight forward, and easy to follow how
+the nuklear api was implemented. Its function was to make a pannel with buttons
+and a display that performed simple math on floating point numbers.
 
-I replicated some of the flags used to make my own pannel that displayed
-items in an array.
-I also made a slider that modified an arbitrary value that was displayed in
-the pannel.
+I replicated some of the flags used to make my own pannel that displayed items
+in an array. I also made a slider that modified an arbitrary value that was
+displayed in the pannel.
 
 Messed around with making lines using the map maker pannel.
 
+<<<<<<< HEAD
 
 
 
@@ -23,3 +23,36 @@ smaddox
 adding new a new line
 
 if the tool_op == LINE add a new line to the list
+=======
+02-05-20
+Today I tried to change the makefile to be able to compile the map maker across
+multiple files. I ran into an issue that I cant easily find the answer for. The
+error says 'duplicate symbols' and I figured it was because my header was not
+protected against double inclusion. So I fixed it, but that didn't fix my
+problem. So I'll come back later and try something with the help of my group
+mates.
+
+I'll try to make some progress on the map's 'line' and 'thing' editor.
+A few things need to be done with that:
+	- Line pannel to choose flags, specials, textures
+	- Thing pannel: angle
+	- Sector pannel: heights
+
+02-06-20
+Today I was able to fix the compilation error from yesterday by removing
+`nuklear.h` from the demo.h header. This may prove to be a problem in the future
+but for now it serves its purpose. I am able to add more source files and
+compile them cleanly with nuklear and glew. I wasnt able to make any new pannels
+but that can be focused on in an easier way now that this current problem has
+been resolved.
+The next step is to develop and integrate new pannnels and have them compile
+with their source-file specific headers, and have these headers include a single
+project-header.
+With work on migrating the existing map pannel, I think I did some pointer
+manipulation incorrectly, which means the current demo is not working as it
+should. That pannel is being worked on by Sam, and it shouldn't make too much of
+an issue at this point. Just know it is broken, and I am aware of that.
+Extra: after some finesse I can now include `nuklear.h` inside the main header
+which means that the project is closer to having a modular development process.
+I guess reading the instructions made more sense today than it did yesterday...
+>>>>>>> dev-rpapagna
