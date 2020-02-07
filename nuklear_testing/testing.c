@@ -1,5 +1,5 @@
 #include "list.h"
-
+#include <string.h>
 #define THICKNESS 1.0f
 
 int stroke_my_line( struct nk_command_buffer *b, t_line_node *node){
@@ -13,24 +13,21 @@ int stroke_my_line( struct nk_command_buffer *b, t_line_node *node){
 int add_line(t_line_bank *linebank, struct nk_vec2 start, struct nk_vec2 end){
 
 	t_line_node *new = (t_line_node*)malloc(sizeof(t_line_node));
+	memset(new, 0, sizeof(t_line_node));
 	new -> color = nk_rgb(10, 10, 0);
 	new->line.start_vertex.x = start.x;
 	new->line.start_vertex.y = start.y;
 	new->line.end_vertex.x = end.x;
 	new->line.end_vertex.y = end.y;
 
-	if( linebank->head == NULL ){
-		linebank->head = new;
-		new->next = new;
-		new->prev = new;
+	if( linebank->tail == NULL ){
+		linebank->tail = linebank->head = new;
 	}
 	else {
-		linebank->tail->next = new;
 		new->prev = linebank->tail;
-		new->next = linebank->head;
-		linebank->head->prev = new;
-	}
+		linebank->tail->next = new;
 		linebank->tail = new;
+	}
 		linebank->selected = new;
 		linebank->count++;
 

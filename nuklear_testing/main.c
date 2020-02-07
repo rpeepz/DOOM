@@ -121,42 +121,36 @@ int main(void)
 			// if lines don't draw try removing the initialization
 			struct nk_vec2 line_start ;
 			struct nk_vec2 line_end ;
-			struct nk_rect circle1 = { .w = 4, .h = 4};
+			static struct nk_rect circle1 = { .w = 4, .h = 4};
+			static struct nk_rect circle2 = { .w = 4, .h = 4};
+
+			static int count = 0;
 
             if (*(draw_mode.tool_op) == LINE) {
-                if (!draw_mode.started_line && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
+			
+				if (nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx))){
+						count++;
+				}
+                if (count == 0 )
                 {
-                    draw_mode.started_line = 1;
                     line_start = in->mouse.pos; //set coordinates for beginning of line
                     circle1.x = line_start.x;
                     circle1.y = line_start.y;
-					printf("started at: (%f, %f)\n", line_start.x, line_start.y);
                 }
+				if (count > 0)
+                    nk_fill_circle(canvas, circle1, nk_rgb(255, 0, 0)); //place cirlce on line start
 
-                if (draw_mode.started_line){
-                    nk_fill_circle(canvas, circle1, nk_rgb(100, 100, 100)); //place cirlce on line start
+				if ( count == 1 )
+				{
+					line_end = in->mouse.pos;
+					circle2.x = line_end.x;
+                    circle2.y = line_end.y;
+                    nk_fill_circle(canvas, circle2, nk_rgb(255, 0, 0)); //place cirlce on line start
 				}
-                if (draw_mode.started_line && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)));
-                {
-                    draw_mode.ended_line = 1;
-                    line_end = in->mouse.pos; //set coordinates for end of line
-					printf("ended at: (%f, %f)\n", line_end.x, line_end.y);
-
-                }
-                if (draw_mode.ended_line){
-					draw_mode.started_line = 0;
-					draw_mode.ended_line = 0;
+				if (count == 2){
 					add_line( &linebank, line_start, line_end);
-					printf("Added line\n");
+					count = 0;
 				}
-            }
-			
-			for( int i = 0; i < linebank.count; ++i){
-				t_line_node *temp;
-				struct nk_rect circle2;
-				temp = linebank.head;
-				stroke_my_line(canvas, temp);
-
 				// Draw circles on top on the vertexs 
 				//circle2.x = temp->line.start_vertex.x;	
 				//circle2.y = temp->line.start_vertex.y;	
@@ -165,40 +159,19 @@ int main(void)
 				//circle2.y = temp->line.end_vertex.y;	
                 //nk_fill_circle(canvas, circle2, nk_rgb(100, 100, 100)); //place cirlce on line start
 				
-				temp = temp->next;
 			}
+				t_line_node *temp;
+				temp = linebank.head;
+				for( int i = 0; i < linebank.count; ++i){
+					stroke_my_line(canvas, temp);
+					temp = temp->next;
+				}
 		}
 		nk_end(ctx);
-        // testing a display box
-        lines_filled = 2;
-        if (nk_begin(ctx, "line list", nk_rect(50, 50, 200, 400), NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_CLOSABLE))
-        {
-            for (int lf = 0; lf < lines_filled; lf++){
-                lines[lf].start.x = 40.1 + ((float)lf * .1f);
-                lines[lf].start.y = 40.2 + ((float)lf * .1f);
-            }
-            for (int zx = 0; zx < lines_filled; zx++) {
-                char buffer[16];
-                nk_layout_row_dynamic(ctx, 30, 2);
-                snprintf(buffer, 16, "%d", zx+1);
-                nk_label(ctx, buffer, NK_TEXT_LEFT);
-                snprintf(buffer, 16, "%.2f, %.2f", lines[zx].start.x, lines[zx].start.y);
-                nk_label(ctx, buffer, NK_TEXT_RIGHT);
-            }
 
-            //  testing slider display value
-            nk_layout_row_dynamic(ctx, 30, 1);
-            {int len; char buffer[64];
-            len = snprintf(buffer, 64, "%.2f", value);
-            nk_edit_string(ctx, NK_EDIT_READ_ONLY, buffer, &len, 63, nk_filter_float);
-            buffer[len] = 0;
-            value = atof(buffer);}
-
-            nk_slider_float(ctx, 100, &value, 0.1f, 0.1f);
-        }
-        nk_end(ctx);
-
-        /* -------------- EXAMPLES ---------------- */
+		list_pannel(ctx, &linebank);
+        
+	        /* -------------- EXAMPLES ---------------- */
         #ifdef INCLUDE_CALCULATOR
           calculator(ctx);
         #endif
