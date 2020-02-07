@@ -98,8 +98,58 @@ int main(void)
 
         tool_pannel(ctx, (void*)&tool_op);
 
-		map_pannel(ctx, (void*)&draw_mode);
+		// map_pannel(ctx, (void*)&draw_mode);
 
+//Map pannel
+		if (nk_begin(ctx, "Map Maker", nk_rect(400, 10, 800, 600),
+				NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MOVABLE|NK_WINDOW_MINIMIZABLE))
+		{
+			canvas = nk_window_get_canvas(ctx);
+			size = nk_window_get_content_region(ctx);
+			
+			float x, y;
+			const float grid_size = 32.0f;
+			const struct nk_color grid_color = nk_rgb(50, 50, 50);
+			for (x = (float)fmod(size.x, grid_size); x < size.w; x += grid_size)
+				nk_stroke_line(canvas, x+size.x, size.y, x+size.x, size.y+size.h, 1.0f, grid_color);
+			for (y = (float)fmod(size.y, grid_size); y < size.h; y += grid_size)
+				nk_stroke_line(canvas, size.x, y+size.y, size.x+size.w, y+size.y, 1.0f, grid_color);
+
+			// Draw lines //
+			// if lines don't draw try removing the initialization
+			struct nk_vec2 line_start = { 0 };
+			struct nk_vec2 line_end = { 0 };
+			struct nk_rect circle1 = { .w = 4, .h = 4};
+
+            if (tool_op == LINE) {
+                if (!started_line && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
+                {
+                    started_line = 1;
+                    line_start = in->mouse.pos; //set coordinates for beginning of line
+                    circle1.x = line_start.x;
+                    circle1.y = line_start.y;
+                }
+
+                if (started_line)
+                    nk_fill_circle(canvas, circle1, nk_rgb(100, 100, 100)); //place cirlce on line start
+
+                if (started_line && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
+                {
+                    ended_line = 1;
+                    line_end = in->mouse.pos; //set coordinates for end of line
+                }
+                if (ended_line)
+					add_line( linebank, line_start, line_end);
+            }
+			
+			for( int i = 0; i < linebank->count; ++i){
+				t_line_node *temp;
+				temp = linebank->head;
+				stroke_my_line(canvas, temp);
+				temp = temp.next;
+			}
+		}
+		nk_end(ctx);
         // testing a display box
         lines_filled = 2;
         if (nk_begin(ctx, "line list", nk_rect(50, 50, 200, 400), NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_CLOSABLE))
