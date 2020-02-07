@@ -20,6 +20,7 @@
 #define MAX_ELEMENT_MEMORY 128 * 1024
 
 t_map_interface draw_mode;
+t_line_bank linebank;
 // Use lines for now but switch to a doubly linked list to make deletion easier. Im still curious with why ID put lines in an array in DoomEd.
 t_line lines[10000];
 int    lines_filled = 0;
@@ -122,30 +123,30 @@ int main(void)
 			struct nk_rect circle1 = { .w = 4, .h = 4};
 
             if (tool_op == LINE) {
-                if (!started_line && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
+                if (!draw_mode.started_line && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
                 {
-                    started_line = 1;
+                    draw_mode.started_line = 1;
                     line_start = in->mouse.pos; //set coordinates for beginning of line
                     circle1.x = line_start.x;
                     circle1.y = line_start.y;
                 }
 
-                if (started_line)
+                if (draw_mode.started_line)
                     nk_fill_circle(canvas, circle1, nk_rgb(100, 100, 100)); //place cirlce on line start
 
-                if (started_line && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
+                if (draw_mode.started_line && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
                 {
-                    ended_line = 1;
+                    draw_mode.ended_line = 1;
                     line_end = in->mouse.pos; //set coordinates for end of line
                 }
-                if (ended_line)
-					add_line( linebank, line_start, line_end);
+                if (draw_mode.ended_line)
+					add_line( &linebank, line_start, line_end);
             }
 			
-			for( int i = 0; i < linebank->count; ++i){
+			for( int i = 0; i < linebank.count; ++i){
 				t_line_node *temp;
 				struct nk_rect circle2;
-				temp = linebank->head;
+				temp = linebank.head;
 				stroke_my_line(canvas, temp);
 
 				// Draw circles on top on the vertexs 
@@ -156,7 +157,7 @@ int main(void)
 				//circle2.y = temp->line.end_vertex.y;	
                 //nk_fill_circle(canvas, circle2, nk_rgb(100, 100, 100)); //place cirlce on line start
 				
-				temp = temp.next;
+				temp = temp->next;
 			}
 		}
 		nk_end(ctx);

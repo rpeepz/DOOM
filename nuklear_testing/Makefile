@@ -23,7 +23,8 @@ CFLAGS += -I$(GLEW_INC_DIR)/GL -I$(GLEW_INC_DIR)
 
 SRC = main.c\
 	tool_pannel.c\
-	map_pannel.c
+	testing.c\
+	# map_pannel.c
 OBJ = $(addprefix $(OBJ_PATH)/,$(SRC:.c=.o))
 
 ifeq ($(OS),Windows_NT)

@@ -1,6 +1,18 @@
 #include "list.h"
 #include "demo.h"
 
+#define NK_INCLUDE_FIXED_TYPES
+#define NK_INCLUDE_STANDARD_IO
+#define NK_INCLUDE_STANDARD_VARARGS
+#define NK_INCLUDE_DEFAULT_ALLOCATOR
+#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
+#define NK_INCLUDE_FONT_BAKING
+#define NK_INCLUDE_DEFAULT_FONT
+# define NK_IMPLEMENTATION
+# define NK_SDL_GL3_IMPLEMENTATION
+#include "../Nuklear/nuklear.h"
+#include "nuklear_sdl_gl3.h"
+
 #define THICKNESS 1.0f
 
 int stroke_my_line( struct nk_command_buffer *b, t_line_node *node){
@@ -25,8 +37,8 @@ int add_line(t_line_bank *linebank, struct nk_vec2 start, struct nk_vec2 end){
 	}
 	else {
 		linebank->tail->next = new;
-		new.prev = linebank->tail;
-		new.next = linebank->head;
+		new->prev = linebank->tail;
+		new->next = linebank->head;
 		linebank->head->prev = new;
 	}
 		linebank->tail = new;
@@ -54,12 +66,12 @@ int remove_line(t_line_bank *linebank){
 
 int	change_selected(t_line_bank *linebank, int direction){
 	if ( linebank->selected != NULL ){
-		linebank.selected->color = nk_rgb(10,10,0);
+		linebank->selected->color = nk_rgb(10,10,0);
 		if (direction == 0)
-			linebank->selected = linebank->selected. -> prev;
+			linebank->selected = linebank->selected -> prev;
 		if (direction == 1)
 			linebank->selected = linebank->selected -> next;
-		linebank.selected->color = nk_rgb(255, 0, 0);
+		linebank->selected->color = nk_rgb(255, 0, 0);
 		return(1);
 	}
 	// if selection is valid unhighlight the current one
