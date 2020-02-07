@@ -4,9 +4,13 @@
 #define THICKNESS 1.0f
 
 int stroke_my_line( struct nk_command_buffer *b, t_line_node *node){
+<<<<<<< HEAD
 	nk_stroke_line(b, node->line.start_vertex.x, node->line.start_vertex.y,
 					node->line.end_vertex.x, node->line.end_vertex.y,
 					THICKNESS, node->color);
+=======
+	nk_stroke_line(b, node->line.start_vertex.x, node->line.start_vertex.y, node->line.end_vertex.x, node->line.end_vertex.y, THICKNESS, node->color);
+>>>>>>> 97ae351bc41cd474c1e6d1f58056e264416e9e92
 }
 
 
