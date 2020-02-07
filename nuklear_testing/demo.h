@@ -16,6 +16,16 @@
 # include <SDL2/SDL.h>
 # include <SDL2/SDL_opengl.h>
 
+# define NK_INCLUDE_FIXED_TYPES
+# define NK_INCLUDE_STANDARD_IO
+# define NK_INCLUDE_STANDARD_VARARGS
+# define NK_INCLUDE_DEFAULT_ALLOCATOR
+# define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
+# define NK_INCLUDE_FONT_BAKING
+# define NK_INCLUDE_DEFAULT_FONT
+# include "../Nuklear/nuklear.h"
+# include "nuklear_sdl_gl3.h"
+
 typedef struct		s_vec2f
 {
 	float			x;
@@ -54,5 +64,20 @@ typedef enum    e_mode
 	MOVE,
 	SECTOR
 }               t_mode;
+
+typedef struct  s_map_interface
+{
+	int active;
+    int started_line;
+    int ended_line;
+    int *tool_op;
+    struct nk_rect  *size;
+    struct nk_command_buffer *canvas;
+    const struct nk_input   *in;
+}               t_map_interface;
+
+void    map_pannel(struct nk_context *ctx, void *p);
+void    tool_pannel(struct nk_context *ctx, void *p);
+void    calculator(struct nk_context *ctx);
 
 #endif

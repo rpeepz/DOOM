@@ -13,26 +13,12 @@
 #include "../Nuklear/nuklear.h"
 #include "nuklear_sdl_gl3.h"
 
-void    map_pannel(struct nk_context *ctx, void *p);
-void    tool_pannel(struct nk_context *ctx, void *p);
-void    calculator(struct nk_context *ctx);
-
 #define WINDOW_WIDTH 1600
 #define WINDOW_HEIGHT 900
 
 #define MAX_VERTEX_MEMORY 512 * 1024
 #define MAX_ELEMENT_MEMORY 128 * 1024
 
-typedef struct  s_map_interface
-{
-	int active;
-    int started_line;
-    int ended_line;
-    int *tool_op;
-    struct nk_rect  *size;
-    struct nk_command_buffer *canvas;
-    const struct nk_input   *in;
-} t_map_interface;
 t_map_interface draw_mode;
 
 // Use lines for now but switch to a doubly linked list to make deletion easier. Im still curious with why ID put lines in an array in DoomEd.

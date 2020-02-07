@@ -12,17 +12,6 @@
 #include "../Nuklear/nuklear.h"
 #include "nuklear_sdl_gl3.h"
 
-typedef struct  s_map_interface
-{
-	int active;
-    int started_line;
-    int ended_line;
-    int *tool_op;
-    struct nk_rect  *size;
-    struct nk_command_buffer *canvas;
-    const struct nk_input   *in;
-}               t_map_interface;
-
 void    map_pannel(struct nk_context *ctx, void *p)
 {
     t_map_interface *m = p;
