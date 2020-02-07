@@ -1,3 +1,6 @@
+#include "list.h"
+#include "demo.h"
+
 #define THICKNESS 1.0f
 
 int stroke_my_line( struct nk_command_buffer *b, t_line_node *node){

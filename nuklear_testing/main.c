@@ -19,35 +19,7 @@
 #define MAX_VERTEX_MEMORY 512 * 1024
 #define MAX_ELEMENT_MEMORY 128 * 1024
 
-<<<<<<< HEAD
-//
-
-typedef struct		s_vec2f
-{
-	float			x;
-	float			y;
-}					t_vec2f;
-typedef struct s_line {
-	t_vec2f start;
-	t_vec2f end;
-}				t_line;
-typedef struct s_sector {
-	t_line *sector_lines;
-}				t_sector;
-typedef struct	s_seg{
-	t_line *ptr_to_line_segmenting;
-	int x;
-	int y;
-}				t_seg;
-typedef struct	s_subsec{
-	// Im not sure what a subsector consists of besides segments
-	t_seg *subsec_segments;
-}				t_subsec;
-typedef enum e_mode{Line_mode, Sector_mode, Selecting_mode, Vertex_mode} t_mode;
-=======
 t_map_interface draw_mode;
->>>>>>> dev-rpapagna
-
 // Use lines for now but switch to a doubly linked list to make deletion easier. Im still curious with why ID put lines in an array in DoomEd.
 t_line lines[10000];
 int    lines_filled = 0;
@@ -95,7 +67,7 @@ int main(void)
     /*set_style(ctx, THEME_DARK);*/
     #endif
 
-//    bg.r = 0.10f, bg.g = 0.18f, bg.b = 0.24f, bg.a = 1.0f;
+    bg.r = 0.10f, bg.g = 0.18f, bg.b = 0.24f, bg.a = 1.0f;
 
     int tool_op = 0;     //Tools pannel selected tool
 
