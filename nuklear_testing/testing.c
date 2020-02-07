@@ -4,17 +4,13 @@
 #define THICKNESS 1.0f
 
 int stroke_my_line( struct nk_command_buffer *b, t_line_node *node){
-<<<<<<< HEAD
 	nk_stroke_line(b, node->line.start_vertex.x, node->line.start_vertex.y,
 					node->line.end_vertex.x, node->line.end_vertex.y,
 					THICKNESS, node->color);
-=======
-	nk_stroke_line(b, node->line.start_vertex.x, node->line.start_vertex.y, node->line.end_vertex.x, node->line.end_vertex.y, THICKNESS, node->color);
->>>>>>> 97ae351bc41cd474c1e6d1f58056e264416e9e92
 }
 
 
-int add_line(t_line_bank *linebank, nk_vec2 start, nk_vec2 end){
+int add_line(t_line_bank *linebank, struct nk_vec2 start, struct nk_vec2 end){
 
 	t_line_node *new = (t_line_node*)malloc(sizeof(t_line_node));
 	new->line.start_vertex.x = start.x;
@@ -46,8 +42,8 @@ int add_line(t_line_bank *linebank, nk_vec2 start, nk_vec2 end){
 
 int remove_line(t_line_bank *linebank){
 	if ( linebank->selected ){
-		linebank -> selected -> prev -> next = linebank -> next;
-		linebank -> selected -> next -> prev = linebank -> prev;
+		linebank -> selected -> prev -> next = linebank -> selected -> next;
+		linebank -> selected -> next -> prev = linebank -> selected -> prev;
 	}
 	linebank->count--;
 	//unlink
@@ -60,9 +56,9 @@ int	change_selected(t_line_bank *linebank, int direction){
 	if ( linebank->selected != NULL ){
 		linebank.selected->color = nk_rgb(10,10,0);
 		if (direction == 0)
-			linebank->selected = linebank->selected.prev;
+			linebank->selected = linebank->selected. -> prev;
 		if (direction == 1)
-			linebank->selected = linebank->selected.next;
+			linebank->selected = linebank->selected -> next;
 		linebank.selected->color = nk_rgb(255, 0, 0);
 		return(1);
 	}

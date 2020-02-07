@@ -144,8 +144,18 @@ int main(void)
 			
 			for( int i = 0; i < linebank->count; ++i){
 				t_line_node *temp;
+				struct nk_rect circle2;
 				temp = linebank->head;
 				stroke_my_line(canvas, temp);
+
+				// Draw circles on top on the vertexs 
+				//circle2.x = temp->line.start_vertex.x;	
+				//circle2.y = temp->line.start_vertex.y;	
+                //nk_fill_circle(canvas, , nk_rgb(100, 100, 100)); //place cirlce on line start
+				//circle2.x = temp->line.end_vertex.x;	
+				//circle2.y = temp->line.end_vertex.y;	
+                //nk_fill_circle(canvas, circle2, nk_rgb(100, 100, 100)); //place cirlce on line start
+				
 				temp = temp.next;
 			}
 		}
