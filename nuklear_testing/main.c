@@ -166,17 +166,11 @@ int drawing_line = 0;
 				nk_stroke_line(canvas, size.x, y+size.y, size.x+size.w, y+size.y, 1.0f, grid_color);
 
 			// Draw lines //
-			struct nk_vec2 line_start;
-			struct nk_vec2 line_end;
+			// if lines don't draw try removing the initialization
+			struct nk_vec2 line_start = { 0 };
+			struct nk_vec2 line_end = { 0 };
 			struct nk_rect circle1 = { .w = 4, .h = 4};
 
-/*            
-            if (!draw_mode.active && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
-				draw_mode.active = nk_true;
-			else
-                draw_mode.active = nk_false;
-*/
-			
             if (tool_op == LINE) {
                 if (!started_line && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
                 {
@@ -195,14 +189,15 @@ int drawing_line = 0;
                     line_end = in->mouse.pos; //set coordinates for end of line
                 }
                 if (ended_line)
-					// add_line( linebank, line_start, line_end);
+					add_line( linebank, line_start, line_end);
             }
-			/*
-			 * for node in line_bank
-			 * stroke_my_line(node)
-			 *
-			 */
-
+			
+			for( int i = 0; i < linebank->count; ++i){
+				t_line_node *temp;
+				temp = linebank->head;
+				stroke_my_line(canvas, temp);
+				temp = temp.next;
+			}
 		}
 		nk_end(ctx);
 

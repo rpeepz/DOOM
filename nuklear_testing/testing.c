@@ -1,7 +1,3 @@
-
-#include "generic_structs.c"
-//#include nuklear stuff
-
 #define THICKNESS 1.0f
 
 int stroke_my_line( struct nk_command_buffer *b, t_line_node *node){
@@ -10,6 +6,28 @@ int stroke_my_line( struct nk_command_buffer *b, t_line_node *node){
 
 
 int add_line(t_line_bank *linebank, nk_vec2 start, nk_vec2 end){
+
+	t_line_node *new = (t_line_node*)malloc(sizeof(t_line_node));
+	new->line.start_vertex.x = start.x;
+	new->line.start_vertex.y = start.y;
+	new->line.end_vertex.x = end.x;
+	new->line.end_vertex.y = end.y;
+
+	if( linebank->head == NULL ){
+		linebank->head = new;
+		new->next = new;
+		new->prev = new;
+	}
+	else {
+		linebank->tail->next = new;
+		new.prev = linebank->tail;
+		new.next = linebank->head;
+		linebank->head->prev = new;
+	}
+		linebank->tail = new;
+		linebank->selected = new;
+		linebank->count++;
+
 	//allocate memory for new node
 	//set values from args
 	//add to list 
@@ -18,6 +36,11 @@ int add_line(t_line_bank *linebank, nk_vec2 start, nk_vec2 end){
 }
 
 int remove_line(t_line_bank *linebank){
+	if ( linebank->selected ){
+		linebank -> selected -> prev -> next = linebank -> next;
+		linebank -> selected -> next -> prev = linebank -> prev;
+	}
+	linebank->
 	//unlink
 	//free
 	return(0);
@@ -25,6 +48,15 @@ int remove_line(t_line_bank *linebank){
 
 
 int	change_selected(t_line_bank *linebank, int direction){
+	if ( linebank->selected != NULL ){
+		linebank.selected->color = nk_rgb(10,10,0);
+		if (direction == 0)
+			linebank->selected = linebank->selected.prev;
+		if (direction == 1)
+			linebank->selected = linebank->selected.next;
+		linebank.selected->color = nk_rgb(255, 0, 0);
+		return(1);
+	}
 	// if selection is valid unhighlight the current one
 	// linebank.selected->color = nk_rgb(10, 10, 0)
 	// linebank.selected = linebank.selected->next or linebank.selected->prev
