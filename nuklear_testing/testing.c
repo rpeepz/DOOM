@@ -10,7 +10,7 @@ int stroke_my_line( struct nk_command_buffer *b, t_line_node *node){
 }
 
 
-int add_line(t_line_bank *linebank, struct nk_vec2 start, struct nk_vec2 end){
+void	add_line(t_line_bank *linebank, struct nk_vec2 start, struct nk_vec2 end){
 
 	t_line_node *new = (t_line_node*)malloc(sizeof(t_line_node));
 	memset(new, 0, sizeof(t_line_node));
@@ -35,20 +35,46 @@ int add_line(t_line_bank *linebank, struct nk_vec2 start, struct nk_vec2 end){
 	//set values from args
 	//add to list 
 	//make that line the current selected
-	return(0);
 }
 
-int remove_line(t_line_bank *linebank){
-	if ( linebank->selected ){
-		linebank -> selected -> prev -> next = linebank -> selected -> next;
-		linebank -> selected -> next -> prev = linebank -> selected -> prev;
+void remove_line(t_line_bank *linebank)
+{
+	t_line_node *node;
+
+	node = linebank->selected;
+	if (node){
+		//unlink
+		if (node->next == node->prev)
+		{
+			linebank->empty = 1;
+			linebank->head = NULL;
+			linebank->tail = NULL;
+			linebank->selected = NULL;
+		}
+		else if (node == linebank->head)
+		{
+			linebank->head = node->next;
+			linebank->selected = node->next;
+			linebank->head->prev = NULL;
+		}
+		else if (node == linebank->tail)
+		{
+			linebank->tail = node->prev;
+			linebank->selected = node->prev;
+			linebank->tail->next = NULL;
+		}
+		else
+		{
+			node->prev->next = node->next;
+			node->next->prev = node->prev;
+			linebank->selected = node->prev;
+		}
+		//free
+		free(node);
+		//decrement count
+		linebank->count--;
 	}
-	linebank->count--;
-	//unlink
-	//free
-	return(0);
 }
-
 
 int	change_selected(t_line_bank *linebank, int direction){
 	if ( linebank->selected != NULL ){
