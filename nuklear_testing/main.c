@@ -71,12 +71,7 @@ int main(void)
 
     bg.r = 0.10f, bg.g = 0.18f, bg.b = 0.24f, bg.a = 1.0f;
 
-    int tool_op = 0;     //Tools pannel selected tool
-
-	// NUM_TOOLS should remain at the end of the enum to represent
-	// the number of tools present -smaddox
-    enum tools {SELECT, LINE, THING, MOVE, SECTOR, SOME_SHIT, NUM_TOOLS};
-
+    int tool_op = MOVE;     //Tools pannel selected tool
     draw_mode.started_line = 0;
     draw_mode.ended_line = 0;
     draw_mode.tool_op = &tool_op;
@@ -104,7 +99,7 @@ int main(void)
 
 //Map pannel
 		if (nk_begin(ctx, "Map Maker", nk_rect(400, 10, 800, 600),
-				NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MOVABLE|NK_WINDOW_MINIMIZABLE))
+				NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MINIMIZABLE|NK_WINDOW_MOVABLE))
 		{
 			canvas = nk_window_get_canvas(ctx);
 			size = nk_window_get_content_region(ctx);
@@ -123,10 +118,12 @@ int main(void)
 			struct nk_vec2 line_end ;
 			static struct nk_rect circle1 = { .w = 4, .h = 4};
 			static struct nk_rect circle2 = { .w = 4, .h = 4};
-
+			struct nk_rect circle3 = { .w = 4, .h = 4};
 			static int count = 0;
 
             if (*(draw_mode.tool_op) == LINE) {
+
+				//SDL_ShowCursor(SDL_DISABLE);
 			
 				if (nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx))){
 						count++;
@@ -137,7 +134,7 @@ int main(void)
                     circle1.x = line_start.x;
                     circle1.y = line_start.y;
                 }
-				if (count > 0)
+				if (count >= 0)
                     nk_fill_circle(canvas, circle1, nk_rgb(255, 0, 0)); //place cirlce on line start
 
 				if ( count == 1 )
@@ -152,18 +149,18 @@ int main(void)
 					count = 0;
 				}
 				// Draw circles on top on the vertexs 
-				//circle2.x = temp->line.start_vertex.x;	
-				//circle2.y = temp->line.start_vertex.y;	
-                //nk_fill_circle(canvas, , nk_rgb(100, 100, 100)); //place cirlce on line start
-				//circle2.x = temp->line.end_vertex.x;	
-				//circle2.y = temp->line.end_vertex.y;	
-                //nk_fill_circle(canvas, circle2, nk_rgb(100, 100, 100)); //place cirlce on line start
-				
-			}
+				}
 				t_line_node *temp;
 				temp = linebank.head;
+
 				for( int i = 0; i < linebank.count; ++i){
 					stroke_my_line(canvas, temp);
+					circle3.x = temp->line.start_vertex.x;	
+					circle3.y = temp->line.start_vertex.y;	
+					nk_fill_circle(canvas, circle3 , nk_rgb(100, 100, 100)); //place cirlce on line start
+					circle3.x = temp->line.end_vertex.x;	
+					circle3.y = temp->line.end_vertex.y - 5;	
+					nk_fill_circle(canvas, circle3, nk_rgb(100, 100, 100)); //place cirlce on line start
 					temp = temp->next;
 				}
 		}

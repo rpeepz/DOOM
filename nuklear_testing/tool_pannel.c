@@ -19,11 +19,11 @@ void tool_pannel(struct nk_context *ctx, void *p)
 		{
             // static int property = 20;
 			nk_layout_row_static(ctx, 30, 100, 1);
+			if (nk_option_label(ctx, "Move", *tool_op == MOVE)) *tool_op = MOVE;
 			if (nk_option_label(ctx, "Select", *tool_op == SELECT)) *tool_op = SELECT;
 			if (nk_option_label(ctx, "Line", *tool_op == LINE)) *tool_op = LINE;
 			if (nk_option_label(ctx, "Thing", *tool_op == THING)) *tool_op = THING;
 			if (nk_option_label(ctx, "Sector", *tool_op == SECTOR)) *tool_op = SECTOR;
-			if (nk_option_label(ctx, "Move", *tool_op == MOVE)) *tool_op = MOVE;
 		}
 		nk_end(ctx);
 }

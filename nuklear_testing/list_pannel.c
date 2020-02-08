@@ -17,7 +17,7 @@ void    list_pannel(struct nk_context *ctx, t_line_bank *linebank)
 	t_line_node		*nodes = linebank->head;
 	int				count = linebank->count;
 
-	// printf("count = %d\n", linebank->count);
+	 //printf("count = %d\n", linebank->count);
 	// add_line(linebank, (struct nk_vec2){500.0,500.0}, (struct nk_vec2){600.0,600.0});
 	// printf("count = %d\n", linebank->count);
 	if (nk_begin(ctx, "line list", nk_rect(1250, 50, 300, 400), NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_CLOSABLE))
