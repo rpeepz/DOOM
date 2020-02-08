@@ -20,7 +20,7 @@ void    list_pannel(struct nk_context *ctx, t_line_bank *linebank)
 	 //printf("count = %d\n", linebank->count);
 	// add_line(linebank, (struct nk_vec2){500.0,500.0}, (struct nk_vec2){600.0,600.0});
 	// printf("count = %d\n", linebank->count);
-	if (nk_begin(ctx, "line list", nk_rect(1250, 50, 300, 400), NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_CLOSABLE))
+	if (nk_begin(ctx, "line list", nk_rect(1210, 5, 300, 400), NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_MINIMIZABLE))
 	{
 		while (nodes) {
 			char buffer[16];

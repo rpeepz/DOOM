@@ -15,7 +15,7 @@
 void tool_pannel(struct nk_context *ctx, void *p)
 {
     int *tool_op = (int *)p;
-    if (nk_begin(ctx, "Tools", nk_rect(0, 400, 200, 200), NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MOVABLE|NK_WINDOW_MINIMIZABLE))
+    if (nk_begin(ctx, "Tools", nk_rect(1210, 410, 200, 200), NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MOVABLE|NK_WINDOW_MINIMIZABLE))
 		{
             // static int property = 20;
 			nk_layout_row_static(ctx, 30, 100, 1);

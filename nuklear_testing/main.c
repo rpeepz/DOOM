@@ -98,8 +98,8 @@ int main(void)
 		// map_pannel(ctx, (void*)&draw_mode);
 
 //Map pannel
-		if (nk_begin(ctx, "Map Maker", nk_rect(400, 10, 800, 600),
-				NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MINIMIZABLE|NK_WINDOW_MOVABLE))
+		if (nk_begin(ctx, "Map Maker", nk_rect(5, 5, 1200, 800),
+				NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MINIMIZABLE))
 		{
 			canvas = nk_window_get_canvas(ctx);
 			size = nk_window_get_content_region(ctx);

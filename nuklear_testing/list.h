@@ -6,7 +6,7 @@
 /*   By: rpapagna <rpapagna@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/23 22:13:43 by smaddox           #+#    #+#             */
-/*   Updated: 2020/02/07 16:06:11 by rpapagna         ###   ########.fr       */
+/*   Updated: 2020/02/07 16:42:22 by rpapagna         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ void    list_pannel(struct nk_context *ctx, t_line_bank *linebank);
 	insert a new node at the end of the list. */
 void	add_line(t_line_bank *linebank, struct nk_vec2 start, struct nk_vec2 end);
 
+/* Given a reference to the line bank remove and free the selected line */
 void remove_line(t_line_bank *linebank);
 
 int	stroke_my_line( struct nk_command_buffer *b, t_line_node *node);
