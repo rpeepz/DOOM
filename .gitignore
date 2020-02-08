@@ -13,3 +13,6 @@ obj/
 # extra
 .vscode
 make-a-map/ 
+
+# executables
+./*/demo
