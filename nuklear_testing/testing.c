@@ -9,16 +9,30 @@ int stroke_my_line( struct nk_command_buffer *b, t_line_node *node){
 	return(0);
 }
 
+t_float_pair	snap(struct nk_vec2 v)
+{
+	t_float_pair res;
+
+	int x = (int)v.x % 10;
+	int y = (int)v.y % 10;
+	if (x >= 5)
+		res.x = v.x + (10 - x);
+	else
+		res.x = v.x - x;
+	if (y >= 5)
+		res.y = v.y + (10 - y);
+	else
+		res.y = v.y - y;
+	return (res);
+}
 
 void	add_line(t_line_bank *linebank, struct nk_vec2 start, struct nk_vec2 end){
 
 	t_line_node *new = (t_line_node*)malloc(sizeof(t_line_node));
 	memset(new, 0, sizeof(t_line_node));
 	new -> color = nk_rgb(10, 10, 0);
-	new->line.start_vertex.x = start.x;
-	new->line.start_vertex.y = start.y;
-	new->line.end_vertex.x = end.x;
-	new->line.end_vertex.y = end.y;
+	new->line.start_vertex = snap(start);
+	new->line.end_vertex = snap(end);
 
 	if( linebank->tail == NULL ){
 		linebank->tail = linebank->head = new;
