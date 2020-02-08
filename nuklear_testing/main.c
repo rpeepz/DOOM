@@ -105,7 +105,7 @@ int main(void)
 			size = nk_window_get_content_region(ctx);
 			
 			float x, y;
-			const float grid_size = 32.0f;
+			const float grid_size = 20.0f;
 			const struct nk_color grid_color = nk_rgb(50, 50, 50);
 			for (x = (float)fmod(size.x, grid_size); x < size.w; x += grid_size)
 				nk_stroke_line(canvas, x+size.x, size.y, x+size.x, size.y+size.h, 1.0f, grid_color);
@@ -158,12 +158,14 @@ int main(void)
 
 				for( int i = 0; i < linebank.count; ++i){
 					stroke_my_line(canvas, temp);
+					/*
 					circle3.x = temp->line.start_vertex.x;	
 					circle3.y = temp->line.start_vertex.y;	
 					nk_fill_circle(canvas, circle3 , nk_rgb(100, 100, 100)); //place cirlce on line start
 					circle3.x = temp->line.end_vertex.x;	
 					circle3.y = temp->line.end_vertex.y - 5;	
 					nk_fill_circle(canvas, circle3, nk_rgb(100, 100, 100)); //place cirlce on line start
+					*/
 					temp = temp->next;
 				}
 		}

@@ -14,7 +14,7 @@
 
 void    list_pannel(struct nk_context *ctx, t_line_bank *linebank)
 {
-	t_line_node		*nodes = linebank->head;
+	t_line_node		*nodes = linebank->tail;
 	int				count = linebank->count;
 
 	 //printf("count = %d\n", linebank->count);
@@ -31,7 +31,7 @@ void    list_pannel(struct nk_context *ctx, t_line_bank *linebank)
 			
 			snprintf(buffer, 16, "%.2f, %.2f", line.end_vertex.x, line.end_vertex.y);
 			nk_label(ctx, buffer, NK_TEXT_RIGHT);
-			nodes = nodes->next;
+			nodes = nodes->prev;
 		}
 /*
 		//  testing slider display value
