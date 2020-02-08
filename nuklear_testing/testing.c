@@ -27,7 +27,8 @@ t_float_pair	snap(struct nk_vec2 v)
 }
 
 void	add_line(t_line_bank *linebank, struct nk_vec2 start, struct nk_vec2 end){
-
+	if (start.x == end.x && start.y == end.y)
+		return ;
 	t_line_node *new = (t_line_node*)malloc(sizeof(t_line_node));
 	memset(new, 0, sizeof(t_line_node));
 	new -> color = nk_rgb(10, 10, 0);
