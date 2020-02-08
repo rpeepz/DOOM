@@ -122,8 +122,11 @@ int main(void)
 			static int count = 0;
 
             if (*(draw_mode.tool_op) == LINE) {
-
-				//SDL_ShowCursor(SDL_DISABLE);
+                if (in->mouse.pos.x >= 5 && in->mouse.pos.x <= 1205 &&
+                    in->mouse.pos.y >= 5 && in->mouse.pos.y <= 805)
+				    SDL_ShowCursor(SDL_DISABLE);
+                else
+				    SDL_ShowCursor(SDL_ENABLE);
 			
 				if (nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx))){
 						count++;
