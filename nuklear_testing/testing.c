@@ -44,7 +44,7 @@ void	add_line(t_line_bank *linebank, struct nk_vec2 start, struct nk_vec2 end){
 		linebank->tail = new;
 	}
 	if (linebank->selected)
-		linebank->selected->color = nk_rgb(10, 10, 0);
+		linebank->selected->color = nk_rgb(10, 10, 10);
 	linebank->selected = new;
 	linebank->count++;
 
@@ -61,7 +61,7 @@ void remove_line(t_line_bank *linebank)
 	node = linebank->selected;
 	if (node){
 		//unlink
-		if (node->next == node->prev)
+		if (linebank->count == 1)
 		{
 			linebank->empty = 1;
 			linebank->head = NULL;
@@ -93,22 +93,31 @@ void remove_line(t_line_bank *linebank)
 	}
 }
 
-int	change_selected(t_line_bank *linebank, int direction){
+/* direction 1 traverses next : 0 traverses prev */
+void change_selected(t_line_bank *linebank, int direction){
 	if ( linebank->selected != NULL ){
-		linebank->selected->color = nk_rgb(10,10,0);
-		if (direction == 0)
-			linebank->selected = linebank->selected -> prev;
-		if (direction == 1)
-			linebank->selected = linebank->selected -> next;
-		linebank->selected->color = nk_rgb(255, 0, 0);
-		return(1);
+		// unhighlight selected
+		linebank->selected->color = nk_rgb(10, 10, 10);
+		// one element in list
+		if (linebank->count == 1)
+			;
+		// at head
+		if (linebank->selected == linebank->head)
+			linebank->selected =
+			direction ? linebank->head->next : linebank->tail;
+		// at tail
+		if (linebank->selected == linebank->tail)
+			linebank->selected =
+			direction ? linebank->head : linebank->tail->prev;
+		else
+			linebank->selected =
+			direction ? linebank->selected->next : linebank->selected->prev;
+		// highlight new selected
+		linebank->selected->color = nk_rgb(255, 140, 60);
 	}
 	// if selection is valid unhighlight the current one
-	// linebank.selected->color = nk_rgb(10, 10, 0)
-	// linebank.selected = linebank.selected->next or linebank.selected->prev
 	// should be circular so you can't fall off the list and not be able to get back
 	// highlight selected line
 	// linebank.selected->color = nk_rgb(255, 0, 0)
-	return(0);
 }
 
