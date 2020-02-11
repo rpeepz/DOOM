@@ -17,37 +17,38 @@ void    list_pannel(struct nk_context *ctx, t_line_bank *linebank)
 	t_line_node		*nodes = linebank->tail;
 	int				count = linebank->count;
 
-	 //printf("count = %d\n", linebank->count);
-	// add_line(linebank, (struct nk_vec2){500.0,500.0}, (struct nk_vec2){600.0,600.0});
-	// printf("count = %d\n", linebank->count);
 	if (nk_begin(ctx, "line list", nk_rect(1210, 5, 350, 400), NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_MINIMIZABLE))
 	{
 		while (nodes) {
-			char buffer[16];
+			char buffer[24];
 			t_linedef line = nodes->line;
-			nk_layout_row_begin(ctx, NK_STATIC, 30, 5);
-			// nk_layout_row_dynamic(ctx, 30, 2);
-			nk_layout_row_push(ctx, 100);
-			snprintf(buffer, 16, "%.2f, %.2f", line.start_vertex.x, line.start_vertex.y);
-			nk_label(ctx, buffer, NK_TEXT_LEFT);
 
-			nk_layout_row_push(ctx, 10);
-			nk_label(ctx, " ", 0);
+			nk_layout_row_begin(ctx, NK_STATIC, 30, 3);
 			
-			nk_layout_row_push(ctx, 100);
-			snprintf(buffer, 16, "%.2f, %.2f", line.end_vertex.x, line.end_vertex.y);
-			nk_label(ctx, buffer, NK_TEXT_RIGHT);
-
-			nk_layout_row_push(ctx, 10);
-			nk_label(ctx, " ", 0);
-
-			nk_layout_row_push(ctx, 60);
+			nk_layout_row_push(ctx, 55);
 			if (nk_button_label(ctx, "Select")) {
 				linebank->selected->color = nk_rgb(10, 10, 10);
 				nodes->color = nk_rgb(255, 160, 40);
 				linebank->selected = nodes;
 			}
+
+			nk_layout_row_push(ctx, 130);
+			snprintf(buffer, 24, " start (%.0f, %.0f)", line.start_vertex.x, line.start_vertex.y);
+			nk_label(ctx, buffer, NK_TEXT_LEFT);
+
+			nk_layout_row_push(ctx, 130);
+			snprintf(buffer, 24, "end (%.0f, %.0f)", line.end_vertex.x, line.end_vertex.y);
+			nk_label(ctx, buffer, NK_TEXT_RIGHT);
+
 			nk_layout_row_end(ctx);
+
+			nk_layout_row_begin(ctx, NK_STATIC, 10, 1);
+			nk_layout_row_push(ctx, 10);
+			nk_label(ctx, " ", 0);
+			nk_layout_row_end(ctx);
+			
+
+			
 			nodes = nodes->prev;
 		}
 /*
