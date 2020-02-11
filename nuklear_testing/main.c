@@ -163,7 +163,6 @@ int main(void)
 				}
 				t_line_node *temp;
 				temp = linebank.head;
-
 				for( int i = 0; i < linebank.count; ++i){
 					stroke_my_line(canvas, temp);
 					/*
@@ -179,7 +178,8 @@ int main(void)
 		}
 		nk_end(ctx);
 
-		list_pannel(ctx, &linebank);
+		
+        list_pannel(ctx, &linebank);
         
 	        /* -------------- EXAMPLES ---------------- */
         #ifdef INCLUDE_CALCULATOR

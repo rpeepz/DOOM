@@ -43,6 +43,8 @@ void    list_pannel(struct nk_context *ctx, t_line_bank *linebank)
 
 			nk_layout_row_push(ctx, 60);
 			if (nk_button_label(ctx, "Select")) {
+				linebank->selected->color = nk_rgb(10, 10, 10);
+				nodes->color = nk_rgb(255, 160, 40);
 				linebank->selected = nodes;
 			}
 			nk_layout_row_end(ctx);
