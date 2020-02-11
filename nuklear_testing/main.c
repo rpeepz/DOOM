@@ -27,9 +27,10 @@ t_line lines[10000];
 int    lines_filled = 0;
 float  value = 1.0f;
 
-
 int main(void)
 {
+    memset(&linebank, 0, sizeof(linebank));
+    linebank.empty = 1;
     /* Platform */
     SDL_Window *win;
     SDL_GLContext glContext;
@@ -96,8 +97,10 @@ int main(void)
 		if (nk_input_is_key_pressed(in, NK_KEY_DEL)){
 			remove_line(&linebank);
 		}
-        if (nk_input_is_key_pressed(in, NK_KEY_UP || NK_KEY_DOWN))
-            change_selected(&linebank, NK_KEY_UP ? 0 : 1);
+        if (nk_input_is_key_pressed(in, NK_KEY_UP))
+            change_selected(&linebank, 0);
+        if (nk_input_is_key_pressed(in, NK_KEY_DOWN))
+            change_selected(&linebank, 1);
         tool_pannel(ctx, (void*)&tool_op);
 
 		// map_pannel(ctx, (void*)&draw_mode);

@@ -31,14 +31,16 @@ void	add_line(t_line_bank *linebank, struct nk_vec2 start, struct nk_vec2 end){
 		return ;
 	t_line_node *new = (t_line_node*)malloc(sizeof(t_line_node));
 	memset(new, 0, sizeof(t_line_node));
-	new -> color = nk_rgb(255, 0, 0);
+	new->next = NULL;
+	new->prev = NULL;
+	new -> color = nk_rgb(255, 140, 60);
 	new->line.start_vertex = snap(start);
 	new->line.end_vertex = snap(end);
 
-	if( linebank->tail == NULL ){
+	if(linebank->empty) {
 		linebank->tail = linebank->head = new;
-	}
-	else {
+		linebank->empty = 0;
+	} else {
 		new->prev = linebank->tail;
 		linebank->tail->next = new;
 		linebank->tail = new;
@@ -89,29 +91,30 @@ void remove_line(t_line_bank *linebank)
 		//free
 		free(node);
 		//decrement count
+		if (linebank->selected)
+			linebank->selected->color = nk_rgb(255, 140, 60);
 		linebank->count--;
 	}
 }
 
-/* direction 1 traverses next : 0 traverses prev */
 void change_selected(t_line_bank *linebank, int direction){
 	if ( linebank->selected != NULL ){
-		// unhighlight selected
-		linebank->selected->color = nk_rgb(10, 10, 10);
 		// one element in list
 		if (linebank->count == 1)
-			;
+			return ;
+		// unhighlight selected
+		linebank->selected->color = nk_rgb(10, 10, 10);
 		// at head
 		if (linebank->selected == linebank->head)
-			linebank->selected =
-			direction ? linebank->head->next : linebank->tail;
+			linebank->selected = direction == 1 ?
+			linebank->head->next : linebank->tail;
 		// at tail
-		if (linebank->selected == linebank->tail)
-			linebank->selected =
-			direction ? linebank->head : linebank->tail->prev;
+		else if (linebank->selected == linebank->tail)
+			linebank->selected = direction == 1 ?
+			linebank->head : linebank->tail->prev;
 		else
-			linebank->selected =
-			direction ? linebank->selected->next : linebank->selected->prev;
+			linebank->selected = direction == 1?
+			linebank->selected->next : linebank->selected->prev;
 		// highlight new selected
 		linebank->selected->color = nk_rgb(255, 140, 60);
 	}

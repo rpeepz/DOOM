@@ -6,7 +6,7 @@
 /*   By: rpapagna <rpapagna@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/23 22:13:43 by smaddox           #+#    #+#             */
-/*   Updated: 2020/02/10 18:45:06 by rpapagna         ###   ########.fr       */
+/*   Updated: 2020/02/10 19:52:21 by rpapagna         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,15 +46,15 @@ typedef struct		s_line_bank
 	of the lines that have been added to the map */
 void    list_pannel(struct nk_context *ctx, t_line_bank *linebank);
 
-/* Given a reference to the line bank and the end points of the line,
-	insert a new node at the end of the list. */
+/* Given the end points of a line, insert new node at the end of the list. */
 void	add_line(t_line_bank *linebank, struct nk_vec2 start, struct nk_vec2 end);
 
-/* Given a reference to the line bank remove and free the selected line */
-void remove_line(t_line_bank *linebank);
+/* Remove and free the selected line */
+void	remove_line(t_line_bank *linebank);
 
-/* display function to show which line is currently selected */
-void change_selected(t_line_bank *linebank, int direction){
+/* Show which line is currently selected
+	direction 1 traverses next : 0 traverses prev */
+void	change_selected(t_line_bank *linebank, int direction);
 
 int	stroke_my_line( struct nk_command_buffer *b, t_line_node *node);
 
