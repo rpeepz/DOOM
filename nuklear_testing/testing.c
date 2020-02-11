@@ -31,8 +31,6 @@ void	add_line(t_line_bank *linebank, struct nk_vec2 start, struct nk_vec2 end){
 		return ;
 	t_line_node *new = (t_line_node*)malloc(sizeof(t_line_node));
 	memset(new, 0, sizeof(t_line_node));
-	new->next = NULL;
-	new->prev = NULL;
 	new -> color = nk_rgb(255, 140, 60);
 	new->line.start_vertex = snap(start);
 	new->line.end_vertex = snap(end);
@@ -61,38 +59,33 @@ void remove_line(t_line_bank *linebank)
 	t_line_node *node;
 
 	node = linebank->selected;
+	change_selected(linebank, 0);
 	if (node){
 		//unlink
 		if (linebank->count == 1)
 		{
+			memset(linebank, 0, sizeof(*linebank));
 			linebank->empty = 1;
-			linebank->head = NULL;
-			linebank->tail = NULL;
-			linebank->selected = NULL;
+			linebank->count = 1;
 		}
 		else if (node == linebank->head)
 		{
 			linebank->head = node->next;
-			linebank->selected = node->next;
 			linebank->head->prev = NULL;
 		}
 		else if (node == linebank->tail)
 		{
 			linebank->tail = node->prev;
-			linebank->selected = node->prev;
 			linebank->tail->next = NULL;
 		}
 		else
 		{
 			node->prev->next = node->next;
 			node->next->prev = node->prev;
-			linebank->selected = node->prev;
 		}
 		//free
 		free(node);
 		//decrement count
-		if (linebank->selected)
-			linebank->selected->color = nk_rgb(255, 140, 60);
 		linebank->count--;
 	}
 }
