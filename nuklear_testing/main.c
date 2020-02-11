@@ -93,6 +93,9 @@ int main(void)
         draw_mode.canvas = canvas;
         draw_mode.in = in;
 
+		if(nk_input_is_key_pressed(in, NK_KEY_DEL)){
+			remove_line(&linebank);
+		}
         tool_pannel(ctx, (void*)&tool_op);
 
 		// map_pannel(ctx, (void*)&draw_mode);

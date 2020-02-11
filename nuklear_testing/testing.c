@@ -31,7 +31,7 @@ void	add_line(t_line_bank *linebank, struct nk_vec2 start, struct nk_vec2 end){
 		return ;
 	t_line_node *new = (t_line_node*)malloc(sizeof(t_line_node));
 	memset(new, 0, sizeof(t_line_node));
-	new -> color = nk_rgb(10, 10, 0);
+	new -> color = nk_rgb(255, 0, 0);
 	new->line.start_vertex = snap(start);
 	new->line.end_vertex = snap(end);
 
@@ -43,8 +43,10 @@ void	add_line(t_line_bank *linebank, struct nk_vec2 start, struct nk_vec2 end){
 		linebank->tail->next = new;
 		linebank->tail = new;
 	}
-		linebank->selected = new;
-		linebank->count++;
+	if (linebank->selected)
+		linebank->selected->color = nk_rgb(10, 10, 0);
+	linebank->selected = new;
+	linebank->count++;
 
 	//allocate memory for new node
 	//set values from args
