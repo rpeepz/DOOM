@@ -24,6 +24,8 @@ t_float_pair	snap(struct nk_vec2 v)
 		res.y = v.y + (SNAP - y);
 	else
 		res.y = v.y - y;
+	if (res.y < 30) res.y = 30;
+	if (res.x < 10) res.x = 10;
 	return (res);
 }
 

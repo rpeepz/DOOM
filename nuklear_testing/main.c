@@ -95,6 +95,10 @@ int main(void)
 		map_pannel(ctx, &draw_mode);
         list_pannel(ctx, &linebank);
 
+// Edit pannel
+        if (draw_mode.tool_op == EDIT)
+            edit_pannel(ctx, &linebank);
+
         /* Draw */
         SDL_GetWindowSize(win, &win_width, &win_height);
         glViewport(0, 0, win_width, win_height);

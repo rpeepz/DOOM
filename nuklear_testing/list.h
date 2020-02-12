@@ -41,6 +41,13 @@ typedef struct		s_line_bank
 	t_line_node 	*tail;
 }					t_line_bank;
 
+/*	Snap coordinates to a grid and convert from nk_vec2 to float pair */
+t_float_pair	snap(struct nk_vec2 v);
+
+/*	Nuklear pannel allowing the user to view and edit information
+	on the current selected line withing the linkbank */
+void    edit_pannel(struct nk_context *ctx, t_line_bank *linebank);
+
 /*	Nuklear pannel displaying information such as coordinates and flags
 	of the lines that have been added to the map */
 void    list_pannel(struct nk_context *ctx, t_line_bank *linebank);
