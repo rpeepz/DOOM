@@ -1,4 +1,5 @@
 #include "demo.h"
+#include "list.h"
 
 #define NK_INCLUDE_FIXED_TYPES
 #define NK_INCLUDE_STANDARD_IO
@@ -12,79 +13,98 @@
 #include "../Nuklear/nuklear.h"
 #include "nuklear_sdl_gl3.h"
 
-void    map_pannel(struct nk_context *ctx, void *p)
+void    map_pannel(struct nk_context *ctx, t_map_interface *draw_mode)
 {
-    t_map_interface *m = p;
-    int *active = &m->active;
-    int *tool_op = m->tool_op;
-    int *started_line = &m->started_line;
-    int *ended_line = &m->ended_line;
-    struct nk_command_buffer *canvas = m->canvas;
-    struct nk_rect *size = m->size;
-    const struct nk_input *in = m->in;
+    struct nk_command_buffer *canvas;
+    struct nk_rect size;;
 
-    if (nk_begin(ctx, "Map Maker", nk_rect(400, 10, 800, 600),
-        NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MOVABLE|NK_WINDOW_MINIMIZABLE))
-    {
-        canvas = nk_window_get_canvas(ctx);
-        *size = nk_window_get_content_region(ctx);
-        
-        //nk_layout_space_begin(ctx, NK_STATIC, total_space.h, nodedit->node_count);
-        /* display grid */
-        /* struct nk_rect size = nk_layout_space_bounds(ctx); */
-        float x, y;
-        const float grid_size = 32.0f;
-        const struct nk_color grid_color = nk_rgb(50, 50, 50);
-        for (x = (float)fmod(size->x, grid_size); x < size->w; x += grid_size)
-            nk_stroke_line(canvas, x+size->x, size->y, x+size->x, size->y+size->h, 1.0f, grid_color);
-        for (y = (float)fmod(size->y, grid_size); y < size->h; y += grid_size)
-            nk_stroke_line(canvas, size->x, y+size->y, size->x+size->w, y+size->y, 1.0f, grid_color);
-        // Draw lines //
-        struct nk_vec2 line_start;
-        struct nk_vec2 line_end;
-        struct nk_rect circle1;
-        struct nk_rect circle2;
-        circle1.w = 8; circle1.h = 8;
-        circle2.w = 8; circle2.h = 8;
-        
-        if (!*active && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
-            *active = nk_true;
-        else
-            *active = nk_false;
-        
-        if (*tool_op == LINE) {
-            int fill_point1 = 0;
-            int fill_point2 = 0;
-            if (!*started_line && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
-            {
-                *started_line = 1;
-                line_start = in->mouse.pos; //set coordinates for beginning of line
-                printf("point 1\n\tx = %f\n\ty = %f\n",in->mouse.pos.x, in->mouse.pos.y);
-                circle1.x = line_start.x;
-                circle1.y = line_start.y;
+    if (nk_begin(ctx, "Map Maker", nk_rect(5, 5, 1200, 800),
+				NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MINIMIZABLE))
+		{
+			canvas = nk_window_get_canvas(ctx);
+			size = nk_window_get_content_region(ctx);
+			
+			float x, y;
+			const float grid_size = 10.0f;
+			const struct nk_color grid_color = nk_rgba(35, 35, 35, 150);
+			const struct nk_color grid_color_2 = nk_rgb(50, 50, 50);
+			const struct nk_color grid_color_3 = nk_rgb(30, 30, 30);
+			
+            /* sub grid */
+            for (x = grid_size; x < size.w; x += grid_size * 2)
+				nk_stroke_line(canvas, x+size.x, size.y, x+size.x, size.y+size.h, 1.0f, grid_color);
+			for (y = (float)fmod(size.y, grid_size) + grid_size; y < size.h; y += grid_size * 2)
+				nk_stroke_line(canvas, size.x, y+size.y, size.x+size.w, y+size.y, 1.0f, grid_color);
+
+            /* inner grid */
+            for (x = 0; x < size.w; x += grid_size * 2)
+				nk_stroke_line(canvas, x+size.x, size.y, x+size.x, size.y+size.h, 1.0f, grid_color_2);
+			for (y = (float)fmod(size.y, grid_size); y < size.h; y += grid_size * 2)
+				nk_stroke_line(canvas, size.x, y+size.y, size.x+size.w, y+size.y, 1.0f, grid_color_2);
+
+            /* outer grid */
+			for (x = 0; x < size.w; x += grid_size*grid_size)
+                nk_stroke_line(canvas, x+size.x, size.y, x+size.x, size.y+size.h, 1.5f, grid_color_3);
+			for (y = -3.5; y < size.h; y += grid_size*grid_size)
+                nk_stroke_line(canvas, size.x, y+size.y, size.x+size.w, y+size.y, 1.5f, grid_color_3);
+
+			// Draw lines //
+			// if lines don't draw try removing the initialization
+			static struct nk_vec2 line_start ;
+			static struct nk_vec2 line_end ;
+			static struct nk_rect circle1 = { .w = 4, .h = 4};
+			static struct nk_rect circle2 = { .w = 4, .h = 4};
+			struct nk_rect circle3 = { .w = 4, .h = 4};
+			static int count = 0;
+
+            SDL_ShowCursor(SDL_ENABLE);
+            if (count >= 0)
+                nk_fill_circle(canvas, circle1, nk_rgb(255, 0, 0)); //place cirlce on line start
+
+            if ((draw_mode->tool_op) == LINE) {
+                if (draw_mode->ctx->input.mouse.pos.x >= 5 && draw_mode->ctx->input.mouse.pos.x <= 1205 &&
+                    draw_mode->ctx->input.mouse.pos.y >= 33 && draw_mode->ctx->input.mouse.pos.y <= 805) {
+				    SDL_ShowCursor(SDL_DISABLE);
+
+                    if (nk_input_mouse_clicked(&draw_mode->ctx->input, NK_BUTTON_LEFT, nk_window_get_bounds(ctx))){
+                            count++;
+                    }
+                    if (count == 0 )
+                    {
+                        line_start = draw_mode->ctx->input.mouse.pos; //set coordinates for beginning of line
+                        circle1.x = line_start.x;
+                        circle1.y = line_start.y;
+                    }
+
+                    if ( count == 1 )
+                    {
+                        line_end = draw_mode->ctx->input.mouse.pos;
+                        circle2.x = line_end.x;
+                        circle2.y = line_end.y;
+                        nk_fill_circle(canvas, circle2, nk_rgb(255, 0, 0)); //place cirlce on line start
+                    }
+                    if (count == 2){
+                        add_line( draw_mode->linebank, line_start, line_end);
+                        count = 0;
+                    }
+                    // Draw circles on top on the vertexs 
+                    }
+                }
+            t_line_node *temp;
+            temp = draw_mode->linebank->head;
+            for( int i = 0; i < draw_mode->linebank->count; ++i){
+                stroke_my_line(canvas, temp);
+                /*
+                circle3.x = temp->line.start_vertex.x;	
+                circle3.y = temp->line.start_vertex.y;	
+                nk_fill_circle(canvas, circle3 , nk_rgb(100, 100, 100)); //place cirlce on line start
+                circle3.x = temp->line.end_vertex.x;	
+                circle3.y = temp->line.end_vertex.y - 5;	
+                nk_fill_circle(canvas, circle3, nk_rgb(100, 100, 100)); //place cirlce on line start
+                */
+                temp = temp->next;
             }
-            if (*started_line)
-            {
-                nk_fill_circle(canvas, circle1, nk_rgb(100, 100, 100)); //place cirlce on line start
-            }
-            if (*started_line && nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
-            {
-                *ended_line = 1;
-                line_end = in->mouse.pos; //set coordinates for end of line
-                printf("point 2\n\tx = %f\n\ty = %f\n",in->mouse.pos.x, in->mouse.pos.y);
-                circle2.x = line_end.x;
-                circle2.y = line_end.y;
-            }
-            if (*ended_line)
-            {
-                nk_fill_circle(canvas, circle2, nk_rgb(100, 100, 100)); //place cirlce on line end
-                nk_stroke_line(canvas, line_start.x, line_start.y, line_end.x, line_end.y, 1.0f, nk_rgb(10,10,0));
-            }
-        }
-    }
-    //         //     //reset line points
-    //         //     line_start = (struct nk_vec2){0};
-    //         //     line_end = (struct nk_vec2){0};
-    //         //     ended_line = 0;
-    nk_end(ctx);
+		}
+		nk_end(ctx);
 }
+
