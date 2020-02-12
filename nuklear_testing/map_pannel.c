@@ -66,6 +66,8 @@ void    map_pannel(struct nk_context *ctx, t_map_interface *draw_mode)
                     draw_mode->ctx->input.mouse.pos.y >= 33 && draw_mode->ctx->input.mouse.pos.y <= 805) {
 				    SDL_ShowCursor(SDL_DISABLE);
 
+                    if (nk_input_mouse_clicked(&draw_mode->ctx->input, NK_BUTTON_RIGHT, nk_window_get_bounds(ctx)))
+                            count = 0;
                     if (nk_input_mouse_clicked(&draw_mode->ctx->input, NK_BUTTON_LEFT, nk_window_get_bounds(ctx))){
                             count++;
                     }
