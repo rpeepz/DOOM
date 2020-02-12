@@ -26,6 +26,10 @@
 # include "../../Nuklear/nuklear.h"
 # include "nuklear_sdl_gl3.h"
 
+# define WINDOW_WIDTH 1600
+# define WINDOW_HEIGHT 900
+# define WINDOW_OFFSET 5
+
 typedef struct		s_vec2f
 {
 	float			x;

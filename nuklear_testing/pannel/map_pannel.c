@@ -16,10 +16,15 @@
 void    map_pannel(struct nk_context *ctx, t_map_interface *draw_mode)
 {
     struct nk_command_buffer *canvas;
-    struct nk_rect size;;
+    struct nk_rect size;
 
-    if (nk_begin(ctx, "Map Maker", nk_rect(5, 5, 1200, 800),
-				NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MINIMIZABLE))
+    /* pannel size nk_rect(5, 5, 1200, 800) */
+    size = nk_rect(WINDOW_OFFSET, WINDOW_OFFSET,
+    WINDOW_WIDTH - (WINDOW_WIDTH / 4),
+    WINDOW_HEIGHT - (WINDOW_OFFSET * 2));
+
+    if (nk_begin(ctx, "Map Maker", size,
+		NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MINIMIZABLE))
 		{
 			canvas = nk_window_get_canvas(ctx);
 			size = nk_window_get_content_region(ctx);
@@ -62,8 +67,8 @@ void    map_pannel(struct nk_context *ctx, t_map_interface *draw_mode)
                 nk_fill_circle(canvas, circle1, nk_rgb(255, 0, 0)); //place cirlce on line start
 
             if ((draw_mode->tool_op) == LINE) {
-                if (draw_mode->ctx->input.mouse.pos.x >= 5 && draw_mode->ctx->input.mouse.pos.x <= 1205 &&
-                    draw_mode->ctx->input.mouse.pos.y >= 33 && draw_mode->ctx->input.mouse.pos.y <= 805) {
+                if (draw_mode->ctx->input.mouse.pos.x >= 5 && draw_mode->ctx->input.mouse.pos.x <= (WINDOW_WIDTH - (WINDOW_WIDTH / 4) + WINDOW_OFFSET) &&
+                    draw_mode->ctx->input.mouse.pos.y >= 33 && draw_mode->ctx->input.mouse.pos.y <= (WINDOW_HEIGHT - (WINDOW_OFFSET * 2)) + WINDOW_OFFSET) {
 				    SDL_ShowCursor(SDL_DISABLE);
 
                     if (nk_input_mouse_clicked(&draw_mode->ctx->input, NK_BUTTON_RIGHT, nk_window_get_bounds(ctx)))

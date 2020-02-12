@@ -19,7 +19,12 @@ void    list_pannel(struct nk_context *ctx, t_line_bank *linebank)
 	t_line_node		*nodes = linebank->tail;
 	int				count = linebank->count;
 
-	if (nk_begin(ctx, "line list", nk_rect(1210, 5, 350, 400), NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_MINIMIZABLE))
+	/* pannel size nk_rect(1210, 5, 385, 400) */
+	struct nk_rect size = nk_rect(WINDOW_WIDTH - (WINDOW_WIDTH / 4) + (WINDOW_OFFSET * 2),
+	WINDOW_OFFSET, WINDOW_WIDTH - ((WINDOW_WIDTH / 4) * 3) - (WINDOW_OFFSET * 3),
+    WINDOW_HEIGHT - ((WINDOW_HEIGHT * 5) / 9));
+	if (nk_begin(ctx, "line list", size,
+		NK_WINDOW_BORDER|NK_WINDOW_MINIMIZABLE))
 	{
 		while (nodes) {
 			char buffer[24];

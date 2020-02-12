@@ -14,9 +14,6 @@
 #include "../Nuklear/nuklear.h"
 #include "nuklear_sdl_gl3.h"
 
-#define WINDOW_WIDTH 1600
-#define WINDOW_HEIGHT 900
-
 #define MAX_VERTEX_MEMORY 512 * 1024
 #define MAX_ELEMENT_MEMORY 128 * 1024
 

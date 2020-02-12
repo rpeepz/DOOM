@@ -15,7 +15,16 @@
 void    edit_pannel(struct nk_context *ctx, t_line_bank *linebank)
 {
     nk_window_set_focus(ctx, "Edit");
-    if (nk_begin(ctx, "Edit", nk_rect(1320, 375, 260, 500), NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_MINIMIZABLE))
+    /* TODO
+        This pannel is currently in a fixed location. Change to
+        dynamic placement such that the following will replace
+        the call in `nk_begin`
+        x, y, w, and h will all use formulas on the
+        WINDOW_WIDTH / WINDOW_HEIGHT / WINDOW_OFFSET
+        macros to replicate the following */
+        struct nk_rect size = nk_rect(1320, 375, 260, 500);
+
+    if (nk_begin(ctx, "Edit", size, NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_MINIMIZABLE))
     {
         if (linebank->selected)
         {
