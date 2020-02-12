@@ -115,7 +115,7 @@ int main(void)
 			float x, y;
 			const float grid_size = 20.0f;
 			const struct nk_color grid_color = nk_rgb(50, 50, 50);
-			for (x = (float)fmod(size.x, grid_size); x < size.w; x += grid_size)
+			for (x = 0; x < size.w; x += grid_size)
 				nk_stroke_line(canvas, x+size.x, size.y, x+size.x, size.y+size.h, 1.0f, grid_color);
 			for (y = (float)fmod(size.y, grid_size); y < size.h; y += grid_size)
 				nk_stroke_line(canvas, size.x, y+size.y, size.x+size.w, y+size.y, 1.0f, grid_color);
