@@ -36,9 +36,8 @@ void	add_line(t_line_bank *linebank, struct nk_vec2 start, struct nk_vec2 end){
 	new->line.start_vertex = snap(start);
 	new->line.end_vertex = snap(end);
 
-	if(linebank->empty) {
+	if(linebank->count == 0) {
 		linebank->tail = linebank->head = new;
-		linebank->empty = 0;
 	} else {
 		new->prev = linebank->tail;
 		linebank->tail->next = new;
@@ -62,12 +61,12 @@ void remove_line(t_line_bank *linebank)
 	node = linebank->selected;
 	change_selected(linebank, 0);
 	if (node){
+		//decrement count
+		linebank->count--;
 		//unlink
-		if (linebank->count == 1)
+		if (linebank->count == 0)
 		{
 			memset(linebank, 0, sizeof(*linebank));
-			linebank->empty = 1;
-			linebank->count = 1;
 		}
 		else if (node == linebank->head)
 		{
@@ -86,8 +85,6 @@ void remove_line(t_line_bank *linebank)
 		}
 		//free
 		free(node);
-		//decrement count
-		linebank->count--;
 	}
 }
 
