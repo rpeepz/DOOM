@@ -129,52 +129,53 @@ int main(void)
 			struct nk_rect circle3 = { .w = 4, .h = 4};
 			static int count = 0;
 
+            SDL_ShowCursor(SDL_ENABLE);
+            if (count >= 0)
+                nk_fill_circle(canvas, circle1, nk_rgb(255, 0, 0)); //place cirlce on line start
+
             if (*(draw_mode.tool_op) == LINE) {
                 if (in->mouse.pos.x >= 5 && in->mouse.pos.x <= 1205 &&
-                    in->mouse.pos.y >= 5 && in->mouse.pos.y <= 805)
+                    in->mouse.pos.y >= 33 && in->mouse.pos.y <= 805) {
 				    SDL_ShowCursor(SDL_DISABLE);
-                else
-				    SDL_ShowCursor(SDL_ENABLE);
-			
-				if (nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx))){
-						count++;
-				}
-                if (count == 0 )
-                {
-                    line_start = in->mouse.pos; //set coordinates for beginning of line
-                    circle1.x = line_start.x;
-                    circle1.y = line_start.y;
-                }
-				if (count >= 0)
-                    nk_fill_circle(canvas, circle1, nk_rgb(255, 0, 0)); //place cirlce on line start
 
-				if ( count == 1 )
-				{
-					line_end = in->mouse.pos;
-					circle2.x = line_end.x;
-                    circle2.y = line_end.y;
-                    nk_fill_circle(canvas, circle2, nk_rgb(255, 0, 0)); //place cirlce on line start
-				}
-				if (count == 2){
-					add_line( &linebank, line_start, line_end);
-					count = 0;
-				}
-				// Draw circles on top on the vertexs 
-				}
-				t_line_node *temp;
-				temp = linebank.head;
-				for( int i = 0; i < linebank.count; ++i){
-					stroke_my_line(canvas, temp);
-					/*
-					circle3.x = temp->line.start_vertex.x;	
-					circle3.y = temp->line.start_vertex.y;	
-					nk_fill_circle(canvas, circle3 , nk_rgb(100, 100, 100)); //place cirlce on line start
-					circle3.x = temp->line.end_vertex.x;	
-					circle3.y = temp->line.end_vertex.y - 5;	
-					nk_fill_circle(canvas, circle3, nk_rgb(100, 100, 100)); //place cirlce on line start
-					*/
-					temp = temp->next;
-				}
+                    if (nk_input_mouse_clicked(in, NK_BUTTON_LEFT, nk_window_get_bounds(ctx))){
+                            count++;
+                    }
+                    if (count == 0 )
+                    {
+                        line_start = in->mouse.pos; //set coordinates for beginning of line
+                        circle1.x = line_start.x;
+                        circle1.y = line_start.y;
+                    }
+
+                    if ( count == 1 )
+                    {
+                        line_end = in->mouse.pos;
+                        circle2.x = line_end.x;
+                        circle2.y = line_end.y;
+                        nk_fill_circle(canvas, circle2, nk_rgb(255, 0, 0)); //place cirlce on line start
+                    }
+                    if (count == 2){
+                        add_line( &linebank, line_start, line_end);
+                        count = 0;
+                    }
+                    // Draw circles on top on the vertexs 
+                    }
+                }
+            t_line_node *temp;
+            temp = linebank.head;
+            for( int i = 0; i < linebank.count; ++i){
+                stroke_my_line(canvas, temp);
+                /*
+                circle3.x = temp->line.start_vertex.x;	
+                circle3.y = temp->line.start_vertex.y;	
+                nk_fill_circle(canvas, circle3 , nk_rgb(100, 100, 100)); //place cirlce on line start
+                circle3.x = temp->line.end_vertex.x;	
+                circle3.y = temp->line.end_vertex.y - 5;	
+                nk_fill_circle(canvas, circle3, nk_rgb(100, 100, 100)); //place cirlce on line start
+                */
+                temp = temp->next;
+            }
 		}
 		nk_end(ctx);
 
