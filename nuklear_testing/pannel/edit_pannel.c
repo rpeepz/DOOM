@@ -20,49 +20,81 @@ void    edit_pannel(struct nk_context *ctx, t_line_bank *linebank)
         if (linebank->selected)
         {
             t_linedef *line = &linebank->selected->line;
-            char buffer[256];
+            char buffer[24];
             int len;
+            double x;
+            double y;
+            /* edit vertex values */
             nk_layout_row_dynamic(ctx, 30, 2);
             
             nk_label(ctx, "start x :", NK_TEXT_LEFT);
-            len = snprintf(buffer, 256, "%.0f", line->start_vertex.x);
-            nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 255, nk_filter_decimal);
+            len = snprintf(buffer, 24, "%.0f", line->start_vertex.x);
+            nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 23, nk_filter_decimal);
             buffer[len] = 0;
-            double x = atof(buffer);
+            x = atof(buffer);
 
             nk_label(ctx, "start y :", NK_TEXT_LEFT);
-            len = snprintf(buffer, 256, "%.0f", line->start_vertex.y);
-            nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 255, nk_filter_decimal);
+            len = snprintf(buffer, 24, "%.0f", line->start_vertex.y);
+            nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 23, nk_filter_decimal);
             buffer[len] = 0;
-            double y = atof(buffer);
+            y = atof(buffer);
             line->start_vertex = snap((struct nk_vec2){x, y});
 
             nk_label(ctx, "end x :", NK_TEXT_LEFT);
-            len = snprintf(buffer, 256, "%.0f", line->end_vertex.x);
-            nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 255, nk_filter_decimal);
+            len = snprintf(buffer, 24, "%.0f", line->end_vertex.x);
+            nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 23, nk_filter_decimal);
             buffer[len] = 0;
             x = atof(buffer);
 
             nk_label(ctx, "end y :", NK_TEXT_LEFT);
-            len = snprintf(buffer, 256, "%.0f", line->end_vertex.y);
-            nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 255, nk_filter_decimal);
+            len = snprintf(buffer, 24, "%.0f", line->end_vertex.y);
+            nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 23, nk_filter_decimal);
             buffer[len] = 0;
             y = atof(buffer);
             line->end_vertex = snap((struct nk_vec2){x, y});
 
             nk_label(ctx, "special :", NK_TEXT_LEFT);
-            len = snprintf(buffer, 256, "%d", line->special);
-            nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 255, nk_filter_decimal);
+            len = snprintf(buffer, 24, "%d", line->special);
+            nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 23, nk_filter_decimal);
             buffer[len] = 0;
             line->special = atoi(buffer);
 
             nk_label(ctx, "tag :", NK_TEXT_LEFT);
-            len = snprintf(buffer, 256, "%d", line->tag);
-            nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 255, nk_filter_decimal);
+            len = snprintf(buffer, 24, "%d", line->tag);
+            nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 23, nk_filter_decimal);
             buffer[len] = 0;
             line->tag = atoi(buffer);
 
-            // line->flags; make checkboxes to represent the flags
+            /* linedef flag options */
+            if (nk_tree_push(ctx, NK_TREE_TAB, "Flags", NK_MAXIMIZED))
+            {
+                struct nk_style_toggle *box = &ctx->style.checkbox;
+
+                box->border = 1.0f;
+                box->border_color = nk_rgb(80, 80, 80);
+        // full box when 0
+                /* no hover */
+                box->normal = nk_style_item_color(nk_rgb(80, 80, 80));
+                /* hover */
+                box->hover = nk_style_item_color(nk_rgb(150, 80, 80));
+
+        // inside of box when 1
+                /* no hover */
+                box->cursor_normal = nk_style_item_color(nk_rgb(140, 140, 140));
+                /* hover */
+                box->cursor_hover = nk_style_item_color(nk_rgb(140, 140, 140));
+
+                nk_layout_row_dynamic(ctx, 20, 2);
+                nk_checkbox_label(ctx, "Block", &line->flags.block);
+                nk_checkbox_label(ctx, "Mblock", &line->flags.mblock);
+                nk_checkbox_label(ctx, "2-Sided", &line->flags.two_side);
+                nk_checkbox_label(ctx, "Ftop", &line->flags.ftop);
+                nk_checkbox_label(ctx, "Fbot", &line->flags.fbot);
+                nk_checkbox_label(ctx, "Secret", &line->flags.secret);
+                nk_checkbox_label(ctx, "Snd Block", &line->flags.snd_block);
+                nk_checkbox_label(ctx, "No Draw", &line->flags.no_draw);
+                nk_tree_pop(ctx);
+            }
             // line->sides[0];
             // line->sides[1];
         }
