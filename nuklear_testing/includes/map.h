@@ -41,13 +41,25 @@ typedef struct		s_sidedef
 	uint32_t		sector_num;
 }					t_sidedef;
 
+typedef struct		s_line_flags
+{
+	int				block;
+	int				mblock;
+	int				two_side;
+	int				ftop;
+	int				fbot;
+	int				secret;
+	int				snd_block;
+	int				no_draw;
+}					t_line_flags;
+
 typedef struct		s_linedef
 {
 	t_float_pair	start_vertex;
 	t_float_pair	end_vertex;
 	uint32_t		special;
 	uint32_t		tag;
-	uint32_t		flags;
+	t_line_flags	flags;
 	t_sidedef		sides[2];
 }					t_linedef;
 
