@@ -113,12 +113,28 @@ int main(void)
 			size = nk_window_get_content_region(ctx);
 			
 			float x, y;
-			const float grid_size = 20.0f;
-			const struct nk_color grid_color = nk_rgb(50, 50, 50);
-			for (x = 0; x < size.w; x += grid_size)
+			const float grid_size = 10.0f;
+			const struct nk_color grid_color = nk_rgba(35, 35, 35, 150);
+			const struct nk_color grid_color_2 = nk_rgb(50, 50, 50);
+			const struct nk_color grid_color_3 = nk_rgb(30, 30, 30);
+			
+            /* sub grid */
+            for (x = grid_size; x < size.w; x += grid_size * 2)
 				nk_stroke_line(canvas, x+size.x, size.y, x+size.x, size.y+size.h, 1.0f, grid_color);
-			for (y = (float)fmod(size.y, grid_size); y < size.h; y += grid_size)
+			for (y = (float)fmod(size.y, grid_size) + grid_size; y < size.h; y += grid_size * 2)
 				nk_stroke_line(canvas, size.x, y+size.y, size.x+size.w, y+size.y, 1.0f, grid_color);
+
+            /* inner grid */
+            for (x = 0; x < size.w; x += grid_size * 2)
+				nk_stroke_line(canvas, x+size.x, size.y, x+size.x, size.y+size.h, 1.0f, grid_color_2);
+			for (y = (float)fmod(size.y, grid_size); y < size.h; y += grid_size * 2)
+				nk_stroke_line(canvas, size.x, y+size.y, size.x+size.w, y+size.y, 1.0f, grid_color_2);
+
+            /* outer grid */
+			for (x = 0; x < size.w; x += grid_size*grid_size)
+                nk_stroke_line(canvas, x+size.x, size.y, x+size.x, size.y+size.h, 1.5f, grid_color_3);
+			for (y = -3.5; y < size.h; y += grid_size*grid_size)
+                nk_stroke_line(canvas, size.x, y+size.y, size.x+size.w, y+size.y, 1.5f, grid_color_3);
 
 			// Draw lines //
 			// if lines don't draw try removing the initialization
