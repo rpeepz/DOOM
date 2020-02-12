@@ -32,7 +32,23 @@ t_float_pair	snap(struct nk_vec2 v)
 void	add_line(t_line_bank *linebank, struct nk_vec2 start, struct nk_vec2 end){
 	if (start.x == end.x && start.y == end.y)
 		return ;
-	t_line_node *new = (t_line_node*)malloc(sizeof(t_line_node));
+	t_line_node *new;
+
+	/* return if duplicate line found */
+	t_float_pair st = snap(start);
+	t_float_pair en = snap(end);
+	for (new = linebank->head; new; new = new->next) {
+		if ((st.x == new->line.start_vertex.x &&
+		st.y == new->line.start_vertex.y &&
+		en.x == new->line.end_vertex.x &&
+		en.y == new->line.end_vertex.y) ||
+		(st.x == new->line.end_vertex.x &&
+		st.y == new->line.end_vertex.y &&
+		en.x == new->line.start_vertex.x &&
+		en.y == new->line.start_vertex.y))
+		return ;
+	}
+	new = (t_line_node*)malloc(sizeof(t_line_node));
 	memset(new, 0, sizeof(t_line_node));
 	new -> color = nk_rgb(255, 140, 60);
 	new->line.start_vertex = snap(start);
