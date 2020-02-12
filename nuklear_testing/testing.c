@@ -1,6 +1,7 @@
 #include "list.h"
 #include <string.h>
 #define THICKNESS 1.0f
+#define SNAP 10
 
 int stroke_my_line( struct nk_command_buffer *b, t_line_node *node){
 	nk_stroke_line(b, node->line.start_vertex.x + 1, node->line.start_vertex.y + 2,
@@ -13,14 +14,14 @@ t_float_pair	snap(struct nk_vec2 v)
 {
 	t_float_pair res;
 
-	int x = (int)v.x % 10;
-	int y = (int)v.y % 10;
+	int x = (int)v.x % SNAP;
+	int y = (int)v.y % SNAP;
 	if (x >= 5)
-		res.x = v.x + (10 - x);
+		res.x = v.x + (SNAP - x);
 	else
 		res.x = v.x - x;
 	if (y >= 5)
-		res.y = v.y + (10 - y);
+		res.y = v.y + (SNAP - y);
 	else
 		res.y = v.y - y;
 	return (res);
