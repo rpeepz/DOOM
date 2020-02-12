@@ -20,6 +20,8 @@
 #define MAX_VERTEX_MEMORY 512 * 1024
 #define MAX_ELEMENT_MEMORY 128 * 1024
 
+#define INCLUDE_STYLE
+#include "../Nuklear/demo/style.c"
 t_map_interface draw_mode;
 t_line_bank linebank;
 // Use lines for now but switch to a doubly linked list to make deletion easier. Im still curious with why ID put lines in an array in DoomEd.
@@ -98,9 +100,9 @@ int main(void)
 			remove_line(&linebank);
 		}
         if (nk_input_is_key_pressed(in, NK_KEY_UP))
-            change_selected(&linebank, 0);
-        if (nk_input_is_key_pressed(in, NK_KEY_DOWN))
             change_selected(&linebank, 1);
+        if (nk_input_is_key_pressed(in, NK_KEY_DOWN))
+            change_selected(&linebank, 0);
         tool_pannel(ctx, (void*)&tool_op);
 
 		// map_pannel(ctx, (void*)&draw_mode);
