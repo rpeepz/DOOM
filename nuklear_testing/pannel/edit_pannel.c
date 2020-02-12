@@ -9,11 +9,12 @@
 #define NK_INCLUDE_DEFAULT_FONT
 // # define NK_IMPLEMENTATION
 // # define NK_SDL_GL3_IMPLEMENTATION
-#include "../Nuklear/nuklear.h"
+#include "../../Nuklear/nuklear.h"
 #include "nuklear_sdl_gl3.h"
 
 void    edit_pannel(struct nk_context *ctx, t_line_bank *linebank)
 {
+    nk_window_set_focus(ctx, "Edit");
     if (nk_begin(ctx, "Edit", nk_rect(1320, 375, 260, 500), NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_MINIMIZABLE))
     {
         if (linebank->selected)

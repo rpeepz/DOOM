@@ -2,7 +2,7 @@
 
 BIN = map-maker
 CC = clang
-INC = demo.h
+INC = includes/
 OBJ_PATH = obj
 
 ifeq ($(shell uname -s), Darwin)
@@ -22,12 +22,15 @@ CFLAGS += -I$(SDL2_INC_DIR)/SDL2 -I$(SDL2_INC_DIR)
 CFLAGS += -I$(GLEW_INC_DIR)/GL -I$(GLEW_INC_DIR)
 
 SRC = main.c\
-	tool_pannel.c\
+	testing.c
+
+PANNEL = tool_pannel.c\
 	list_pannel.c\
-	testing.c\
 	map_pannel.c\
 	edit_pannel.c
+
 OBJ = $(addprefix $(OBJ_PATH)/,$(SRC:.c=.o))
+OBJ += $(addprefix $(OBJ_PATH)/,$(PANNEL:.c=.o))
 
 ifeq ($(OS),Windows_NT)
 BIN := $(BIN).exe
@@ -49,7 +52,9 @@ $(BIN): $(OBJ)
 $(OBJ_PATH):
 	mkdir -p $@
 
-$(OBJ_PATH)/%.o: ./%.c | $(OBJ_PATH)
+$(OBJ_PATH)/%.o: ./%.c $(INC)/*.h| $(OBJ_PATH)
+	$(CC) -I$(INC) $(CFLAGS) -o $@ -c $<
+$(OBJ_PATH)/%.o: pannel/%.c $(INC)/*.h | $(OBJ_PATH)
 	$(CC) -I$(INC) $(CFLAGS) -o $@ -c $<
 
 clean:
