@@ -6,7 +6,7 @@
 /*   By: rpapagna <rpapagna@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/23 22:13:43 by smaddox           #+#    #+#             */
-/*   Updated: 2020/02/10 19:52:21 by rpapagna         ###   ########.fr       */
+/*   Updated: 2020/02/11 22:27:23 by rpapagna         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ typedef struct		s_line_node
 
 typedef struct		s_line_bank
 {
-	int				empty;
 	int				count;
 	t_line_node 	*selected;
 	t_line_node		*head;
