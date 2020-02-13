@@ -31,8 +31,8 @@ typedef struct				s_short_pair
 
 typedef struct				s_float_pair
 {
-	double					x;
-	double					y;
+	float					x;
+	float					y;
 }							t_float_pair;
 
 typedef enum {FALSE, TRUE}	e_boolean;
