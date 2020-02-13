@@ -20,9 +20,10 @@
 
 /*	line data */
 
-typedef enum { LINE_BLOCKPLAYER, LINE_BLOCKMONSTER, LINE_TWOSIDES, \
-	LINE_TOPNOPEG, LINE_BOTNOPEG, LINE_SECRET, LINE_BLOCKSOUND, LINE_NODRAW } e_line_flags;	
+/*	typedef enum { LINE_BLOCKPLAYER, LINE_BLOCKMONSTER, LINE_TWOSIDES, \
+ 	LINE_TOPNOPEG, LINE_BOTNOPEG, LINE_SECRET, LINE_BLOCKSOUND, LINE_NODRAW } e_line_flags;	
 
+	depricated -rpapagna */
 typedef struct	s_sector_info
 {
 	//value pairs: ceiling, floor
@@ -43,13 +44,13 @@ typedef struct		s_sidedef
 
 typedef struct		s_line_flags
 {
-	int				block;
-	int				mblock;
+	int				block;	// block player
+	int				mblock;	// block moster
 	int				two_side;
 	int				ftop;
 	int				fbot;
 	int				secret;
-	int				snd_block;
+	int				snd_block;	// block sound
 	int				no_draw;
 }					t_line_flags;
 
