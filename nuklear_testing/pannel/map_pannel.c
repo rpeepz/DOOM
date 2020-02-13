@@ -14,9 +14,10 @@
 #include "nuklear_sdl_gl3.h"
 
 struct nk_command_buffer *canvas;
-static struct nk_rect circle1 = { .w = 4, .h = 4};
-static struct nk_rect circle2 = { .w = 4, .h = 4};
+static struct nk_rect cursor = { .w = 4, .h = 4};
+static struct nk_rect end_point = { .w = 4, .h = 4};
 static int count = 0;
+static int count2 = 0;
 
 void    draw_lines(t_map_interface *draw_mode);
 void    draw_things(t_map_interface *draw_mode);
@@ -61,13 +62,14 @@ void    map_pannel(t_map_interface *draw_mode)
                 nk_stroke_line(canvas, size.x, y+size.y, size.x+size.w, y+size.y, 1.5f, grid_color_3);
 
             SDL_ShowCursor(SDL_ENABLE);
-            if (count >= 0)
-                nk_fill_circle(canvas, circle1, nk_rgb(255, 0, 0)); //place cirlce on line start
-
             if ((draw_mode->tool_op) == LINE) {
+                // follow cursor for start point of line
+                nk_fill_circle(canvas, cursor, nk_rgb(255, 0, 0));
                 draw_lines(draw_mode);
             }
             else if ((draw_mode->tool_op) == THING) {
+                // follow cursor for thing location
+                nk_fill_circle(canvas, cursor, nk_rgb(0, 255, 0));
                 draw_things(draw_mode);
             }
             for (t_item_node *temp = draw_mode->bank->head_line; temp; temp = temp->next)
@@ -98,15 +100,18 @@ void    draw_lines(t_map_interface *draw_mode)
         NK_BUTTON_LEFT, nk_window_get_bounds(draw_mode->ctx)))
                 count++;
         if (count == 0) {
-            line_start = draw_mode->ctx->input.mouse.pos; //set coordinates for beginning of line
-            circle1.x = line_start.x;
-            circle1.y = line_start.y;
+            // set coordinates for beginning of line
+            line_start = draw_mode->ctx->input.mouse.pos;
+            cursor.x = line_start.x;
+            cursor.y = line_start.y;
         }
         if (count == 1) {
+            // set coordinates for end of line
             line_end = draw_mode->ctx->input.mouse.pos;
-            circle2.x = line_end.x;
-            circle2.y = line_end.y;
-            nk_fill_circle(canvas, circle2, nk_rgb(255, 0, 0)); //place cirlce on line start
+            end_point.x = line_end.x;
+            end_point.y = line_end.y;
+            // follow cursor with circle
+            nk_fill_circle(canvas, end_point, nk_rgb(255, 0, 225));
         }
         if (count == 2) {
             add_line(draw_mode->bank, line_start, line_end);
@@ -117,5 +122,53 @@ void    draw_lines(t_map_interface *draw_mode)
 
 void    draw_things(t_map_interface *draw_mode)
 {
-    (void)draw_mode;
+    struct nk_vec2 thing_pos;
+    struct nk_rect s = nk_rect(
+    (WINDOW_WIDTH / 2) - 150, (WINDOW_HEIGHT / 2) - 100, 300, 120);
+
+    if (draw_mode->ctx->input.mouse.pos.x >= 5 &&
+    draw_mode->ctx->input.mouse.pos.x <=
+    (WINDOW_WIDTH - (WINDOW_WIDTH / 4) + WINDOW_OFFSET) &&
+    draw_mode->ctx->input.mouse.pos.y >= 33 &&
+    draw_mode->ctx->input.mouse.pos.y <=
+    (WINDOW_HEIGHT - (WINDOW_OFFSET * 2)) + WINDOW_OFFSET) {
+        SDL_ShowCursor(SDL_DISABLE);
+        // set coordinates for thing
+        if (count2 == 0) {
+            thing_pos = draw_mode->ctx->input.mouse.pos;
+            cursor.x = thing_pos.x;
+            cursor.y = thing_pos.y;
+        }
+        if (nk_input_mouse_clicked(&draw_mode->ctx->input,
+        NK_BUTTON_LEFT, nk_window_get_bounds(draw_mode->ctx)))
+            count2++;
+        if (count2) {
+            if (nk_popup_begin(draw_mode->ctx, NK_POPUP_STATIC, "", 0, s))
+            {
+                SDL_ShowCursor(SDL_ENABLE);
+                static char buffer2[16];
+                char buffer[16];
+                int len = snprintf(buffer, 16, "%s", buffer2);
+                nk_layout_row_dynamic(draw_mode->ctx, 25, 1);
+                nk_label(draw_mode->ctx, "Name Thing", NK_TEXT_CENTERED);
+                nk_edit_string(draw_mode->ctx, NK_EDIT_SIMPLE, buffer, &len, 16, nk_filter_ascii);
+                buffer[len] = 0;
+                memcpy(buffer2, buffer, strlen(buffer));
+                nk_layout_row_dynamic(draw_mode->ctx, 10, 1);
+                nk_label(draw_mode->ctx, " ", 1);
+                nk_layout_row_dynamic(draw_mode->ctx, 25, 2);
+                if (nk_button_label(draw_mode->ctx, "OK")) {
+                    add_thing(draw_mode->bank, thing_pos, buffer2);
+                    memset(buffer2, 0, 16);
+                    count2 = 0;
+                }
+                if (nk_button_label(draw_mode->ctx, "No Name")) {
+                    add_thing(draw_mode->bank, thing_pos, "");
+                    memset(buffer2, 0, 16);
+                    count2 = 0;
+                }
+                nk_popup_end(draw_mode->ctx);
+            }
+        }
+    }
 }
