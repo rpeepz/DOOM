@@ -44,14 +44,14 @@ typedef struct		s_sidedef
 
 typedef struct		s_line_flags
 {
-	int				block;	// block player
+	int				block;	// block player & monsters
 	int				mblock;	// block moster
 	int				two_side;
-	int				ftop;
-	int				fbot;
+	int				ftop;	// unpegged upper texture
+	int				fbot;	// unpegged lower texture
 	int				secret;
-	int				snd_block;	// block sound
-	int				no_draw;
+	int				snd_block;	// blocks sound
+	int				no_draw;	// never shows up on automap
 }					t_line_flags;
 
 typedef struct		s_linedef
@@ -64,25 +64,26 @@ typedef struct		s_linedef
 	t_sidedef		sides[2];
 }					t_linedef;
 
-/* Things */
-
-/* things don't have options so ignore that part */
+/* skill levels
+Easy - 1, 2 / Normal - 3 / Hard - 4, 5 */
+typedef struct		s_thing_flags
+{
+	int				skill_one;	// skill level 1 & 2
+	int				skill_three;// skill level 3
+	int				skill_five;	// skill level 4 & 5
+	int				ambush;		// deaf
+	int				network;	// not in single player
+	int				single_p;	// not in deathmatch
+	int				coop;		// not in coop
+	int				friendly;	// friendly monster
+}					t_thing_flags;
 
 typedef struct		s_thing {
 	t_float_pair	pos;
 	int				angle;
 	int				type;
-	int				flags;
+	char			name[16];
+	t_thing_flags	flags;
 }					t_thing;
-
-/* Map data */
-
-typedef struct		s_map_data
-{
-	size_t			line_count;
-	size_t			thing_count;
-	t_linedef		lines[MAX_LINE_COUNT];
-	t_thing			things[MAX_THING_COUNT];
-}					t_map_data;
 
 #endif
