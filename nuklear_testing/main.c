@@ -95,7 +95,7 @@ int main(void)
 
 // Edit pannel
         if (draw_mode.tool_op == EDIT)
-            if (bank.selected->line)
+            if (bank.selected && bank.selected->line)
                 edit_pannel(ctx, bank.selected->line);
 
         /* Draw */

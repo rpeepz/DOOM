@@ -122,9 +122,9 @@ void    draw_lines(t_map_interface *draw_mode)
 
 void    draw_things(t_map_interface *draw_mode)
 {
-    struct nk_vec2 thing_pos;
+    static struct nk_vec2 thing_pos;
     struct nk_rect s = nk_rect(
-    (WINDOW_WIDTH / 2) - 150, (WINDOW_HEIGHT / 2) - 100, 300, 120);
+    (WINDOW_WIDTH / 2) - 150, (WINDOW_HEIGHT / 2) - 100, 250, 120);
 
     if (draw_mode->ctx->input.mouse.pos.x >= 5 &&
     draw_mode->ctx->input.mouse.pos.x <=
@@ -146,26 +146,44 @@ void    draw_things(t_map_interface *draw_mode)
             if (nk_popup_begin(draw_mode->ctx, NK_POPUP_STATIC, "", 0, s))
             {
                 SDL_ShowCursor(SDL_ENABLE);
+                // submit buffer
                 static char buffer2[16];
+                //edit buffer
                 char buffer[16];
+                /* add submit buffer to edit buffer */
                 int len = snprintf(buffer, 16, "%s", buffer2);
+                /* create rows to display the edit buffer */
                 nk_layout_row_dynamic(draw_mode->ctx, 25, 1);
                 nk_label(draw_mode->ctx, "Name Thing", NK_TEXT_CENTERED);
+                
+                nk_layout_row_begin(draw_mode->ctx, NK_STATIC, 25, 2);
+                nk_layout_row_push(draw_mode->ctx, 168);
                 nk_edit_string(draw_mode->ctx, NK_EDIT_SIMPLE, buffer, &len, 16, nk_filter_ascii);
+                
+                nk_layout_row_push(draw_mode->ctx, 50);
+                if (nk_button_label(draw_mode->ctx, "clear")) {
+                    memset(buffer, 0, 16);
+                    memset(buffer2, 0, 16);
+                }
+                nk_layout_row_end(draw_mode->ctx);
+                
+                /* copy edit back to submit buffer */
                 buffer[len] = 0;
                 memcpy(buffer2, buffer, strlen(buffer));
+                // spacing between rows
                 nk_layout_row_dynamic(draw_mode->ctx, 10, 1);
                 nk_label(draw_mode->ctx, " ", 1);
                 nk_layout_row_dynamic(draw_mode->ctx, 25, 2);
+                /* buttons to add thing with or without name */
                 if (nk_button_label(draw_mode->ctx, "OK")) {
                     add_thing(draw_mode->bank, thing_pos, buffer2);
                     memset(buffer2, 0, 16);
-                    count2 = 0;
+                    count2 = -1;
                 }
                 if (nk_button_label(draw_mode->ctx, "No Name")) {
                     add_thing(draw_mode->bank, thing_pos, "");
                     memset(buffer2, 0, 16);
-                    count2 = 0;
+                    count2 = -1;
                 }
                 nk_popup_end(draw_mode->ctx);
             }

@@ -99,7 +99,7 @@ static void	things(struct nk_context *ctx, t_bank *bank)
 
 		nk_layout_row_push(ctx, 130);
 		snprintf(buffer, 24, "'%s'", thing.name);
-		nk_label(ctx, buffer, NK_TEXT_RIGHT);
+		nk_label(ctx, buffer, NK_TEXT_CENTERED);
 
 		nk_layout_row_end(ctx);
 
