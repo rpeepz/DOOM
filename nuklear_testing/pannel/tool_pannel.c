@@ -12,24 +12,25 @@
 #include "../../Nuklear/nuklear.h"
 #include "nuklear_sdl_gl3.h"
 
-void tool_pannel(struct nk_context *ctx, int *tool_op)
+void tool_pannel(t_map_interface *draw_mode)
 {
+	struct nk_context *ctx = draw_mode->ctx;
 	/* pannel size nk_rect(1210, 410, 200, 200) */
 	struct nk_rect size = nk_rect(WINDOW_WIDTH - (WINDOW_WIDTH / 4) + (WINDOW_OFFSET * 2),
 	WINDOW_HEIGHT - ((WINDOW_HEIGHT * 5) / 9) + (WINDOW_OFFSET * 2),
 	(WINDOW_WIDTH / 8),
     WINDOW_HEIGHT - ((WINDOW_HEIGHT * 7) / 9));
 
-    if (nk_begin(ctx, "Tools", size,
+    if (nk_begin(draw_mode->ctx, "Tools", size,
 		NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MINIMIZABLE))
 		{
             // static int property = 20;
 			nk_layout_row_static(ctx, 30, 100, 1);
-			if (nk_option_label(ctx, "Move", *tool_op == MOVE)) *tool_op = MOVE;
-			if (nk_option_label(ctx, "Edit", *tool_op == EDIT)) *tool_op = EDIT;
-			if (nk_option_label(ctx, "Line", *tool_op == LINE)) *tool_op = LINE;
-			if (nk_option_label(ctx, "Thing", *tool_op == THING)) *tool_op = THING;
-			if (nk_option_label(ctx, "Sector", *tool_op == SECTOR)) *tool_op = SECTOR;
+			if (nk_option_label(ctx, "Move", draw_mode->tool_op == MOVE)) draw_mode->tool_op = MOVE;
+			if (nk_option_label(ctx, "Edit", draw_mode->tool_op == EDIT)) draw_mode->tool_op = EDIT;
+			if (nk_option_label(ctx, "Line", draw_mode->tool_op == LINE)) draw_mode->tool_op = LINE;
+			if (nk_option_label(ctx, "Thing", draw_mode->tool_op == THING)) draw_mode->tool_op = THING;
+			if (nk_option_label(ctx, "Sector", draw_mode->tool_op == SECTOR)) draw_mode->tool_op = SECTOR;
 		}
 		nk_end(ctx);
 }

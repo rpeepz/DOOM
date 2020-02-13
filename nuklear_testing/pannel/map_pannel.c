@@ -18,10 +18,10 @@ static struct nk_rect circle1 = { .w = 4, .h = 4};
 static struct nk_rect circle2 = { .w = 4, .h = 4};
 static int count = 0;
 
-void    draw_lines(struct nk_context *ctx, t_map_interface *draw_mode);
-void    draw_things(struct nk_context *ctx, t_map_interface *draw_mode);
+void    draw_lines(t_map_interface *draw_mode);
+void    draw_things(t_map_interface *draw_mode);
 
-void    map_pannel(struct nk_context *ctx, t_map_interface *draw_mode)
+void    map_pannel(t_map_interface *draw_mode)
 {
     struct nk_rect size;
 
@@ -30,11 +30,11 @@ void    map_pannel(struct nk_context *ctx, t_map_interface *draw_mode)
     WINDOW_WIDTH - (WINDOW_WIDTH / 4),
     WINDOW_HEIGHT - (WINDOW_OFFSET * 2));
 
-    if (nk_begin(ctx, "Map Maker", size,
+    if (nk_begin(draw_mode->ctx, "Map Maker", size,
 		NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MINIMIZABLE))
 		{
-			canvas = nk_window_get_canvas(ctx);
-			size = nk_window_get_content_region(ctx);
+			canvas = nk_window_get_canvas(draw_mode->ctx);
+			size = nk_window_get_content_region(draw_mode->ctx);
 
 			float x, y;
 			const float grid_size = 10.0f;
@@ -65,20 +65,20 @@ void    map_pannel(struct nk_context *ctx, t_map_interface *draw_mode)
                 nk_fill_circle(canvas, circle1, nk_rgb(255, 0, 0)); //place cirlce on line start
 
             if ((draw_mode->tool_op) == LINE) {
-                draw_lines(ctx, draw_mode);
+                draw_lines(draw_mode);
             }
             else if ((draw_mode->tool_op) == THING) {
-                draw_things(ctx, draw_mode);
+                draw_things(draw_mode);
             }
-            for (t_line_node *temp = draw_mode->linebank->head; temp; temp = temp->next)
+            for (t_item_node *temp = draw_mode->bank->head_line; temp; temp = temp->next)
                 stroke_my_line(canvas, temp);
-            // for (t_thing_node *temp = draw_mode->thingbank->head; temp; temp = temp->next)
+            // for (t_item_node *temp = draw_mode->bank->head_thing; temp; temp = temp->next)
             //     stroke_box(canvas, temp);
 		}
-		nk_end(ctx);
+		nk_end(draw_mode->ctx);
 }
 
-void    draw_lines(struct nk_context *ctx, t_map_interface *draw_mode)
+void    draw_lines(t_map_interface *draw_mode)
 {
     static struct nk_vec2 line_start;
     static struct nk_vec2 line_end;
@@ -92,10 +92,10 @@ void    draw_lines(struct nk_context *ctx, t_map_interface *draw_mode)
         SDL_ShowCursor(SDL_DISABLE);
 
         if (nk_input_mouse_clicked(&draw_mode->ctx->input,
-        NK_BUTTON_RIGHT, nk_window_get_bounds(ctx)))
+        NK_BUTTON_RIGHT, nk_window_get_bounds(draw_mode->ctx)))
                 count = 0;
         if (nk_input_mouse_clicked(&draw_mode->ctx->input,
-        NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
+        NK_BUTTON_LEFT, nk_window_get_bounds(draw_mode->ctx)))
                 count++;
         if (count == 0) {
             line_start = draw_mode->ctx->input.mouse.pos; //set coordinates for beginning of line
@@ -109,14 +109,13 @@ void    draw_lines(struct nk_context *ctx, t_map_interface *draw_mode)
             nk_fill_circle(canvas, circle2, nk_rgb(255, 0, 0)); //place cirlce on line start
         }
         if (count == 2) {
-            add_line( draw_mode->linebank, line_start, line_end);
+            add_line(draw_mode->bank, line_start, line_end);
             count = 0;
         }
     }
 }
 
-void    draw_things(struct nk_context *ctx, t_map_interface *draw_mode)
+void    draw_things(t_map_interface *draw_mode)
 {
-    (void)ctx;
     (void)draw_mode;
 }

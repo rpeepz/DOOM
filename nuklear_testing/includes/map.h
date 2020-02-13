@@ -20,10 +20,6 @@
 
 /*	line data */
 
-/*	typedef enum { LINE_BLOCKPLAYER, LINE_BLOCKMONSTER, LINE_TWOSIDES, \
- 	LINE_TOPNOPEG, LINE_BOTNOPEG, LINE_SECRET, LINE_BLOCKSOUND, LINE_NODRAW } e_line_flags;	
-
-	depricated -rpapagna */
 typedef struct	s_sector_info
 {
 	//value pairs: ceiling, floor

@@ -14,17 +14,17 @@
 
 struct nk_style_button *button;
 
-static void	lines(struct nk_context *ctx, t_line_bank *linebank)
+static void	lines(struct nk_context *ctx, t_bank *bank)
 {
-	t_line_node		*nodes = linebank->tail;
+	t_item_node		*nodes = bank->tail_line;
 
 	while (nodes) {
 		char buffer[24];
-		t_linedef line = nodes->line;
+		t_linedef line = *nodes->line;
 
 		nk_layout_row_begin(ctx, NK_STATIC, 30, 3);
 
-		if (linebank->selected == nodes) {
+		if (bank->selected == nodes) {
 			button->normal = nk_style_item_color(nk_rgba(170, 170, 170, 80));
 		} else {
 			button->normal = nk_style_item_color(nk_rgb(50, 50, 50));
@@ -32,9 +32,9 @@ static void	lines(struct nk_context *ctx, t_line_bank *linebank)
 
 		nk_layout_row_push(ctx, 55);
 		if (nk_button_label(ctx, "Select")) {
-			linebank->selected->color = nk_rgb(10, 10, 10);
+			if (bank->selected) bank->selected->color = nk_rgb(10, 10, 10);
 			nodes->color = nk_rgb(255, 160, 40);
-			linebank->selected = nodes;
+			bank->selected = nodes;
 		}
 
 		nk_layout_row_push(ctx, 130);
@@ -56,17 +56,17 @@ static void	lines(struct nk_context *ctx, t_line_bank *linebank)
 		nodes = nodes->prev;
 	}
 }
-static void	things(struct nk_context *ctx, t_thing_bank *thingbank)
+static void	things(struct nk_context *ctx, t_bank *bank)
 {
-	t_thing_node	*nodes = thingbank->tail;
+	t_item_node		*nodes = bank->tail_thing;
 
 	while (nodes) {
 		char buffer[24];
-		t_thing thing = nodes->thing;
+		t_thing thing = *nodes->thing;
 
 		nk_layout_row_begin(ctx, NK_STATIC, 30, 3);
 
-		if (thingbank->selected == nodes) {
+		if (bank->selected == nodes) {
 			button->normal = nk_style_item_color(nk_rgba(170, 170, 170, 80));
 		} else {
 			button->normal = nk_style_item_color(nk_rgb(50, 50, 50));
@@ -74,9 +74,9 @@ static void	things(struct nk_context *ctx, t_thing_bank *thingbank)
 
 		nk_layout_row_push(ctx, 55);
 		if (nk_button_label(ctx, "Select")) {
-			thingbank->selected->color = nk_rgb(32, 32, 180);
+			if (bank->selected) bank->selected->color = nk_rgb(32, 32, 180);
 			nodes->color = nk_rgb(255, 0, 0);
-			thingbank->selected = nodes;
+			bank->selected = nodes;
 		}
 
 		nk_layout_row_push(ctx, 130);
@@ -99,12 +99,10 @@ static void	things(struct nk_context *ctx, t_thing_bank *thingbank)
 	}
 }
 
-void    list_pannel(t_map_interface draw_mode)
+void    list_pannel(t_map_interface *draw_mode)
 {
-	struct nk_context *ctx = draw_mode.ctx;
-	t_line_bank *linebank = draw_mode.linebank;
-	t_thing_bank *thingbank = draw_mode.thingbank;
-	static int		item = 0;
+	struct nk_context *ctx = draw_mode->ctx;
+	t_bank *bank = draw_mode->bank;
 	/* pannel size nk_rect(1210, 5, 385, 400) */
 	struct nk_rect size = nk_rect(WINDOW_WIDTH - (WINDOW_WIDTH / 4) + (WINDOW_OFFSET * 2),
 	WINDOW_OFFSET, WINDOW_WIDTH - ((WINDOW_WIDTH / 4) * 3) - (WINDOW_OFFSET * 3),
@@ -119,22 +117,29 @@ void    list_pannel(t_map_interface draw_mode)
 		nk_menubar_begin(ctx);
 		nk_layout_row_dynamic(ctx, 30, 2);
 	// colors for selected item type
-		if (item == 0) button->normal = nk_style_item_color(nk_rgba(170, 170, 170, 80));
+		if (draw_mode->list_op == ITEM_LINE) button->normal = nk_style_item_color(nk_rgba(170, 170, 170, 80));
 		else button->normal = nk_style_item_color(nk_rgb(50, 50, 50));
-		if (nk_button_label(ctx, "Lines")) item = 0;
+		if (nk_button_label(ctx, "Lines")) draw_mode->list_op = ITEM_LINE;
 
-		if (item == 1) button->normal = nk_style_item_color(nk_rgba(170, 170, 170, 80));
+		if (draw_mode->list_op == ITEM_THING) button->normal = nk_style_item_color(nk_rgba(170, 170, 170, 80));
 		else button->normal = nk_style_item_color(nk_rgb(50, 50, 50));
-		if (nk_button_label(ctx, "Things")) item = 1;
+		if (nk_button_label(ctx, "Things")) draw_mode->list_op = ITEM_THING;
 		nk_menubar_end(ctx);
 
-		if (item == 0) {
-			
-			lines(ctx, linebank);
+		/* Change `bank->selected` to reflect the list option */
+		if (draw_mode->list_op == ITEM_LINE) {
+			if (bank->selected && bank->selected->thing)
+				bank->selected->color = THING_COLOR;
+			bank->selected = bank->tail_line;
+			if (bank->selected) bank->selected->color = HIGHLIGHT;
+			lines(ctx, bank);
 		}
 		else {
-			
-			things(ctx, thingbank);
+			if (bank->selected && bank->selected->line)
+				bank->selected->color = LINE_COLOR;
+			bank->selected = bank->tail_thing;
+			if (bank->selected) bank->selected->color = HIGHLIGHT;
+			things(ctx, bank);
 		}
 	}
 	nk_end(ctx);

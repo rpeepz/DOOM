@@ -72,13 +72,13 @@ typedef enum    e_mode
 typedef struct  s_map_interface
 {
     struct nk_context *ctx;
-	struct s_line_bank *linebank;
-	struct s_thing_bank *thingbank;
+	struct s_bank *bank;
     int 	tool_op;
+	int		list_op;
 }               t_map_interface;
 
-void    map_pannel(struct nk_context *ctx, t_map_interface *draw_mode);
-void    tool_pannel(struct nk_context *ctx, int *tool_op);
+void    map_pannel(t_map_interface *draw_mode);
+void    tool_pannel(t_map_interface *draw_mode);
 void    calculator(struct nk_context *ctx);
 
 #endif
