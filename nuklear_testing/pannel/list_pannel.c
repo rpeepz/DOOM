@@ -56,6 +56,16 @@ static void	lines(struct nk_context *ctx, t_bank *bank)
 		nodes = nodes->prev;
 	}
 }
+
+static char	*get_angle(int angle)
+{
+	char	*direction[8] = {
+		"E", "NE", "N", "NW",
+		"W", "SW", "S", "SE"
+	};
+	return (direction[angle / 45]);
+}
+
 static void	things(struct nk_context *ctx, t_bank *bank)
 {
 	t_item_node		*nodes = bank->tail_thing;
@@ -64,7 +74,7 @@ static void	things(struct nk_context *ctx, t_bank *bank)
 		char buffer[24];
 		t_thing thing = *nodes->thing;
 
-		nk_layout_row_begin(ctx, NK_STATIC, 30, 3);
+		nk_layout_row_begin(ctx, NK_STATIC, 30, 4);
 
 		if (bank->selected == nodes) {
 			button->normal = nk_style_item_color(nk_rgba(170, 170, 170, 80));
@@ -79,12 +89,16 @@ static void	things(struct nk_context *ctx, t_bank *bank)
 			bank->selected = nodes;
 		}
 
-		nk_layout_row_push(ctx, 130);
+		nk_layout_row_push(ctx, 80);
 		snprintf(buffer, 24, " (%.0f, %.0f)", thing.pos.x, thing.pos.y);
 		nk_label(ctx, buffer, NK_TEXT_LEFT);
 
+		nk_layout_row_push(ctx, 40);
+		snprintf(buffer, 24, "%s", get_angle(thing.angle));
+		nk_label(ctx, buffer, NK_TEXT_RIGHT);
+
 		nk_layout_row_push(ctx, 130);
-		snprintf(buffer, 24, " '%s' ", thing.name);
+		snprintf(buffer, 24, "'%s'", thing.name);
 		nk_label(ctx, buffer, NK_TEXT_RIGHT);
 
 		nk_layout_row_end(ctx);
