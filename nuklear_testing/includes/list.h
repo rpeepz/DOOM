@@ -70,7 +70,7 @@ t_float_pair	snap(struct nk_vec2 v);
 void	add_line(t_bank *bank, struct nk_vec2 start, struct nk_vec2 end);
 
 /* Given the location of a thing, insert new node at the end of the list. */
-void	add_thing(t_bank *bank, struct nk_vec2 location);
+void	add_thing(t_bank *bank, struct nk_vec2 location, char *name);
 
 /* Remove and free the selected item */
 void	remove_from_bank(t_bank *bank, int item);

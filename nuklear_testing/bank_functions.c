@@ -77,7 +77,7 @@ void	add_line(t_bank *bank, struct nk_vec2 start, struct nk_vec2 end)
 	bank->count_line++;
 }
 
-void	add_thing(t_bank *bank, struct nk_vec2 location)
+void	add_thing(t_bank *bank, struct nk_vec2 location, char *name)
 {
 	t_item_node	*new;
 	/* snap input coordinates */
@@ -91,6 +91,7 @@ void	add_thing(t_bank *bank, struct nk_vec2 location)
 	new->color = HIGHLIGHT;
 	new->thing = malloc(sizeof(t_thing));
 	memset(new->thing, 0, sizeof(t_thing));
+	memcpy(new->thing->name, name, strlen(name));
 	//set values from args
 	new->thing->pos = pos;
 
