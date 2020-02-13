@@ -22,7 +22,7 @@ CFLAGS += -I$(SDL2_INC_DIR)/SDL2 -I$(SDL2_INC_DIR)
 CFLAGS += -I$(GLEW_INC_DIR)/GL -I$(GLEW_INC_DIR)
 
 SRC = main.c\
-	testing.c
+	bank_functions.c
 
 PANNEL = tool_pannel.c\
 	list_pannel.c\
