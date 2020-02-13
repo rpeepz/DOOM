@@ -14,16 +14,6 @@ displayed in the pannel.
 
 Messed around with making lines using the map maker pannel.
 
-<<<<<<< HEAD
-
-
-
-smaddox
------------------------------------------------------------------------------------------
-adding new a new line
-
-if the tool_op == LINE add a new line to the list
-=======
 02-05-20
 Today I tried to change the makefile to be able to compile the map maker across
 multiple files. I ran into an issue that I cant easily find the answer for. The
@@ -55,4 +45,28 @@ an issue at this point. Just know it is broken, and I am aware of that.
 Extra: after some finesse I can now include `nuklear.h` inside the main header
 which means that the project is closer to having a modular development process.
 I guess reading the instructions made more sense today than it did yesterday...
->>>>>>> dev-rpapagna
+
+02-10-20
+Post work notes:
+Added a highlight to the current selected line on the map pannel. Also Added the
+ability cycle through the linebank circularly, with up and down arrows, or use
+the select button.
+02-11-20:
+psot work notes:
+Modified the line list pannel to display coordinates of all the lines. optimized
+the snap to grid function. Fixed a small bug where the top bar of the map pannel
+was acting as a valid vertex location, when it should not be. Adjusted grid line
+drawing to better represent the internal grid snap locations.
+Added new feature, when on the line tool and the first point has been selected,
+right click will clear that first point.
+02-12-20
+Today I reorganized the project directory by storing files in new folders, which
+is also reflected in the Makefile to compile everything properly still. My goal
+today was to add a new pannel "Edit" which by design should display properties
+of the current selected item, and give the ability to edit in real time, with
+proper error checks.
+linebank will not accept duplicate lines.
+I modified the snap function to check for lower and higher thresholds as to not
+allow the lines to stretch beyond the bounds of the pannel.
+Current pannels now scale to the main window size.
+Edit pannel is coming together nicely.
