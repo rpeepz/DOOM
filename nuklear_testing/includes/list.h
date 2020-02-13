@@ -46,7 +46,7 @@ t_float_pair	snap(struct nk_vec2 v);
 
 /*	Nuklear pannel allowing the user to view and edit information
 	on the current selected line withing the linkbank */
-void    edit_pannel(struct nk_context *ctx, t_line_bank *linebank);
+void    edit_pannel(struct nk_context *ctx, t_linedef *line);
 
 /*	Nuklear pannel displaying information such as coordinates and flags
 	of the lines that have been added to the map */

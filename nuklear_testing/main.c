@@ -94,7 +94,8 @@ int main(void)
 
 // Edit pannel
         if (draw_mode.tool_op == EDIT)
-            edit_pannel(ctx, &linebank);
+            if (linebank.selected)
+                edit_pannel(ctx, &linebank.selected->line);
 
         /* Draw */
         SDL_GetWindowSize(win, &win_width, &win_height);
