@@ -128,16 +128,26 @@ void    list_pannel(t_map_interface *draw_mode)
 
 		/* Change `bank->selected` to reflect the list option */
 		if (draw_mode->list_op == ITEM_LINE) {
-			if (bank->selected && bank->selected->thing)
-				bank->selected->color = THING_COLOR;
-			bank->selected = bank->tail_line;
+			if (bank->selected) {
+				if (bank->selected->thing) {
+					bank->selected->color = THING_COLOR;
+					bank->selected = NULL;
+				}
+			}
+			if (bank->selected == NULL)
+				bank->selected = bank->tail_line;
 			if (bank->selected) bank->selected->color = HIGHLIGHT;
 			lines(ctx, bank);
 		}
-		else {
-			if (bank->selected && bank->selected->line)
-				bank->selected->color = LINE_COLOR;
-			bank->selected = bank->tail_thing;
+		else if (draw_mode->list_op == ITEM_THING) {
+			if (bank->selected) {
+				if (bank->selected->line) {
+					bank->selected->color = LINE_COLOR;
+					bank->selected = NULL;
+				}
+			}
+			if (bank->selected == NULL)
+				bank->selected = bank->tail_thing;
 			if (bank->selected) bank->selected->color = HIGHLIGHT;
 			things(ctx, bank);
 		}
