@@ -25,24 +25,25 @@
 //# include "../Nuklear/nuklear.h"
 //# include "nuklear_sdl_gl3.h"
 
-typedef struct		s_line_node
+typedef struct			s_line_node
 {
-	t_linedef		line;
-	struct nk_color color;
-	struct s_line_node		*next;
-	struct s_line_node		*prev;
-}					t_line_node;
+	t_linedef			line;
+	struct nk_color		color;
+	struct s_line_node	*next;
+	struct s_line_node	*prev;
+}						t_line_node;
 
-typedef struct		s_line_bank
+typedef struct			s_line_bank
 {
-	int				count;
-	t_line_node 	*selected;
-	t_line_node		*head;
-	t_line_node 	*tail;
-}					t_line_bank;
+	int					count;
+	t_line_node			*selected;
+	t_line_node			*head;
+	t_line_node			*tail;
+}						t_line_bank;
 
-/*	Snap coordinates to a grid and convert from nk_vec2 to float pair */
-t_float_pair	snap(struct nk_vec2 v);
+/* driver call to `nk_stroke_line` given a t_node pointer
+	which holds the vectors from which the line begins and ends */
+int	stroke_my_line( struct nk_command_buffer *b, t_line_node *node);
 
 /*	Nuklear pannel allowing the user to view and edit information
 	on the current selected line withing the linkbank */
@@ -50,7 +51,10 @@ void    edit_pannel(struct nk_context *ctx, t_linedef *line);
 
 /*	Nuklear pannel displaying information such as coordinates and flags
 	of the lines that have been added to the map */
-void    list_pannel(struct nk_context *ctx, t_line_bank *linebank);
+void    list_pannel(t_map_interface draw_mode);
+
+/*	Snap coordinates to a grid and convert from nk_vec2 to float pair */
+t_float_pair	snap(struct nk_vec2 v);
 
 /* Given the end points of a line, insert new node at the end of the list. */
 void	add_line(t_line_bank *linebank, struct nk_vec2 start, struct nk_vec2 end);
@@ -60,8 +64,32 @@ void	remove_line(t_line_bank *linebank);
 
 /* Show which line is currently selected
 	direction 1 traverses next : 0 traverses prev */
-void	change_selected(t_line_bank *linebank, int direction);
+void	change_line_selected(t_line_bank *linebank, int direction);
 
-int	stroke_my_line( struct nk_command_buffer *b, t_line_node *node);
+typedef struct			s_thing_node
+{
+	t_thing				thing;
+	struct nk_color		color;
+	struct s_thing_node *next;
+	struct s_thing_node *prev;
+}						t_thing_node;
+
+typedef struct			s_thing_bank
+{
+	int					count;
+	t_thing_node		*selected;
+	t_thing_node		*head;
+	t_thing_node		*tail;
+}						t_thing_bank;
+
+/* Given the location of a thing, insert new node at the end of the list. */
+void	add_thing(t_thing_bank *thingbank, struct nk_vec2 location);
+
+/* Remove and free the selected thing */
+void	remove_thing(t_thing_bank *thingbank);
+
+/* Show which line is currently selected
+	direction 1 traverses next : 0 traverses prev */
+void	change_thing_selected(t_thing_bank *thingbank, int direction);
 
 #endif
