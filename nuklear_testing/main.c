@@ -22,6 +22,7 @@
 
 t_map_interface draw_mode;
 t_line_bank linebank = {0};
+t_thing_bank thingbank = {0};
 
 int main(void)
 {
@@ -65,6 +66,7 @@ int main(void)
 
     bg.r = 0.10f, bg.g = 0.18f, bg.b = 0.24f, bg.a = 1.0f;
 
+    draw_mode.thingbank = &thingbank;
     draw_mode.linebank = &linebank;
     draw_mode.tool_op = LINE;// Tools pannel selected tool
     draw_mode.ctx = ctx;
@@ -84,13 +86,13 @@ int main(void)
 			remove_line(&linebank);
 		}
         if (nk_input_is_key_pressed(in, NK_KEY_UP))
-            change_selected(&linebank, 1);
+            change_line_selected(&linebank, 1);
         if (nk_input_is_key_pressed(in, NK_KEY_DOWN))
-            change_selected(&linebank, 0);
+            change_line_selected(&linebank, 0);
 
         tool_pannel(ctx, &draw_mode.tool_op);
 		map_pannel(ctx, &draw_mode);
-        list_pannel(ctx, &linebank);
+        list_pannel(draw_mode);
 
 // Edit pannel
         if (draw_mode.tool_op == EDIT)

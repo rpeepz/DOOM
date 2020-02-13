@@ -80,7 +80,7 @@ void remove_line(t_line_bank *linebank)
 	t_line_node *node;
 
 	node = linebank->selected;
-	change_selected(linebank, 0);
+	change_line_selected(linebank, 0);
 	if (node){
 		//decrement count
 		linebank->count--;
@@ -109,7 +109,7 @@ void remove_line(t_line_bank *linebank)
 	}
 }
 
-void change_selected(t_line_bank *linebank, int direction){
+void change_line_selected(t_line_bank *linebank, int direction){
 	if ( linebank->selected != NULL ){
 		// one element in list
 		if (linebank->count == 1)

@@ -73,6 +73,7 @@ typedef struct  s_map_interface
 {
     struct nk_context *ctx;
 	struct s_line_bank *linebank;
+	struct s_thing_bank *thingbank;
     int 	tool_op;
 }               t_map_interface;
 
