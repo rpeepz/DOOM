@@ -13,9 +13,16 @@
 #include "../../Nuklear/nuklear.h"
 #include "nuklear_sdl_gl3.h"
 
+struct nk_command_buffer *canvas;
+static struct nk_rect circle1 = { .w = 4, .h = 4};
+static struct nk_rect circle2 = { .w = 4, .h = 4};
+static int count = 0;
+
+void    draw_lines(struct nk_context *ctx, t_map_interface *draw_mode);
+void    draw_things(struct nk_context *ctx, t_map_interface *draw_mode);
+
 void    map_pannel(struct nk_context *ctx, t_map_interface *draw_mode)
 {
-    struct nk_command_buffer *canvas;
     struct nk_rect size;
 
     /* pannel size nk_rect(5, 5, 1200, 800) */
@@ -28,7 +35,7 @@ void    map_pannel(struct nk_context *ctx, t_map_interface *draw_mode)
 		{
 			canvas = nk_window_get_canvas(ctx);
 			size = nk_window_get_content_region(ctx);
-			
+
 			float x, y;
 			const float grid_size = 10.0f;
 			const struct nk_color grid_color = nk_rgba(35, 35, 35, 150);
@@ -53,65 +60,63 @@ void    map_pannel(struct nk_context *ctx, t_map_interface *draw_mode)
 			for (y = -3.5; y < size.h; y += grid_size*grid_size)
                 nk_stroke_line(canvas, size.x, y+size.y, size.x+size.w, y+size.y, 1.5f, grid_color_3);
 
-			// Draw lines //
-			// if lines don't draw try removing the initialization
-			static struct nk_vec2 line_start ;
-			static struct nk_vec2 line_end ;
-			static struct nk_rect circle1 = { .w = 4, .h = 4};
-			static struct nk_rect circle2 = { .w = 4, .h = 4};
-			struct nk_rect circle3 = { .w = 4, .h = 4};
-			static int count = 0;
-
             SDL_ShowCursor(SDL_ENABLE);
             if (count >= 0)
                 nk_fill_circle(canvas, circle1, nk_rgb(255, 0, 0)); //place cirlce on line start
 
             if ((draw_mode->tool_op) == LINE) {
-                if (draw_mode->ctx->input.mouse.pos.x >= 5 && draw_mode->ctx->input.mouse.pos.x <= (WINDOW_WIDTH - (WINDOW_WIDTH / 4) + WINDOW_OFFSET) &&
-                    draw_mode->ctx->input.mouse.pos.y >= 33 && draw_mode->ctx->input.mouse.pos.y <= (WINDOW_HEIGHT - (WINDOW_OFFSET * 2)) + WINDOW_OFFSET) {
-				    SDL_ShowCursor(SDL_DISABLE);
-
-                    if (nk_input_mouse_clicked(&draw_mode->ctx->input, NK_BUTTON_RIGHT, nk_window_get_bounds(ctx)))
-                            count = 0;
-                    if (nk_input_mouse_clicked(&draw_mode->ctx->input, NK_BUTTON_LEFT, nk_window_get_bounds(ctx))){
-                            count++;
-                    }
-                    if (count == 0 )
-                    {
-                        line_start = draw_mode->ctx->input.mouse.pos; //set coordinates for beginning of line
-                        circle1.x = line_start.x;
-                        circle1.y = line_start.y;
-                    }
-
-                    if ( count == 1 )
-                    {
-                        line_end = draw_mode->ctx->input.mouse.pos;
-                        circle2.x = line_end.x;
-                        circle2.y = line_end.y;
-                        nk_fill_circle(canvas, circle2, nk_rgb(255, 0, 0)); //place cirlce on line start
-                    }
-                    if (count == 2){
-                        add_line( draw_mode->linebank, line_start, line_end);
-                        count = 0;
-                    }
-                    // Draw circles on top on the vertexs 
-                    }
-                }
-            t_line_node *temp;
-            temp = draw_mode->linebank->head;
-            for( int i = 0; i < draw_mode->linebank->count; ++i){
-                stroke_my_line(canvas, temp);
-                /*
-                circle3.x = temp->line.start_vertex.x;	
-                circle3.y = temp->line.start_vertex.y;	
-                nk_fill_circle(canvas, circle3 , nk_rgb(100, 100, 100)); //place cirlce on line start
-                circle3.x = temp->line.end_vertex.x;	
-                circle3.y = temp->line.end_vertex.y - 5;	
-                nk_fill_circle(canvas, circle3, nk_rgb(100, 100, 100)); //place cirlce on line start
-                */
-                temp = temp->next;
+                draw_lines(ctx, draw_mode);
             }
+            else if ((draw_mode->tool_op) == THING) {
+                draw_things(ctx, draw_mode);
+            }
+            for (t_line_node *temp = draw_mode->linebank->head; temp; temp = temp->next)
+                stroke_my_line(canvas, temp);
+            // for (t_thing_node *temp = draw_mode->thingbank->head; temp; temp = temp->next)
+            //     stroke_box(canvas, temp);
 		}
 		nk_end(ctx);
 }
 
+void    draw_lines(struct nk_context *ctx, t_map_interface *draw_mode)
+{
+    static struct nk_vec2 line_start;
+    static struct nk_vec2 line_end;
+
+    if (draw_mode->ctx->input.mouse.pos.x >= 5 &&
+    draw_mode->ctx->input.mouse.pos.x <=
+    (WINDOW_WIDTH - (WINDOW_WIDTH / 4) + WINDOW_OFFSET) &&
+    draw_mode->ctx->input.mouse.pos.y >= 33 &&
+    draw_mode->ctx->input.mouse.pos.y <=
+    (WINDOW_HEIGHT - (WINDOW_OFFSET * 2)) + WINDOW_OFFSET) {
+        SDL_ShowCursor(SDL_DISABLE);
+
+        if (nk_input_mouse_clicked(&draw_mode->ctx->input,
+        NK_BUTTON_RIGHT, nk_window_get_bounds(ctx)))
+                count = 0;
+        if (nk_input_mouse_clicked(&draw_mode->ctx->input,
+        NK_BUTTON_LEFT, nk_window_get_bounds(ctx)))
+                count++;
+        if (count == 0) {
+            line_start = draw_mode->ctx->input.mouse.pos; //set coordinates for beginning of line
+            circle1.x = line_start.x;
+            circle1.y = line_start.y;
+        }
+        if (count == 1) {
+            line_end = draw_mode->ctx->input.mouse.pos;
+            circle2.x = line_end.x;
+            circle2.y = line_end.y;
+            nk_fill_circle(canvas, circle2, nk_rgb(255, 0, 0)); //place cirlce on line start
+        }
+        if (count == 2) {
+            add_line( draw_mode->linebank, line_start, line_end);
+            count = 0;
+        }
+    }
+}
+
+void    draw_things(struct nk_context *ctx, t_map_interface *draw_mode)
+{
+    (void)ctx;
+    (void)draw_mode;
+}
