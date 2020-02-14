@@ -12,34 +12,40 @@
 #include "../../Nuklear/nuklear.h"
 #include "nuklear_sdl_gl3.h"
 
+struct s_option_label{
+	char *label;
+	char *tooltip;
+	int  mode;
+};
+
 void tool_pannel(t_map_interface *draw_mode)
 {
 	struct nk_context *ctx = draw_mode->ctx;
-	/* pannel size nk_rect(1210, 410, 200, 200) */
+		struct s_option_label options[ ] = {
+		{ .label = "Move", .tooltip = "Move tooltip", .mode = MOVE },
+		{ .label = "Edit", .tooltip = "Edit items on map", .mode = EDIT },
+		{ .label = "Line", .tooltip = "Add lines to map", .mode = LINE },
+		{ .label = "Thing", .tooltip = "Add things to map", .mode = THING },
+		{ .label = "Sector", .tooltip = "Sector tooltip", .mode = SECTOR },
+		{ .label = "File", .tooltip = "File tooltip", .mode = NK_FILE }};
+
+	int num_options = sizeof(options) / sizeof(options[0]);
+
 	struct nk_rect size = nk_rect(WINDOW_WIDTH - (WINDOW_WIDTH / 4) + (WINDOW_OFFSET * 2),
 	WINDOW_HEIGHT - ((WINDOW_HEIGHT * 5) / 9) + (WINDOW_OFFSET * 2),
-	(WINDOW_WIDTH / 8),
-    WINDOW_HEIGHT - ((WINDOW_HEIGHT * 7) / 9));
-
+	(WINDOW_WIDTH / 8), WINDOW_HEIGHT - (WINDOW_HEIGHT * 6.5) / 9 );
+	
     if (nk_begin(draw_mode->ctx, "Tools", size,
 		NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MINIMIZABLE))
 		{
 			nk_layout_row_static(ctx, 30, 60, 1);
-            if (nk_input_is_mouse_hovering_rect(&ctx->input, nk_widget_bounds(ctx)))
-                nk_tooltip(ctx, "Move tooltip");
-			if (nk_option_label(ctx, "Move", draw_mode->tool_op == MOVE)) draw_mode->tool_op = MOVE;
-            if (nk_input_is_mouse_hovering_rect(&ctx->input, nk_widget_bounds(ctx)))
-                nk_tooltip(ctx, "Edit features of existing items on the map");
-			if (nk_option_label(ctx, "Edit", draw_mode->tool_op == EDIT)) draw_mode->tool_op = EDIT;
-            if (nk_input_is_mouse_hovering_rect(&ctx->input, nk_widget_bounds(ctx)))
-                nk_tooltip(ctx, "Add lines to the map");
-			if (nk_option_label(ctx, "Line", draw_mode->tool_op == LINE)) draw_mode->tool_op = LINE;
-            if (nk_input_is_mouse_hovering_rect(&ctx->input, nk_widget_bounds(ctx)))
-                nk_tooltip(ctx, "Add things to the map");
-			if (nk_option_label(ctx, "Thing", draw_mode->tool_op == THING)) draw_mode->tool_op = THING;
-            if (nk_input_is_mouse_hovering_rect(&ctx->input, nk_widget_bounds(ctx)))
-                nk_tooltip(ctx, "Sector tooltip");
-			if (nk_option_label(ctx, "Sector", draw_mode->tool_op == SECTOR)) draw_mode->tool_op = SECTOR;
-		}
+
+			for ( int i = 0; i < num_options; ++i){
+				if (nk_input_is_mouse_hovering_rect(&ctx->input, nk_widget_bounds(ctx)))
+					nk_tooltip(ctx, options[i].tooltip);
+				if (nk_option_label(ctx, options[i].label, draw_mode->tool_op == options[i].mode))
+					draw_mode->tool_op = options[i].mode;
+			}
+	}
 		nk_end(ctx);
 }
