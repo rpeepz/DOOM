@@ -16,8 +16,25 @@
 # define MAX_LINE_COUNT 4096	//should be dynamic
 # define MAX_THING_COUNT 1000	//should be dynamic -rpapagna
 
-/*	flag masks */
-# define L_TWO_SIDED 4
+/*	Line flag masks */
+# define L_BLOCK 0x1
+# define L_MBLOCK 0x2
+# define L_TWO_SIDED 0x4
+# define L_FTOP 0x8
+# define L_FBOT 0x10
+# define L_SECRET 0x20
+# define L_SNDBLOCK 0x40
+# define L_NODRAW 0x80
+
+/*	Thing flag masks */
+# define T_EASY 0x1
+# define T_NORMAL 0x2
+# define T_HARD 0x4
+# define T_DEAF 0x8
+# define T_NETWORK 0x10
+# define T_SINGLE 0x20
+# define T_COOP 0x40
+# define T_FRIEND 0x80
 
 #include "generic_structs.h"
 
@@ -40,6 +57,12 @@ typedef struct		s_sidedef
 	uint32_t		sector_num;
 }					t_sidedef;
 
+/*	Flags in order for Linedefs
+
+	"Block", "Mblock", "2-Sided",
+	"Ftop", "Fbot", "Secret",
+	"Snd Block", "No Draw"
+*/
 typedef struct		s_linedef
 {
 	t_float_pair	start_vertex;
@@ -50,26 +73,18 @@ typedef struct		s_linedef
 	t_sidedef		sides[2];
 }					t_linedef;
 
-/* skill levels
-Easy - 1, 2 / Normal - 3 / Hard - 4, 5 */
-typedef struct		s_thing_flags
-{
-	int				skill_one;	// skill level 1 & 2
-	int				skill_three;// skill level 3
-	int				skill_five;	// skill level 4 & 5
-	int				ambush;		// deaf
-	int				network;	// not in single player
-	int				single_p;	// not in deathmatch
-	int				coop;		// not in coop
-	int				friendly;	// friendly monster
-}					t_thing_flags;
+/*	Flags in order for Things
 
+	"Easy", "Normal", "Hard",
+	"Ambush", "Network", "Single Player",
+	"Co-op", "Friendly"
+*/
 typedef struct		s_thing {
 	t_float_pair	pos;
 	int				angle;
 	int				type;
 	char			name[16];
-	t_thing_flags	flags;
+	uint8_t			flags;
 }					t_thing;
 
 #endif

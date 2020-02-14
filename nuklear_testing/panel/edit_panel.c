@@ -15,6 +15,33 @@
 char buffer[24];
 int len;
 void    sidedef_edit(struct nk_context *ctx, t_sidedef *side);
+void    edit_selected_line(struct nk_context *ctx, t_linedef *line);
+void    edit_selected_thing(struct nk_context *ctx, t_item_node *item);
+
+void    edit_pannel(t_map_interface *draw_mode)
+{
+    if (!draw_mode->bank->selected ||
+    ((draw_mode->list_op == ITEM_LINE && !draw_mode->bank->selected->line) ||
+    (draw_mode->list_op == ITEM_THING && !draw_mode->bank->selected->thing)))
+        return ;
+    struct nk_context *ctx = draw_mode->ctx;
+    nk_window_set_focus(ctx, "Edit");
+
+    /* pannel size nk_rect(1310, 375, 275, 500); */
+    struct nk_rect size = nk_rect(WINDOW_WIDTH - ((WINDOW_WIDTH / 16) * 3) + (WINDOW_OFFSET * 2),
+    ((WINDOW_HEIGHT * 2) / 5) + (WINDOW_OFFSET * 3),
+    ((WINDOW_WIDTH * 5) / 32) + (WINDOW_OFFSET * 5),
+    (WINDOW_HEIGHT * 5) / 9);
+
+    if (nk_begin(draw_mode->ctx, "Edit", size, NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_MINIMIZABLE))
+    {
+        if (draw_mode->list_op == ITEM_LINE)
+            edit_selected_line(ctx, draw_mode->bank->selected->line);
+        else if (draw_mode->list_op == ITEM_THING)
+            edit_selected_thing(ctx, draw_mode->bank->selected);
+    }
+    nk_end(ctx);
+}
 
 void    edit_selected_line(struct nk_context *ctx, t_linedef *line)
 {
@@ -149,33 +176,105 @@ void    sidedef_edit(struct nk_context *ctx, t_sidedef *side)
     }
 }
 
-void    edit_selected_thing(struct nk_context *ctx, t_thing *thing)
+static int  get_angle(char *angle)
 {
-    (void)ctx;
-    (void)thing;
+    char	*direction[8] = {
+        "E", "NE", "N", "NW",
+        "W", "SW", "S", "SE"};
+	for (int i = 0; i < 8; i++){
+        if (!strcmp(angle, direction[i]))
+            return (i * 45);
+    }
+    return (0);
 }
 
-void    edit_pannel(t_map_interface *draw_mode)
+void    edit_selected_thing(struct nk_context *ctx, t_item_node *item)
 {
-    if (!draw_mode->bank->selected ||
-    ((draw_mode->list_op == ITEM_LINE && !draw_mode->bank->selected->line) ||
-    (draw_mode->list_op == ITEM_THING && !draw_mode->bank->selected->thing)))
-        return ;
-    struct nk_context *ctx = draw_mode->ctx;
-    nk_window_set_focus(ctx, "Edit");
-
-    /* pannel size nk_rect(1310, 375, 275, 500); */
-    struct nk_rect size = nk_rect(WINDOW_WIDTH - ((WINDOW_WIDTH / 16) * 3) + (WINDOW_OFFSET * 2),
-    ((WINDOW_HEIGHT * 2) / 5) + (WINDOW_OFFSET * 3),
-    ((WINDOW_WIDTH * 5) / 32) + (WINDOW_OFFSET * 5),
-    (WINDOW_HEIGHT * 5) / 9);
-
-    if (nk_begin(draw_mode->ctx, "Edit", size, NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_MINIMIZABLE))
-    {
-        if (draw_mode->list_op == ITEM_LINE)
-            edit_selected_line(ctx, draw_mode->bank->selected->line);
-        else if (draw_mode->list_op == ITEM_THING)
-            edit_selected_thing(ctx, draw_mode->bank->selected->thing);
+    t_thing *thing = item->thing;
+    nk_layout_row_dynamic(ctx, 20, 1);
+    nk_label(ctx, "Direction", NK_TEXT_LEFT);
+    nk_style_default(ctx);
+    nk_layout_row_static(ctx, 25, 30, 3);
+    char	*direction[9] = {
+		"NW", "N", "NE",
+		"W",  " ", "E",
+        "SW", "S", "SE"
+        };
+    for (int i = 0; i < 9; i++) {
+        if (nk_button_label(ctx, direction[i])) {
+            if (i == 4)
+                continue ;
+            thing->angle = get_angle(direction[i]);
+        }
     }
-    nk_end(ctx);
+    // spacing
+    nk_layout_row_dynamic(ctx, 20, 1);
+    nk_label(ctx, " ", 0);
+
+    char *sections[ ] = { "Angle:", "Type:", "Name:" };
+    nk_layout_row_begin(ctx, NK_STATIC, 25, 2);
+    for (int i = 0; i < 3; i++) {
+        nk_layout_row_push(ctx, 50);
+        nk_label(ctx, sections[i], NK_TEXT_RIGHT);
+        nk_layout_row_push(ctx, 150);
+        if (!i) len = snprintf(buffer, 16, "%d", thing->angle);
+        else if (i == 1) len = snprintf(buffer, 16, "%d", thing->type);
+        else len = snprintf(buffer, 16, "%s", thing->name);
+        if (i < 2) nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 5, nk_filter_decimal);
+        else nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 16, nk_filter_default);
+        buffer[len] = 0;
+        if (!i) {
+            int angle = atoi(buffer);
+            if (angle >= 360 || angle < 0) angle = 0;
+            thing->angle = angle;
+        }
+        else if (i == 1) thing->type = atoi(buffer);
+        else memcpy(thing->name, buffer, 16);
+    }
+
+    /* check box style */
+    struct nk_style_toggle *box = &ctx->style.checkbox;
+    box->border = 1.0f;
+    box->border_color = nk_rgb(80, 80, 80);
+// full box when 0
+    /* no hover */
+    box->normal = nk_style_item_color(nk_rgb(80, 80, 80));
+    /* hover */
+    box->hover = nk_style_item_color(nk_rgb(150, 80, 80));
+// inside of box when 1
+    /* no hover */
+    box->cursor_normal = nk_style_item_color(nk_rgb(140, 140, 140));
+    /* hover */
+    box->cursor_hover = nk_style_item_color(nk_rgb(140, 140, 140));
+
+    /* thing flag options */
+    nk_layout_row_dynamic(ctx, 20, 1);
+    nk_label(ctx, " ", 0);
+    nk_layout_row_dynamic(ctx, 20, 3);
+    char *labels[] = { "Easy", "Normal", "Hard", "Ambush", "Network", "Single_P", "Co-op", "Friendly" };
+    static int flags[] = {0, 0, 0, 0, 0, 0, 0, 0};
+    int i;
+    for (i = 0; i < 8; i ++) {
+        if (i == 3 || i == 4)
+            continue ;
+        nk_checkbox_label(ctx, labels[i], flags + i);
+        if (flags[i])
+            thing->flags |= (1 << i);
+        else
+            thing->flags &= ~(1 << i);
+    }
+    nk_layout_row_dynamic(ctx, 20, 1);
+    nk_label(ctx, " ", 0);
+    /* slider color combobox */
+    if (nk_combo_begin_color(ctx, item->color, nk_vec2(200,200))) {
+        float ratios[] = {0.15f, 0.85f};
+        nk_layout_row(ctx, NK_DYNAMIC, 30, 2, ratios);
+        nk_label(ctx, "R:", NK_TEXT_LEFT);
+        item->color.r = (nk_byte)nk_slide_int(ctx, 0, item->color.r, 255, 5);
+        nk_label(ctx, "G:", NK_TEXT_LEFT);
+        item->color.g = (nk_byte)nk_slide_int(ctx, 0, item->color.g, 255, 5);
+        nk_label(ctx, "B:", NK_TEXT_LEFT);
+        item->color.b = (nk_byte)nk_slide_int(ctx, 0, item->color.b, 255, 5);
+        nk_combo_end(ctx);
+    }
 }
