@@ -118,14 +118,21 @@ void    edit_pannel(struct nk_context *ctx, t_linedef *line)
             box->cursor_hover = nk_style_item_color(nk_rgb(140, 140, 140));
 
             nk_layout_row_dynamic(ctx, 20, 2);
-            nk_checkbox_label(ctx, "Block", &line->flags.block);
-            nk_checkbox_label(ctx, "Mblock", &line->flags.mblock);
-            nk_checkbox_label(ctx, "2-Sided", &line->flags.two_side);
-            nk_checkbox_label(ctx, "Ftop", &line->flags.ftop);
-            nk_checkbox_label(ctx, "Fbot", &line->flags.fbot);
-            nk_checkbox_label(ctx, "Secret", &line->flags.secret);
-            nk_checkbox_label(ctx, "Snd Block", &line->flags.snd_block);
-            nk_checkbox_label(ctx, "No Draw", &line->flags.no_draw);
+
+			/* flags check boxes */
+
+			char *labels[] = { "Block", "Mblock", "2-Sided", "Ftop", "Fbot", "Secret", "Snd Block", "No Draw" };
+			static int flags[ ] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+			int num_flags = sizeof(flags) / sizeof(flags[0]);
+			for (int i = 0; i < num_flags; i++){
+				nk_checkbox_label(ctx, labels[i], flags + i);
+				/* if checkbox is set then set flag bit */ 
+				if ( flags[i] )
+					line->flags |= (1 << i);
+				/* else make sure said bit is turned off */
+				else
+					line->flags &=  ~(1 << i);
+			}
             nk_tree_pop(ctx);
         }
         ctx->style.button.normal = nk_style_item_color(nk_rgb(50, 50, 50));
@@ -143,15 +150,12 @@ void    edit_pannel(struct nk_context *ctx, t_linedef *line)
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_label(ctx, "Textures", NK_TEXT_LEFT);
 
+			char *sections[ ] = { "Top:", "Middle:", "Bottom:" };
+
             nk_layout_row_begin(ctx, NK_STATIC, 25, 3);
             for (int i = 0; i < 3; i++) {
-                char *label;
                 nk_layout_row_push(ctx, 50);
-                if (i == 0) label = "Top:";
-                else if (i == 1) label = "Middle:";
-                else if (i == 2) label = "Bottom:";
-                nk_label(ctx, label, NK_TEXT_RIGHT);
-
+				nk_label(ctx, sections[i], NK_TEXT_RIGHT);
                 nk_layout_row_push(ctx, 100);
                 len = snprintf(buffer, 9, "%s", side->textures[i]);
                 nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 8, nk_filter_default);
@@ -159,12 +163,12 @@ void    edit_pannel(struct nk_context *ctx, t_linedef *line)
                 memcpy(side->textures[i], buffer, 9);
 
                 nk_layout_row_push(ctx, 50);
-                if (nk_button_label(ctx, "zero"))
+                if (nk_button_label(ctx, "clear"))
                     memset(side->textures[i], 0, 8);
             }
             nk_tree_pop(ctx);
         }
-        if (line->flags.two_side)
+		if ( line->flags & L_TWO_SIDED )
         {
             side = &line->sides[1];
             if (nk_tree_push(ctx, NK_TREE_TAB, "Sidedef - Left", NK_MAXIMIZED))
@@ -179,16 +183,13 @@ void    edit_pannel(struct nk_context *ctx, t_linedef *line)
 
                 nk_layout_row_dynamic(ctx, 25, 1);
                 nk_label(ctx, "Textures", NK_TEXT_LEFT);
+			
+				char *sections[ ] = { "Top:", "Middle:", "Bottom:" };
 
                 nk_layout_row_begin(ctx, NK_STATIC, 25, 3);
                 for (int i = 0; i < 3; i++) {
-                    char *label;
                     nk_layout_row_push(ctx, 50);
-                    if (i == 0) label = "Top:";
-                    else if (i == 1) label = "Middle:";
-                    else if (i == 2) label = "Bottom:";
-                    nk_label(ctx, label, NK_TEXT_RIGHT);
-
+					nk_label(ctx, sections[i], NK_TEXT_RIGHT);
                     nk_layout_row_push(ctx, 100);
                     len = snprintf(buffer, 9, "%s", side->textures[i]);
                     nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 8, nk_filter_default);
@@ -196,7 +197,7 @@ void    edit_pannel(struct nk_context *ctx, t_linedef *line)
                     memcpy(side->textures[i], buffer, 9);
 
                     nk_layout_row_push(ctx, 50);
-                    if (nk_button_label(ctx, "zero"))
+                    if (nk_button_label(ctx, "clear"))
                         memset(side->textures[i], 0, 8);
                 }
                 nk_tree_pop(ctx);

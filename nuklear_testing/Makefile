@@ -24,13 +24,13 @@ CFLAGS += -I$(GLEW_INC_DIR)/GL -I$(GLEW_INC_DIR)
 SRC = main.c\
 	testing.c
 
-PANNEL = tool_pannel.c\
-	list_pannel.c\
-	map_pannel.c\
-	edit_pannel.c
+PANEL = tool_panel.c\
+	list_panel.c\
+	map_panel.c\
+	edit_panel.c
 
 OBJ = $(addprefix $(OBJ_PATH)/,$(SRC:.c=.o))
-OBJ += $(addprefix $(OBJ_PATH)/,$(PANNEL:.c=.o))
+OBJ += $(addprefix $(OBJ_PATH)/,$(PANEL:.c=.o))
 
 ifeq ($(OS),Windows_NT)
 BIN := $(BIN).exe
@@ -54,7 +54,7 @@ $(OBJ_PATH):
 
 $(OBJ_PATH)/%.o: ./%.c $(INC)/*.h| $(OBJ_PATH)
 	$(CC) -I$(INC) $(CFLAGS) -o $@ -c $<
-$(OBJ_PATH)/%.o: pannel/%.c $(INC)/*.h | $(OBJ_PATH)
+$(OBJ_PATH)/%.o: panel/%.c $(INC)/*.h | $(OBJ_PATH)
 	$(CC) -I$(INC) $(CFLAGS) -o $@ -c $<
 
 clean:
