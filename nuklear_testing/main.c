@@ -23,7 +23,28 @@
 t_map_interface draw_mode;
 t_bank bank = {0};
 
-int main(void)
+void    hooks(void)
+{
+    if (nk_input_is_key_pressed(&draw_mode.ctx->input, NK_KEY_DEL))
+        remove_from_bank(&bank, draw_mode.list_op);
+    if (nk_input_is_key_pressed(&draw_mode.ctx->input, NK_KEY_UP))
+        change_selected(&bank, draw_mode.list_op, 1);
+    if (nk_input_is_key_pressed(&draw_mode.ctx->input, NK_KEY_DOWN))
+        change_selected(&bank, draw_mode.list_op, 0);
+
+}
+void    pannels(void)
+{
+    tool_pannel(&draw_mode);
+    map_pannel(&draw_mode);
+    list_pannel(&draw_mode);
+
+    if (draw_mode.tool_op == EDIT)
+        edit_pannel(&draw_mode);
+
+}
+
+int     main(void)
 {
     /* Platform */
     SDL_Window *win;
@@ -81,22 +102,8 @@ int main(void)
             nk_sdl_handle_event(&evt);
         } nk_input_end(ctx);
 
-		if (nk_input_is_key_pressed(in, NK_KEY_DEL)){
-			remove_from_bank(&bank, draw_mode.list_op);
-		}
-        if (nk_input_is_key_pressed(in, NK_KEY_UP))
-            change_selected(&bank, draw_mode.list_op, 1);
-        if (nk_input_is_key_pressed(in, NK_KEY_DOWN))
-            change_selected(&bank, draw_mode.list_op, 0);
-
-        tool_pannel(&draw_mode);
-		map_pannel(&draw_mode);
-        list_pannel(&draw_mode);
-
-// Edit pannel
-        if (draw_mode.tool_op == EDIT)
-            if (bank.selected && bank.selected->line)
-                edit_pannel(ctx, bank.selected->line);
+        hooks();
+        pannels();
 
         /* Draw */
         SDL_GetWindowSize(win, &win_width, &win_height);

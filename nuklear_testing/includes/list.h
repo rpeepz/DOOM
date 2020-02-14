@@ -61,7 +61,7 @@ void stroke_box(struct nk_command_buffer *b, t_item_node *thing_node);
 
 /*	Nuklear pannel allowing the user to view and edit information
 	on the current selected line withing the linkbank */
-void    edit_pannel(struct nk_context *ctx, t_linedef *line);
+void    edit_pannel(t_map_interface *draw_mode);
 
 /*	Nuklear pannel displaying information such as coordinates and flags
 	of the lines that have been added to the map */
