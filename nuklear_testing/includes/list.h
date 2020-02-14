@@ -51,9 +51,13 @@ typedef struct			s_bank
 	t_item_node			*tail_thing;
 }						t_bank;
 
-/* driver call to `nk_stroke_line` given a t_node pointer
+/* driver call to `nk_stroke_line` given a t_item_node
 	which holds the vectors from which the line begins and ends */
 int	stroke_my_line(struct nk_command_buffer *b, t_item_node *node);
+
+/* driver call to `nk_fill_rect` given a t_item_node
+	which holds the vector that will be the location of the thing */
+void stroke_box(struct nk_command_buffer *b, t_item_node *thing_node);
 
 /*	Nuklear pannel allowing the user to view and edit information
 	on the current selected line withing the linkbank */

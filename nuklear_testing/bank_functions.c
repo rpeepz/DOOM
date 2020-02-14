@@ -12,6 +12,13 @@ int stroke_my_line( struct nk_command_buffer *b, t_item_node *line_node)
 	return(0);
 }
 
+void stroke_box(struct nk_command_buffer *b, t_item_node *thing_node)
+{
+	struct nk_rect size =
+	{thing_node->thing->pos.x - 4, thing_node->thing->pos.y - 3, 10, 10};
+	nk_fill_rect(b, size, 1.0f, thing_node->color);
+}
+
 t_float_pair	snap(struct nk_vec2 v)
 {
 	t_float_pair res;
