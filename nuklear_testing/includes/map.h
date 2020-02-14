@@ -19,7 +19,6 @@
 /*	flag masks */
 # define L_TWO_SIDED 4
 
-
 #include "generic_structs.h"
 
 /*	line data */
