@@ -24,12 +24,21 @@ void tool_pannel(t_map_interface *draw_mode)
     if (nk_begin(draw_mode->ctx, "Tools", size,
 		NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MINIMIZABLE))
 		{
-            // static int property = 20;
-			nk_layout_row_static(ctx, 30, 100, 1);
+			nk_layout_row_static(ctx, 30, 60, 1);
+            if (nk_input_is_mouse_hovering_rect(&ctx->input, nk_widget_bounds(ctx)))
+                nk_tooltip(ctx, "Move tooltip");
 			if (nk_option_label(ctx, "Move", draw_mode->tool_op == MOVE)) draw_mode->tool_op = MOVE;
+            if (nk_input_is_mouse_hovering_rect(&ctx->input, nk_widget_bounds(ctx)))
+                nk_tooltip(ctx, "Edit features of existing items on the map");
 			if (nk_option_label(ctx, "Edit", draw_mode->tool_op == EDIT)) draw_mode->tool_op = EDIT;
+            if (nk_input_is_mouse_hovering_rect(&ctx->input, nk_widget_bounds(ctx)))
+                nk_tooltip(ctx, "Add lines to the map");
 			if (nk_option_label(ctx, "Line", draw_mode->tool_op == LINE)) draw_mode->tool_op = LINE;
+            if (nk_input_is_mouse_hovering_rect(&ctx->input, nk_widget_bounds(ctx)))
+                nk_tooltip(ctx, "Add things to the map");
 			if (nk_option_label(ctx, "Thing", draw_mode->tool_op == THING)) draw_mode->tool_op = THING;
+            if (nk_input_is_mouse_hovering_rect(&ctx->input, nk_widget_bounds(ctx)))
+                nk_tooltip(ctx, "Sector tooltip");
 			if (nk_option_label(ctx, "Sector", draw_mode->tool_op == SECTOR)) draw_mode->tool_op = SECTOR;
 		}
 		nk_end(ctx);
