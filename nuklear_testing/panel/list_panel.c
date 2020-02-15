@@ -74,7 +74,7 @@ static void	things(struct nk_context *ctx, t_bank *bank)
 		char buffer[24];
 		t_thing thing = *nodes->thing;
 
-		nk_layout_row_begin(ctx, NK_STATIC, 30, 4);
+		nk_layout_row_begin(ctx, NK_STATIC, 30, 5);
 
 		if (bank->selected == nodes) {
 			button->normal = nk_style_item_color(nk_rgba(170, 170, 170, 80));
@@ -84,7 +84,7 @@ static void	things(struct nk_context *ctx, t_bank *bank)
 
 		nk_layout_row_push(ctx, 55);
 		if (nk_button_label(ctx, "Select")) {
-			if (bank->selected) bank->selected->color = nk_rgb(32, 32, 180);
+			if (bank->selected) bank->selected->color = THING_COLOR;
 			nodes->color = nk_rgb(255, 0, 0);
 			bank->selected = nodes;
 		}
@@ -101,6 +101,8 @@ static void	things(struct nk_context *ctx, t_bank *bank)
 		snprintf(buffer, 24, "'%s'", thing.name);
 		nk_label(ctx, buffer, NK_TEXT_CENTERED);
 
+		nk_layout_row_push(ctx, 20);
+		nk_button_color(ctx, nodes->color);
 		nk_layout_row_end(ctx);
 
 		/* add padding between each line */
