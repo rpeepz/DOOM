@@ -14,8 +14,8 @@
 # define GENERIC_STRUCT_H
 
 # define PI 3.141592657
-#include <unistd.h>
-#include <stdint.h>
+# include <unistd.h>
+# include <stdint.h>
 
 typedef struct				s_int_pair
 {
@@ -37,6 +37,5 @@ typedef struct				s_float_pair
 
 typedef enum {FALSE, TRUE}	e_boolean;
 typedef uint8_t				t_byte;
-
 
 #endif

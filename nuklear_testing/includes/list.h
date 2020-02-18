@@ -15,20 +15,13 @@
 
 # include "map.h"
 # include "demo.h"
+# include "../../Nuklear/nuklear.h"
+# include "nuklear_sdl_gl3.h"
 # define ITEM_LINE 2
 # define ITEM_THING 1
 # define HIGHLIGHT nk_rgb(255, 140, 60)
 # define LINE_COLOR nk_rgb(10, 10, 10)
 # define THING_COLOR nk_rgb(145, 145, 145)
-//# define NK_INCLUDE_FIXED_TYPES
-//# define NK_INCLUDE_STANDARD_IO
-//# define NK_INCLUDE_STANDARD_VARARGS
-//# define NK_INCLUDE_DEFAULT_ALLOCATOR
-//# define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
-//# define NK_INCLUDE_FONT_BAKING
-//# define NK_INCLUDE_DEFAULT_FONT
-//# include "../Nuklear/nuklear.h"
-//# include "nuklear_sdl_gl3.h"
 
 /* map-item double linked node */
 typedef struct			s_item_node
@@ -53,19 +46,19 @@ typedef struct			s_bank
 
 /* driver call to `nk_stroke_line` given a t_item_node
 	which holds the vectors from which the line begins and ends */
-int	stroke_my_line(struct nk_command_buffer *b, t_item_node *node);
+int		stroke_my_line(struct nk_command_buffer *b, t_item_node *node);
 
 /* driver call to `nk_fill_rect` given a t_item_node
 	which holds the vector that will be the location of the thing */
-void stroke_box(struct nk_command_buffer *b, t_item_node *thing_node);
+void	stroke_box(struct nk_command_buffer *b, t_item_node *thing_node);
 
 /*	Nuklear pannel allowing the user to view and edit information
 	on the current selected line withing the linkbank */
-void    edit_pannel(t_map_interface *draw_mode);
+void	edit_pannel(t_map_interface *draw_mode);
 
 /*	Nuklear pannel displaying information such as coordinates and flags
 	of the lines that have been added to the map */
-void    list_pannel(t_map_interface *draw_mode);
+void	list_pannel(t_map_interface *draw_mode);
 
 /*	Snap coordinates to a grid and convert from nk_vec2 to float pair */
 t_float_pair	snap(struct nk_vec2 v);
