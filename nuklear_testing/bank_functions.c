@@ -14,9 +14,12 @@ int stroke_my_line( struct nk_command_buffer *b, t_item_node *line_node)
 
 void stroke_box(struct nk_command_buffer *b, t_item_node *thing_node)
 {
+	struct nk_color v = HIGHLIGHT; // To confirm selected box
 	struct nk_rect size =
 	{thing_node->thing->pos.x - 4, thing_node->thing->pos.y - 3, 10, 10};
-	nk_fill_rect(b, size, 1.0f, thing_node->color);
+	nk_fill_rect(b, size, 1.0f,
+	(!memcmp(&thing_node->color, &v, sizeof(struct nk_color))) ?
+	thing_node->color : thing_node->thing->color);
 }
 
 t_float_pair	snap(struct nk_vec2 v)
@@ -98,6 +101,7 @@ void	add_thing(t_bank *bank, struct nk_vec2 location, char *name)
 	new->color = HIGHLIGHT;
 	new->thing = malloc(sizeof(t_thing));
 	memset(new->thing, 0, sizeof(t_thing));
+	new->thing->color = THING_COLOR;
 	memcpy(new->thing->name, name, strlen(name));
 	//set values from args
 	new->thing->pos = pos;

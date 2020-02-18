@@ -13,9 +13,6 @@
 #ifndef MAP_H
 # define MAP_H
 
-# define MAX_LINE_COUNT 4096	//should be dynamic
-# define MAX_THING_COUNT 1000	//should be dynamic -rpapagna
-
 /*	Line flag masks */
 # define L_BLOCK 0x1
 # define L_MBLOCK 0x2
@@ -36,7 +33,8 @@
 # define T_COOP 0x40
 # define T_FRIEND 0x80
 
-#include "generic_structs.h"
+# include "generic_structs.h"
+# include "demo.h"
 
 /*	line data */
 
@@ -85,6 +83,7 @@ typedef struct		s_thing {
 	int				type;
 	char			name[16];
 	uint8_t			flags;
+	struct nk_color	color;
 }					t_thing;
 
 #endif

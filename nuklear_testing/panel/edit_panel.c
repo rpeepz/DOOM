@@ -266,15 +266,15 @@ void    edit_selected_thing(struct nk_context *ctx, t_item_node *item)
     nk_layout_row_dynamic(ctx, 20, 1);
     nk_label(ctx, " ", 0);
     /* slider color combobox */
-    if (nk_combo_begin_color(ctx, item->color, nk_vec2(200,200))) {
+    if (nk_combo_begin_color(ctx, item->thing->color, nk_vec2(200,200))) {
         float ratios[] = {0.15f, 0.85f};
         nk_layout_row(ctx, NK_DYNAMIC, 30, 2, ratios);
         nk_label(ctx, "R:", NK_TEXT_LEFT);
-        item->color.r = (nk_byte)nk_slide_int(ctx, 0, item->color.r, 255, 5);
+        item->thing->color.r = (nk_byte)nk_slide_int(ctx, 0, item->thing->color.r, 255, 5);
         nk_label(ctx, "G:", NK_TEXT_LEFT);
-        item->color.g = (nk_byte)nk_slide_int(ctx, 0, item->color.g, 255, 5);
+        item->thing->color.g = (nk_byte)nk_slide_int(ctx, 0, item->thing->color.g, 255, 5);
         nk_label(ctx, "B:", NK_TEXT_LEFT);
-        item->color.b = (nk_byte)nk_slide_int(ctx, 0, item->color.b, 255, 5);
+        item->thing->color.b = (nk_byte)nk_slide_int(ctx, 0, item->thing->color.b, 255, 5);
         nk_combo_end(ctx);
     }
 }

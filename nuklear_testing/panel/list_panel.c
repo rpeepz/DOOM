@@ -101,8 +101,8 @@ static void	things(struct nk_context *ctx, t_bank *bank)
 		snprintf(buffer, 24, "'%s'", thing.name);
 		nk_label(ctx, buffer, NK_TEXT_CENTERED);
 
-		nk_layout_row_push(ctx, 20);
-		nk_button_color(ctx, nodes->color);
+		nk_layout_row_push(ctx, 30);
+		nk_button_color(ctx, nodes->thing->color);
 		nk_layout_row_end(ctx);
 
 		/* add padding between each line */
