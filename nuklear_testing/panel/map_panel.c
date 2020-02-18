@@ -111,7 +111,7 @@ void    draw_lines(t_map_interface *draw_mode)
             end_point.x = line_end.x;
             end_point.y = line_end.y;
             // follow cursor with circle
-            nk_fill_circle(canvas, end_point, nk_rgb(255, 0, 225));
+            nk_fill_circle(canvas, end_point, nk_rgb(171, 128, 255));
         }
         if (count == 2) {
             add_line(draw_mode->bank, line_start, line_end);
@@ -169,7 +169,7 @@ void    draw_things(t_map_interface *draw_mode)
                 
                 /* copy edit back to submit buffer */
                 buffer[len] = 0;
-                memcpy(buffer2, buffer, strlen(buffer));
+                memcpy(buffer2, buffer, 16);
                 // spacing between rows
                 nk_layout_row_dynamic(draw_mode->ctx, 10, 1);
                 nk_label(draw_mode->ctx, " ", 1);
