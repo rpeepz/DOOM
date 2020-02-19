@@ -55,6 +55,7 @@ static void	lines(struct nk_context *ctx, t_bank *bank)
 
 		nodes = nodes->prev;
 	}
+	nk_style_default(ctx);
 }
 
 static char	*get_angle(int angle)
@@ -113,6 +114,7 @@ static void	things(struct nk_context *ctx, t_bank *bank)
 
 		nodes = nodes->prev;
 	}
+	nk_style_default(ctx);
 }
 
 void    list_pannel(t_map_interface *draw_mode)
@@ -169,4 +171,5 @@ void    list_pannel(t_map_interface *draw_mode)
 		}
 	}
 	nk_end(ctx);
+	nk_style_default(ctx);
 }

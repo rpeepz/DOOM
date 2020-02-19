@@ -12,6 +12,7 @@
 #include "../../Nuklear/nuklear.h"
 #include "nuklear_sdl_gl3.h"
 
+static int texture_popup = 0;
 char buffer[24];
 int len;
 void    sidedef_edit(struct nk_context *ctx, t_sidedef *side);
@@ -25,7 +26,28 @@ void    edit_pannel(t_map_interface *draw_mode)
     (draw_mode->list_op == ITEM_THING && !draw_mode->bank->selected->thing)))
         return ;
     struct nk_context *ctx = draw_mode->ctx;
-    nk_window_set_focus(ctx, "Edit");
+    
+    if (texture_popup) {
+        static struct nk_rect s = {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2,
+        200, 200};
+        if (nk_popup_begin(ctx, NK_POPUP_STATIC, "Error", 0, s))
+        {
+            nk_layout_row_dynamic(ctx, 25, 1);
+            nk_label(ctx, "A terrible error as occured", NK_TEXT_LEFT);
+            nk_layout_row_dynamic(ctx, 25, 2);
+            if (nk_button_label(ctx, "OK")) {
+                texture_popup = nk_false;
+                nk_popup_close(ctx);
+            }
+            if (nk_button_label(ctx, "Cancel")) {
+                texture_popup = nk_false;
+                nk_popup_close(ctx);
+            }
+            nk_popup_end(ctx);
+        } else texture_popup = nk_false;
+    }
+    else
+        nk_window_set_focus(ctx, "Edit");
 
     /* pannel size nk_rect(1310, 375, 275, 500); */
     struct nk_rect size = nk_rect(WINDOW_WIDTH - ((WINDOW_WIDTH / 16) * 3) + (WINDOW_OFFSET * 2),
@@ -144,10 +166,12 @@ void    edit_selected_line(struct nk_context *ctx, t_linedef *line)
             nk_tree_pop(ctx);
         }
     }
+    nk_style_default(ctx);
 }
 
 void    sidedef_edit(struct nk_context *ctx, t_sidedef *side)
 {
+    static int texture_popup = nk_false;
     float max = 25;
     nk_layout_row_dynamic(ctx, 25, 1);
     nk_label(ctx, "Texture offset", NK_TEXT_LEFT);
@@ -165,10 +189,8 @@ void    sidedef_edit(struct nk_context *ctx, t_sidedef *side)
         nk_layout_row_push(ctx, 50);
         nk_label(ctx, sections[i], NK_TEXT_RIGHT);
         nk_layout_row_push(ctx, 100);
-        len = snprintf(buffer, 9, "%s", side->textures[i]);
-        nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 8, nk_filter_default);
-        buffer[len] = 0;
-        memcpy(side->textures[i], buffer, 9);
+        if (nk_button_label(ctx, side->textures[i]))
+            texture_popup = nk_true;
 
         nk_layout_row_push(ctx, 50);
         if (nk_button_label(ctx, "clear"))
@@ -277,4 +299,5 @@ void    edit_selected_thing(struct nk_context *ctx, t_item_node *item)
         item->thing->color.b = (nk_byte)nk_slide_int(ctx, 0, item->thing->color.b, 255, 5);
         nk_combo_end(ctx);
     }
+    nk_style_default(ctx);
 }
