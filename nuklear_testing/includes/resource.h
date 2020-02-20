@@ -20,13 +20,12 @@
 # include <errno.h>
 # include <stdlib.h>
 # include <string.h>
-# include <resource.h>
-# include <generic_structs.h>
+# include "generic_structs.h"
 # include <errno.h>
 # include <fcntl.h>
 # include <stdio.h>
 
-# define MAX_RESOURCE_COUNT 100
+# define MAX_RESOURCE_COUNT 300
 
 typedef struct		s_resource
 {
