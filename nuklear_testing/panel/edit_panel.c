@@ -12,12 +12,11 @@
 #include "../../Nuklear/nuklear.h"
 #include "nuklear_sdl_gl3.h"
 
-static int texture_popup = 0;
-char buffer[24];
-int len;
-void    sidedef_edit(struct nk_context *ctx, t_sidedef *side);
-void    edit_selected_line(struct nk_context *ctx, t_linedef *line);
-void    edit_selected_thing(struct nk_context *ctx, t_item_node *item);
+char    buffer[24];
+int     len;
+void    sidedef_edit(t_map_interface *draw_mode, t_sidedef *side);
+void    edit_selected_line(t_map_interface *draw_mode, t_linedef *line);
+void    edit_selected_thing(t_map_interface *draw_mode, t_item_node *item);
 
 void    edit_pannel(t_map_interface *draw_mode)
 {
@@ -26,28 +25,7 @@ void    edit_pannel(t_map_interface *draw_mode)
     (draw_mode->list_op == ITEM_THING && !draw_mode->bank->selected->thing)))
         return ;
     struct nk_context *ctx = draw_mode->ctx;
-    
-    if (texture_popup) {
-        static struct nk_rect s = {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2,
-        200, 200};
-        if (nk_popup_begin(ctx, NK_POPUP_STATIC, "Error", 0, s))
-        {
-            nk_layout_row_dynamic(ctx, 25, 1);
-            nk_label(ctx, "A terrible error as occured", NK_TEXT_LEFT);
-            nk_layout_row_dynamic(ctx, 25, 2);
-            if (nk_button_label(ctx, "OK")) {
-                texture_popup = nk_false;
-                nk_popup_close(ctx);
-            }
-            if (nk_button_label(ctx, "Cancel")) {
-                texture_popup = nk_false;
-                nk_popup_close(ctx);
-            }
-            nk_popup_end(ctx);
-        } else texture_popup = nk_false;
-    }
-    else
-        nk_window_set_focus(ctx, "Edit");
+    nk_window_set_focus(ctx, "Edit");
 
     /* pannel size nk_rect(1310, 375, 275, 500); */
     struct nk_rect size = nk_rect(WINDOW_WIDTH - ((WINDOW_WIDTH / 16) * 3) + (WINDOW_OFFSET * 2),
@@ -58,15 +36,16 @@ void    edit_pannel(t_map_interface *draw_mode)
     if (nk_begin(draw_mode->ctx, "Edit", size, NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_MINIMIZABLE))
     {
         if (draw_mode->list_op == ITEM_LINE)
-            edit_selected_line(ctx, draw_mode->bank->selected->line);
+            edit_selected_line(draw_mode, draw_mode->bank->selected->line);
         else if (draw_mode->list_op == ITEM_THING)
-            edit_selected_thing(ctx, draw_mode->bank->selected);
+            edit_selected_thing(draw_mode, draw_mode->bank->selected);
     }
     nk_end(ctx);
 }
 
-void    edit_selected_line(struct nk_context *ctx, t_linedef *line)
+void    edit_selected_line(t_map_interface *draw_mode, t_linedef *line)
 {
+    struct nk_context *ctx = draw_mode->ctx;
     double x;
     double y;
     /* edit vertex values */
@@ -97,6 +76,7 @@ void    edit_selected_line(struct nk_context *ctx, t_linedef *line)
         if (!i) line->start_vertex = snap((struct nk_vec2){x, y});
         else line->end_vertex = snap((struct nk_vec2){x, y});
     }
+    /* Edit special and tag values */
     nk_layout_row_push(ctx, 70);
     nk_label(ctx, "special", NK_TEXT_LEFT);
 
@@ -154,47 +134,78 @@ void    edit_selected_line(struct nk_context *ctx, t_linedef *line)
         nk_tree_pop(ctx);
     }
     ctx->style.button.normal = nk_style_item_color(nk_rgb(50, 50, 50));
+    /* edit sidedef properties */
     t_sidedef *side = &line->sides[0];
     if (nk_tree_push(ctx, NK_TREE_TAB, "Sidedef - Right", NK_MAXIMIZED)) {
-        sidedef_edit(ctx, side);
+        sidedef_edit(draw_mode, side);
         nk_tree_pop(ctx);
     }
     if (line->flags & L_TWO_SIDED) {
         side = &line->sides[1];
         if (nk_tree_push(ctx, NK_TREE_TAB, "Sidedef - Left", NK_MAXIMIZED)) {
-            sidedef_edit(ctx, side);
+            sidedef_edit(draw_mode, side);
             nk_tree_pop(ctx);
         }
     }
-    nk_style_default(ctx);
 }
 
-void    sidedef_edit(struct nk_context *ctx, t_sidedef *side)
+void    sidedef_edit(t_map_interface *draw_mode, t_sidedef *side)
 {
-    static int texture_popup = nk_false;
-    float max = 25;
+    static int  texture_popup = nk_false;
+    static int  texture_set = 0;
+    float       max = 25;
+    struct nk_context *ctx = draw_mode->ctx;
+
+    /* change offset of texture placement */
     nk_layout_row_dynamic(ctx, 25, 1);
     nk_label(ctx, "Texture offset", NK_TEXT_LEFT);
-
     nk_layout_row_dynamic(ctx, 25, 2);
-    nk_property_float(ctx, "#x:", 0, &side->offset.x, max, 0.25f, 0.01f);
-    nk_property_float(ctx, "#y:", 0, &side->offset.y, max, 0.25f, 0.01f);
+    nk_property_float(ctx, "#x:", 0, &side->offset.x, max, 1.0f, 0.25f);
+    nk_property_float(ctx, "#y:", 0, &side->offset.y, max, 1.0f, 0.25f);
 
+    /* add textures to sections of the linedef */
     nk_layout_row_dynamic(ctx, 25, 1);
     nk_label(ctx, "Textures", NK_TEXT_LEFT);
-
     char *sections[ ] = { "Top:", "Middle:", "Bottom:" };
     nk_layout_row_begin(ctx, NK_STATIC, 25, 3);
     for (int i = 0; i < 3; i++) {
         nk_layout_row_push(ctx, 50);
         nk_label(ctx, sections[i], NK_TEXT_RIGHT);
         nk_layout_row_push(ctx, 100);
-        if (nk_button_label(ctx, side->textures[i]))
+        if (nk_button_label(ctx, side->textures[i])) {
             texture_popup = nk_true;
-
+            texture_set = i;
+        }
         nk_layout_row_push(ctx, 50);
         if (nk_button_label(ctx, "clear"))
             memset(side->textures[i], 0, 8);
+    }
+    /* Texture Select window */
+    if (texture_popup) {
+        struct nk_rect s = {-40, -20,
+        WINDOW_WIDTH / 5, WINDOW_HEIGHT / 2};
+        if (nk_popup_begin(ctx, NK_POPUP_STATIC, "Error", 0, s))
+        {
+            nk_menubar_begin(ctx);
+            nk_layout_row_begin(ctx, NK_STATIC, 25, 3);
+            nk_layout_row_push(ctx, 130);
+            nk_label(ctx, "Select Texture for ", NK_TEXT_LEFT);
+            nk_layout_row_push(ctx, 60);
+            nk_label(ctx, sections[texture_set], NK_TEXT_LEFT);
+            if (nk_button_label(ctx, "Cancel")) {
+                texture_popup = nk_false;
+                nk_popup_close(ctx);
+            }
+            // hit enter to close the popup window
+            if (nk_input_is_key_pressed(&ctx->input, NK_KEY_ENTER)) {
+                texture_popup = nk_false;
+                nk_popup_close(ctx);
+            }
+            nk_menubar_end(ctx);
+            /* list texture options */
+            // list_wall_textures();
+            nk_popup_end(ctx);
+        } else texture_popup = nk_false;
     }
 }
 
@@ -210,13 +221,14 @@ static int  get_angle(char *angle)
     return (0);
 }
 
-void    edit_selected_thing(struct nk_context *ctx, t_item_node *item)
+void    edit_selected_thing(t_map_interface *draw_mode, t_item_node *item)
 {
+    struct nk_context *ctx = draw_mode->ctx;
     t_thing *thing = item->thing;
     nk_layout_row_dynamic(ctx, 20, 1);
     nk_label(ctx, "Direction", NK_TEXT_LEFT);
-    nk_style_default(ctx);
     nk_layout_row_static(ctx, 25, 30, 3);
+    // Buttons to choose initial direction of thing
     char	*direction[9] = {
 		"NW", "N", "NE",
 		"W",  " ", "E",
@@ -232,7 +244,7 @@ void    edit_selected_thing(struct nk_context *ctx, t_item_node *item)
     // spacing
     nk_layout_row_dynamic(ctx, 20, 1);
     nk_label(ctx, " ", 0);
-
+    /* edit properties of Thing */
     char *sections[ ] = { "Angle:", "Type:", "Name:" };
     nk_layout_row_begin(ctx, NK_STATIC, 25, 2);
     for (int i = 0; i < 3; i++) {
@@ -249,8 +261,7 @@ void    edit_selected_thing(struct nk_context *ctx, t_item_node *item)
             int angle = atoi(buffer);
             if (angle >= 360 || angle < 0) angle = 0;
             thing->angle = angle;
-        }
-        else if (i == 1) thing->type = atoi(buffer);
+        } else if (i == 1) thing->type = atoi(buffer);
         else memcpy(thing->name, buffer, 16);
     }
 
