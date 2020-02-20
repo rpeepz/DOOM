@@ -1,7 +1,7 @@
 # Mac files
 *._*
 .DS_Store
-.swp
+*.swp
 
 # Compile files
 obj/
@@ -12,7 +12,7 @@ obj/
 
 # extra
 .vscode
-make-a-map/ 
+make-a-map/
 
 # executables
 ./*/demo
