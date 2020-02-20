@@ -13,7 +13,7 @@
 #define NK_SDL_GL3_IMPLEMENTATION
 #include "../Nuklear/nuklear.h"
 #include "nuklear_sdl_gl3.h"
-
+#include "../data_structures/resource.h"
 #define MAX_VERTEX_MEMORY 512 * 1024
 #define MAX_ELEMENT_MEMORY 128 * 1024
 
@@ -22,6 +22,28 @@
 
 t_map_interface draw_mode;
 t_bank bank = {0};
+
+
+t_resource_table    *gather_assets(void)
+{
+     DIR *dir;
+    struct dirent *sd;
+    struct stat buf;
+    t_resource_table *table;
+
+    dir = opendir("assets/floor");
+    table = malloc(sizeof(t_resource_table));
+    table->size = 0;    
+    while ((sd = readdir(dir)) != NULL)
+    {
+        lstat(sd->d_name, &buf);
+        strcpy(table->table[table->size].name, sd->d_name);
+        table->table[table->size].size = buf.st_size;
+        table->size++;
+    }
+    return (table);
+}
+
 
 void    hooks(void)
 {
@@ -52,6 +74,8 @@ int     main(void)
     int win_width, win_height;
     int running = 1;
     struct nk_colorf bg;
+    t_resource_table *table;
+    
     
     /* SDL setup */
     SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "0");
@@ -92,6 +116,7 @@ int     main(void)
     draw_mode.list_op = ITEM_LINE;
 
     const struct nk_input *in = &ctx->input;
+    table = gather_assets();
     while (running)
     {
         /* Input */
