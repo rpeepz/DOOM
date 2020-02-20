@@ -240,6 +240,7 @@ void    draw_menu(t_map_interface *draw_mode)
             ;
         nk_menu_end(ctx);
     }
+    nk_menubar_end(ctx);
 }
 
 void    draw_about(struct nk_context *ctx)
