@@ -20,9 +20,6 @@
 # include "nuklear_sdl_gl3.h"
 # define ITEM_LINE 2
 # define ITEM_THING 1
-# define HIGHLIGHT nk_rgb(255, 140, 60)
-# define LINE_COLOR nk_rgb(10, 10, 10)
-# define THING_COLOR nk_rgb(145, 145, 145)
 
 /* map-item double linked node */
 typedef struct			s_item_node

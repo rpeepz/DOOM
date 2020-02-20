@@ -133,7 +133,7 @@ void    edit_selected_line(t_map_interface *draw_mode, t_linedef *line)
         }
         nk_tree_pop(ctx);
     }
-    ctx->style.button.normal = nk_style_item_color(nk_rgb(50, 50, 50));
+    ctx->style.button.normal = nk_style_item_color(BUTTON_DEFAULT);
     /* edit sidedef properties */
     t_sidedef *side = &line->sides[0];
     if (nk_tree_push(ctx, NK_TREE_TAB, "Sidedef - Right", NK_MAXIMIZED)) {

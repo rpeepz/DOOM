@@ -27,7 +27,7 @@ static void	lines(struct nk_context *ctx, t_bank *bank)
 		if (bank->selected == nodes) {
 			button->normal = nk_style_item_color(nk_rgba(170, 170, 170, 80));
 		} else {
-			button->normal = nk_style_item_color(nk_rgb(50, 50, 50));
+			button->normal = nk_style_item_color(BUTTON_DEFAULT);
 		}
 
 		nk_layout_row_push(ctx, 55);
@@ -80,7 +80,7 @@ static void	things(struct nk_context *ctx, t_bank *bank)
 		if (bank->selected == nodes) {
 			button->normal = nk_style_item_color(nk_rgba(170, 170, 170, 80));
 		} else {
-			button->normal = nk_style_item_color(nk_rgb(50, 50, 50));
+			button->normal = nk_style_item_color(BUTTON_DEFAULT);
 		}
 
 		nk_layout_row_push(ctx, 55);
@@ -128,7 +128,7 @@ void    list_pannel(t_map_interface *draw_mode)
 	if (nk_begin(ctx, "List", size, NK_WINDOW_BORDER|NK_WINDOW_MINIMIZABLE)) {
 		/* color style for buttons */
 		button = &ctx->style.button;
-		button->active = nk_style_item_color(nk_rgb(50, 50, 50));
+		button->active = nk_style_item_color(BUTTON_DEFAULT);
 		button->hover = nk_style_item_color(nk_rgba(150, 150, 150, 80));
 
 		/* menu bar buttons */
@@ -136,11 +136,11 @@ void    list_pannel(t_map_interface *draw_mode)
 		nk_layout_row_dynamic(ctx, 30, 2);
 	// colors for selected item type
 		if (draw_mode->list_op == ITEM_LINE) button->normal = nk_style_item_color(nk_rgba(170, 170, 170, 80));
-		else button->normal = nk_style_item_color(nk_rgb(50, 50, 50));
+		else button->normal = nk_style_item_color(BUTTON_DEFAULT);
 		if (nk_button_label(ctx, "Lines")) draw_mode->list_op = ITEM_LINE;
 
 		if (draw_mode->list_op == ITEM_THING) button->normal = nk_style_item_color(nk_rgba(170, 170, 170, 80));
-		else button->normal = nk_style_item_color(nk_rgb(50, 50, 50));
+		else button->normal = nk_style_item_color(BUTTON_DEFAULT);
 		if (nk_button_label(ctx, "Things")) draw_mode->list_op = ITEM_THING;
 		nk_menubar_end(ctx);
 
