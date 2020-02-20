@@ -36,6 +36,7 @@ static void	lines(struct nk_context *ctx, t_bank *bank)
 			nodes->color = nk_rgb(255, 160, 40);
 			bank->selected = nodes;
 		}
+		nk_style_default(ctx);
 
 		nk_layout_row_push(ctx, 130);
 		snprintf(buffer, 24, " start (%.0f, %.0f)", line.start_vertex.x, line.start_vertex.y);
@@ -55,7 +56,6 @@ static void	lines(struct nk_context *ctx, t_bank *bank)
 
 		nodes = nodes->prev;
 	}
-	nk_style_default(ctx);
 }
 
 static char	*get_angle(int angle)
@@ -89,6 +89,7 @@ static void	things(struct nk_context *ctx, t_bank *bank)
 			nodes->color = nk_rgb(255, 0, 0);
 			bank->selected = nodes;
 		}
+		nk_style_default(ctx);
 
 		nk_layout_row_push(ctx, 80);
 		snprintf(buffer, 24, " (%.0f, %.0f)", thing.pos.x, thing.pos.y);
@@ -114,7 +115,6 @@ static void	things(struct nk_context *ctx, t_bank *bank)
 
 		nodes = nodes->prev;
 	}
-	nk_style_default(ctx);
 }
 
 void    list_pannel(t_map_interface *draw_mode)
@@ -171,5 +171,4 @@ void    list_pannel(t_map_interface *draw_mode)
 		}
 	}
 	nk_end(ctx);
-	nk_style_default(ctx);
 }
