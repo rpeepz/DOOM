@@ -25,6 +25,7 @@
 # define NK_INCLUDE_DEFAULT_FONT
 # include "../../Nuklear/nuklear.h"
 # include "nuklear_sdl_gl3.h"
+# include "resource.h"
 
 # define WINDOW_WIDTH 1600
 # define WINDOW_HEIGHT 900
@@ -74,6 +75,8 @@ typedef struct			s_map_interface
 {
 	struct nk_context	*ctx;
 	struct s_bank		*bank;
+	t_resource_table	*floor;
+	t_resource_table	*wall;
 	int					tool_op;
 	int					list_op;
 }						t_map_interface;
