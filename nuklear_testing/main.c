@@ -22,30 +22,6 @@
 t_map_interface draw_mode;
 t_bank bank = {0};
 
-t_resource_table    *gather_assets(int mode)
-{
-     DIR *dir;
-    struct dirent *sd;
-    struct stat buf;
-    t_resource_table *table;
-
-    if (mode == 0) dir = opendir("assets/floor");
-    else dir = opendir("assets/wall");
-    table = malloc(sizeof(t_resource_table));
-    table->size = 0;
-    while ((sd = readdir(dir)) != NULL)
-    {
-        if (sd->d_name[0] == '.')
-            continue ;
-        lstat(sd->d_name, &buf);
-        strcpy(table->table[table->size].name, sd->d_name);
-        table->table[table->size].size = buf.st_size;
-        table->size++;
-    }
-    return (table);
-}
-
-
 void    hooks(void)
 {
     if (nk_input_is_key_pressed(&draw_mode.ctx->input, NK_KEY_DEL))
