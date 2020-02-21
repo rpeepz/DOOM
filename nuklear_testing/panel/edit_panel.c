@@ -344,8 +344,15 @@ void    list_wall_textures(t_map_interface *draw_mode, t_sidedef *side, t_resour
         nk_layout_row_push(ctx, 30);
         nk_label(ctx, " ", 1);
 
+//      nk_label_wrap(ctx, "placeholder texture location"); //replace with image of texture
+        /* cheap workaround for not knowing how to render a png in nuklear */
         nk_layout_row_push(ctx, 80);
-        nk_label_wrap(ctx, "placeholder texture location"); //replace with image of texture
+        if (nk_button_label(ctx, "Preview")) {
+            char buffer[32] = "open assets/wall/";
+            strcat(buffer, texture.name);
+            system (buffer);
+        }
+        memset(buffer, 0, sizeof(buffer));
     }
     nk_layout_row_end(ctx);
 }
