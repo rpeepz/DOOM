@@ -31,6 +31,7 @@ typedef struct		s_resource
 {
 	int				size;
 	char			name[16]; // Max Length for resource filename
+	char			full_path[32];
 	uint8_t			*raw_data;
 }					t_resource;
 

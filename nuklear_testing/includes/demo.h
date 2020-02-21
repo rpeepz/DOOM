@@ -85,7 +85,8 @@ typedef struct			s_map_interface
 	int					list_op;
 }						t_map_interface;
 
-void			map_pannel(t_map_interface *draw_mode);
-void			tool_pannel(t_map_interface *draw_mode);
+void				map_pannel(t_map_interface *draw_mode);
+void				tool_pannel(t_map_interface *draw_mode);
+t_resource_table    *gather_assets(int mode);
 
 #endif
