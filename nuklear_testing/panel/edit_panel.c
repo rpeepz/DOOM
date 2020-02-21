@@ -326,6 +326,7 @@ void    list_wall_textures(t_map_interface *draw_mode, t_sidedef *side, t_resour
         if (nk_button_label(ctx, "Select")) {
             strcpy(side->textures[texture_set], texture.name);
             texture_popup = nk_false;
+            nk_popup_close(ctx);
         }
         nk_layout_row_push(ctx, 10);
         nk_label(ctx, " ", 1);
