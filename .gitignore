@@ -13,6 +13,9 @@ obj/
 # extra
 .vscode
 make-a-map/
+notes.txt
+preprocess
 
 # executables
-./*/demo
+*/map-maker
+*/demo*

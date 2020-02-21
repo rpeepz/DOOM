@@ -45,19 +45,39 @@ else
 	endif
 endif
 
+#COLOR OUTPUT OPIONS
+RED		=\033[0;31m
+GREEN	=\033[0;32m
+NC		=\033[0m
+
+all: $(BIN)
+
+re: clean all
+
 $(BIN): $(OBJ)
 #	@mkdir -p bin
 #	rm -f bin/$(BIN) $(OBJS)
-	$(CC) $(OBJ_PATH)/*.o $(CFLAGS) -o $(BIN) $(LIBS)
+	@printf "[compile   src]\t[#######   ]\r" #print statement
+	@$(CC) $(OBJ_PATH)/*.o $(CFLAGS) -o $(BIN) $(LIBS)
+	@printf "[$(GREEN)  complete!  $(NC)]\t[##########]\n" #print statement
+	@printf "Usage: ./$(BIN)\n"
 
 $(OBJ_PATH):
-	mkdir -p $@
+	@printf "[create    obj]\t[#         ]\r" #print statement
+	@mkdir -p $@
 
 $(OBJ_PATH)/%.o: ./%.c $(INC)/*.h| $(OBJ_PATH)
-	$(CC) -I$(INC) $(CFLAGS) -o $@ -c $<
+	@printf "[compile   obj]\t[###       ]\r" #print statement
+	@$(CC) -I$(INC) $(CFLAGS) -o $@ -c $<
 $(OBJ_PATH)/%.o: panel/%.c $(INC)/*.h | $(OBJ_PATH)
-	$(CC) -I$(INC) $(CFLAGS) -o $@ -c $<
+	@printf "[compile   obj]\t[#####     ]\r" #print statement
+	@$(CC) -I$(INC) $(CFLAGS) -o $@ -c $<
 
 clean:
-	rm -rf obj
-	rm -rf $(BIN)
+	@printf "[$(RED)remove    obj$(NC)]\t[####      ]\r" #print statement
+	@rm -f $(OBJ_PATH)/*.o
+	@rm -rf $(OBJ_PATH)
+	@printf "[$(RED)remove binary$(NC)]\t[######    ]\r" #print statement
+	@rm -rf $(BIN)
+	@rm -rf $(BIN).dSYM
+	@printf "[$(RED)full    clean$(NC)]\t[##########]\n" #print statement
