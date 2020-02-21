@@ -122,6 +122,12 @@ void    edit_selected_line(t_map_interface *draw_mode, t_linedef *line)
         char *labels[] = { "Block", "Mblock", "2-Sided", "Ftop", "Fbot", "Secret", "Snd Block", "No Draw" };
         static int flags[ ] = { 0, 0, 0, 0, 0, 0, 0, 0 };
         int num_flags = sizeof(flags) / sizeof(flags[0]);
+
+	/* unpack flags for current line */
+	for (int i = 0; i < num_flags; i++)
+		flags[i] = ((line -> flags) & ( 1 << i)) ? 1 : 0;
+
+	/* pack flags for current line */
         for (int i = 0; i < num_flags; i++){
             nk_checkbox_label(ctx, labels[i], flags + i);
             /* if checkbox is set then set flag bit */ 
