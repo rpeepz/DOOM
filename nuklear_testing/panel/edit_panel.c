@@ -12,11 +12,14 @@
 #include "../../Nuklear/nuklear.h"
 #include "nuklear_sdl_gl3.h"
 
+static int  texture_set = 0;
+static int  texture_popup;
 char    buffer[24];
 int     len;
 void    sidedef_edit(t_map_interface *draw_mode, t_sidedef *side);
 void    edit_selected_line(t_map_interface *draw_mode, t_linedef *line);
 void    edit_selected_thing(t_map_interface *draw_mode, t_item_node *item);
+void    list_wall_textures(t_map_interface *draw_mode, t_sidedef *side, t_resource_table *wall);
 
 void    edit_pannel(t_map_interface *draw_mode)
 {
@@ -151,8 +154,6 @@ void    edit_selected_line(t_map_interface *draw_mode, t_linedef *line)
 
 void    sidedef_edit(t_map_interface *draw_mode, t_sidedef *side)
 {
-    static int  texture_popup = nk_false;
-    static int  texture_set = 0;
     float       max = 25;
     struct nk_context *ctx = draw_mode->ctx;
 
@@ -184,7 +185,7 @@ void    sidedef_edit(t_map_interface *draw_mode, t_sidedef *side)
     if (texture_popup) {
         struct nk_rect s = {-40, -20,
         WINDOW_WIDTH / 5, WINDOW_HEIGHT / 2};
-        if (nk_popup_begin(ctx, NK_POPUP_STATIC, "Error", 0, s))
+        if (nk_popup_begin(ctx, NK_POPUP_STATIC, "Texture Select", 0, s))
         {
             nk_menubar_begin(ctx);
             nk_layout_row_begin(ctx, NK_STATIC, 25, 3);
@@ -203,7 +204,7 @@ void    sidedef_edit(t_map_interface *draw_mode, t_sidedef *side)
             }
             nk_menubar_end(ctx);
             /* list texture options */
-            // list_wall_textures();
+            list_wall_textures(draw_mode, side, draw_mode->wall);
             nk_popup_end(ctx);
         } else texture_popup = nk_false;
     }
@@ -311,4 +312,31 @@ void    edit_selected_thing(t_map_interface *draw_mode, t_item_node *item)
         nk_combo_end(ctx);
     }
     nk_style_default(ctx);
+}
+
+void    list_wall_textures(t_map_interface *draw_mode, t_sidedef *side, t_resource_table *wall)
+{
+    struct nk_context *ctx = draw_mode->ctx;
+
+    nk_layout_row_begin(ctx, NK_STATIC, 40, 5);
+    for (int i = 0; i < (int)wall->size; i++) {
+        t_resource texture = wall->table[i];
+        nk_layout_row_push(ctx, 55);
+        if (nk_button_label(ctx, "Select")) {
+            strcpy(side->textures[texture_set], texture.name);
+            texture_popup = nk_false;
+        }
+        nk_layout_row_push(ctx, 10);
+        nk_label(ctx, " ", 1);
+
+        nk_layout_row_push(ctx, 80);
+        nk_label(ctx, texture.name, NK_TEXT_RIGHT);
+
+        nk_layout_row_push(ctx, 30);
+        nk_label(ctx, " ", 1);
+        
+        nk_layout_row_push(ctx, 80);
+        nk_label_wrap(ctx, "placeholder texture location"); //replace with image of texture
+    }
+    nk_layout_row_end(ctx);
 }

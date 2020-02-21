@@ -41,7 +41,7 @@
 typedef struct	s_sector_info
 {
 	//value pairs: ceiling, floor t_int_pair	room_heights;
-	char		flats[2][9];
+	char		flats[2][16];
 	uint32_t	light;
 	uint32_t	special;
 	uint32_t	tag;
@@ -50,7 +50,7 @@ typedef struct	s_sector_info
 typedef struct		s_sidedef
 {
 	t_float_pair	offset; //row, column
-	char			textures[3][9]; //top mid and bottom 0, 1, 2 respectively
+	char			textures[3][16]; //top mid and bottom 0, 1, 2 respectively
 	t_sector_info	sector_info;
 	uint32_t		sector_num;
 }					t_sidedef;
