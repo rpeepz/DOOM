@@ -292,8 +292,9 @@ void    edit_selected_thing(t_map_interface *draw_mode, t_item_node *item)
     nk_layout_row_dynamic(ctx, 20, 3);
     char *labels[] = { "Easy", "Normal", "Hard", "Ambush", "Network", "Single_P", "Co-op", "Friendly" };
     static int flags[] = {0, 0, 0, 0, 0, 0, 0, 0};
-    int i;
-    for (i = 0; i < 8; i ++) {
+    for (int i = 0; i < 8; i++)
+		flags[i] = ((thing -> flags) & ( 1 << i)) ? 1 : 0;
+    for (int i = 0; i < 8; i ++) {
         if (i == 3 || i == 4)
             continue ;
         nk_checkbox_label(ctx, labels[i], flags + i);
