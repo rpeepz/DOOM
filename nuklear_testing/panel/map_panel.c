@@ -41,7 +41,7 @@ void    map_pannel(t_map_interface *draw_mode)
 		{
 			canvas = nk_window_get_canvas(draw_mode->ctx);
             if (show_grid) draw_grid(nk_window_get_content_region(draw_mode->ctx));
-
+            nk_style_default(draw_mode->ctx);
             SDL_ShowCursor(SDL_ENABLE);
             if ((draw_mode->tool_op) == LINE) {
                 // follow cursor for start point of line
