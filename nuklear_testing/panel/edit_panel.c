@@ -12,11 +12,15 @@
 #include "../../Nuklear/nuklear.h"
 #include "nuklear_sdl_gl3.h"
 
+static int  texture_popup = nk_false;
+static int  texture_side = 0;
+static int  texture_set = 0;
 char    buffer[24];
 int     len;
 void    sidedef_edit(t_map_interface *draw_mode, t_sidedef *side);
 void    edit_selected_line(t_map_interface *draw_mode, t_linedef *line);
 void    edit_selected_thing(t_map_interface *draw_mode, t_item_node *item);
+void    list_wall_textures(t_map_interface *draw_mode, t_sidedef *side, t_resource_table *wall);
 
 void    edit_pannel(t_map_interface *draw_mode)
 {
@@ -141,27 +145,21 @@ void    edit_selected_line(t_map_interface *draw_mode, t_linedef *line)
     }
     ctx->style.button.normal = nk_style_item_color(BUTTON_DEFAULT);
     /* edit sidedef properties */
-    t_sidedef *side = &line->sides[0];
-    if (nk_tree_push(ctx, NK_TREE_TAB, "Sidedef - Right", NK_MAXIMIZED)) {
-        sidedef_edit(draw_mode, side);
-        nk_tree_pop(ctx);
-    }
-    if (line->flags & L_TWO_SIDED) {
-        side = &line->sides[1];
-        if (nk_tree_push(ctx, NK_TREE_TAB, "Sidedef - Left", NK_MAXIMIZED)) {
-            sidedef_edit(draw_mode, side);
+    char *titles[] = {"Sidedef - Right", "Sidedef - Left"};
+    for (int i = 0; i < 2; i++) {
+        if (!(line->flags & L_TWO_SIDED) && i == 1) break ;
+        if (nk_tree_push(ctx, NK_TREE_TAB, titles[i], NK_MAXIMIZED)) {
+            sidedef_edit(draw_mode, &line->sides[i]);
             nk_tree_pop(ctx);
         }
     }
+    nk_layout_row_dynamic(ctx, 23, 1);
 }
 
 void    sidedef_edit(t_map_interface *draw_mode, t_sidedef *side)
 {
-    static int  texture_popup = nk_false;
-    static int  texture_set = 0;
     float       max = 25;
-    struct nk_context *ctx = draw_mode->ctx;
-
+    struct nk_context   *ctx = draw_mode->ctx;
     /* change offset of texture placement */
     nk_layout_row_dynamic(ctx, 25, 1);
     nk_label(ctx, "Texture offset", NK_TEXT_LEFT);
@@ -180,17 +178,18 @@ void    sidedef_edit(t_map_interface *draw_mode, t_sidedef *side)
         nk_layout_row_push(ctx, 100);
         if (nk_button_label(ctx, side->textures[i])) {
             texture_popup = nk_true;
+            texture_side = (side == &draw_mode->bank->selected->line->sides[0] ? 0 : 1);
             texture_set = i;
         }
         nk_layout_row_push(ctx, 50);
         if (nk_button_label(ctx, "clear"))
-            memset(side->textures[i], 0, 8);
+            memset(side->textures[i], 0, sizeof(side->textures[i]));
     }
     /* Texture Select window */
     if (texture_popup) {
         struct nk_rect s = {-40, -20,
         WINDOW_WIDTH / 5, WINDOW_HEIGHT / 2};
-        if (nk_popup_begin(ctx, NK_POPUP_STATIC, "Error", 0, s))
+        if (nk_popup_begin(ctx, NK_POPUP_STATIC, "Texture Select", 0, s))
         {
             nk_menubar_begin(ctx);
             nk_layout_row_begin(ctx, NK_STATIC, 25, 3);
@@ -209,7 +208,7 @@ void    sidedef_edit(t_map_interface *draw_mode, t_sidedef *side)
             }
             nk_menubar_end(ctx);
             /* list texture options */
-            // list_wall_textures();
+            list_wall_textures(draw_mode, side, draw_mode->wall);
             nk_popup_end(ctx);
         } else texture_popup = nk_false;
     }
@@ -318,4 +317,35 @@ void    edit_selected_thing(t_map_interface *draw_mode, t_item_node *item)
         nk_combo_end(ctx);
     }
     nk_style_default(ctx);
+}
+
+void    list_wall_textures(t_map_interface *draw_mode, t_sidedef *side, t_resource_table *wall)
+{
+    struct nk_context *ctx = draw_mode->ctx;
+    if (!(side == &draw_mode->bank->selected->line->sides[0]) && texture_side == 0)
+        return ;
+    if (!(side == &draw_mode->bank->selected->line->sides[1]) && texture_side == 1)
+        return ;
+    nk_layout_row_begin(ctx, NK_STATIC, 40, 5);
+    for (int i = 0; i < (int)wall->size; i++) {
+        t_resource texture = wall->table[i];
+        nk_layout_row_push(ctx, 55);
+        if (nk_button_label(ctx, "Select")) {
+            strcpy(side->textures[texture_set], texture.name);
+            texture_popup = nk_false;
+            nk_popup_close(ctx);
+        }
+        nk_layout_row_push(ctx, 10);
+        nk_label(ctx, " ", 1);
+
+        nk_layout_row_push(ctx, 80);
+        nk_label(ctx, texture.name, NK_TEXT_RIGHT);
+
+        nk_layout_row_push(ctx, 30);
+        nk_label(ctx, " ", 1);
+
+        nk_layout_row_push(ctx, 80);
+        nk_label_wrap(ctx, "placeholder texture location"); //replace with image of texture
+    }
+    nk_layout_row_end(ctx);
 }
