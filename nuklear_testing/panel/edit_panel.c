@@ -12,8 +12,8 @@
 #include "../../Nuklear/nuklear.h"
 #include "nuklear_sdl_gl3.h"
 
+static int  texture_popup = nk_false;
 static int  texture_set = 0;
-static int  texture_popup;
 char    buffer[24];
 int     len;
 void    sidedef_edit(t_map_interface *draw_mode, t_sidedef *side);
@@ -138,25 +138,49 @@ void    edit_selected_line(t_map_interface *draw_mode, t_linedef *line)
     }
     ctx->style.button.normal = nk_style_item_color(BUTTON_DEFAULT);
     /* edit sidedef properties */
-    t_sidedef *side = &line->sides[0];
-    if (nk_tree_push(ctx, NK_TREE_TAB, "Sidedef - Right", NK_MAXIMIZED)) {
-        sidedef_edit(draw_mode, side);
+    char *titles[] = {"Sidedef - Right", "Sidedef - Left"};
+    if (nk_tree_push(ctx, NK_TREE_TAB, titles[0], NK_MAXIMIZED)) {
+        sidedef_edit(draw_mode, &line->sides[0]);
         nk_tree_pop(ctx);
     }
     if (line->flags & L_TWO_SIDED) {
-        side = &line->sides[1];
-        if (nk_tree_push(ctx, NK_TREE_TAB, "Sidedef - Left", NK_MAXIMIZED)) {
-            sidedef_edit(draw_mode, side);
+        if (nk_tree_push(ctx, NK_TREE_TAB, titles[1], NK_MAXIMIZED)) {
+            sidedef_edit(draw_mode, &line->sides[1]);
             nk_tree_pop(ctx);
         }
+    }
+    nk_layout_row_dynamic(ctx, 23, 1);
+    /* debug info */
+    if (nk_button_label(ctx, "show info"))
+    {
+        system("clear");
+        printf("\n");
+        // printf("start\tx%f\n", line->start_vertex.x);
+        // printf("start\ty%f\n", line->start_vertex.y);
+        // printf("spec\t%d\n", line->special);
+        // printf("tag \t%d\n", line->tag);
+        // printf("flags\t%#hhX\n", line->flags);
+        // printf("offsetX %f\n", line->sides[0].offset.x);
+        // printf("offsetY %f\n", line->sides[0].offset.y);
+        printf("s0 top\t%s\n", line->sides[0].textures[0]);
+        printf("s0 mid\t%s\n", line->sides[0].textures[1]);
+        printf("s0 bot\t%s\n", line->sides[0].textures[2]);
+        // printf("secInfo %p\n", (void*)&line->sides[0].sector_info);
+        // printf("sec num %d\n", line->sides[0].sector_num);
+        // printf("offsetX %f\n", line->sides[1].offset.x);
+        // printf("offsetY %f\n", line->sides[1].offset.y);
+        printf("s1 top\t%s\n", line->sides[1].textures[0]);
+        printf("s1 mid\t%s\n", line->sides[1].textures[1]);
+        printf("s1 bot\t%s\n", line->sides[1].textures[2]);
+        // printf("secInfo %p\n", (void*)&line->sides[1].sector_info);
+        // printf("sec num %d\n", line->sides[1].sector_num);
     }
 }
 
 void    sidedef_edit(t_map_interface *draw_mode, t_sidedef *side)
 {
     float       max = 25;
-    struct nk_context *ctx = draw_mode->ctx;
-
+    struct nk_context   *ctx = draw_mode->ctx;
     /* change offset of texture placement */
     nk_layout_row_dynamic(ctx, 25, 1);
     nk_label(ctx, "Texture offset", NK_TEXT_LEFT);
@@ -179,7 +203,7 @@ void    sidedef_edit(t_map_interface *draw_mode, t_sidedef *side)
         }
         nk_layout_row_push(ctx, 50);
         if (nk_button_label(ctx, "clear"))
-            memset(side->textures[i], 0, 8);
+            memset(side->textures[i], 0, sizeof(side->textures[i]));
     }
     /* Texture Select window */
     if (texture_popup) {
@@ -317,7 +341,7 @@ void    edit_selected_thing(t_map_interface *draw_mode, t_item_node *item)
 void    list_wall_textures(t_map_interface *draw_mode, t_sidedef *side, t_resource_table *wall)
 {
     struct nk_context *ctx = draw_mode->ctx;
-
+printf("editing %s\n", side == &draw_mode->bank->selected->line->sides[0] ? "right" : "left");
     nk_layout_row_begin(ctx, NK_STATIC, 40, 5);
     for (int i = 0; i < (int)wall->size; i++) {
         t_resource texture = wall->table[i];
@@ -334,7 +358,7 @@ void    list_wall_textures(t_map_interface *draw_mode, t_sidedef *side, t_resour
 
         nk_layout_row_push(ctx, 30);
         nk_label(ctx, " ", 1);
-        
+
         nk_layout_row_push(ctx, 80);
         nk_label_wrap(ctx, "placeholder texture location"); //replace with image of texture
     }
