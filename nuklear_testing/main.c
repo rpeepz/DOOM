@@ -24,8 +24,8 @@ t_bank bank = {0};
 
 void    hooks(void)
 {
-    if (nk_input_is_key_pressed(&draw_mode.ctx->input, NK_KEY_DEL))
-        remove_from_bank(&bank, draw_mode.list_op);
+    // if (nk_input_is_key_pressed(&draw_mode.ctx->input, NK_KEY_DEL))
+    //     remove_from_bank(&bank, draw_mode.list_op);
     if (nk_input_is_key_pressed(&draw_mode.ctx->input, NK_KEY_UP))
         change_selected(&bank, draw_mode.list_op, 1);
     if (nk_input_is_key_pressed(&draw_mode.ctx->input, NK_KEY_DOWN))

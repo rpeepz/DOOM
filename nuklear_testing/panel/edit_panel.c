@@ -21,6 +21,7 @@ void    sidedef_edit(t_map_interface *draw_mode, t_sidedef *side);
 void    edit_selected_line(t_map_interface *draw_mode, t_linedef *line);
 void    edit_selected_thing(t_map_interface *draw_mode, t_item_node *item);
 void    list_wall_textures(t_map_interface *draw_mode, t_sidedef *side, t_resource_table *wall);
+void    delete_button(t_map_interface *draw_mode);
 
 void    edit_pannel(t_map_interface *draw_mode)
 {
@@ -43,6 +44,7 @@ void    edit_pannel(t_map_interface *draw_mode)
             edit_selected_line(draw_mode, draw_mode->bank->selected->line);
         else if (draw_mode->list_op == ITEM_THING)
             edit_selected_thing(draw_mode, draw_mode->bank->selected);
+        delete_button(draw_mode);
     }
     nk_end(ctx);
 }
@@ -303,7 +305,7 @@ void    edit_selected_thing(t_map_interface *draw_mode, t_item_node *item)
             thing->flags &= ~(1 << i);
     }
     nk_layout_row_dynamic(ctx, 20, 1);
-    nk_label(ctx, " ", 0);
+    nk_label(ctx, " ", 1);
     /* slider color combobox */
     if (nk_combo_begin_color(ctx, item->thing->color, nk_vec2(200,200))) {
         float ratios[] = {0.15f, 0.85f};
@@ -316,6 +318,8 @@ void    edit_selected_thing(t_map_interface *draw_mode, t_item_node *item)
         item->thing->color.b = (nk_byte)nk_slide_int(ctx, 0, item->thing->color.b, 255, 5);
         nk_combo_end(ctx);
     }
+    nk_layout_row_dynamic(ctx, 25, 1);
+    nk_label(ctx, " ", 1);
     nk_style_default(ctx);
 }
 
@@ -355,4 +359,41 @@ void    list_wall_textures(t_map_interface *draw_mode, t_sidedef *side, t_resour
         memset(buffer, 0, sizeof(buffer));
     }
     nk_layout_row_end(ctx);
+}
+
+void    delete_button(t_map_interface *draw_mode)
+{
+    static int confirm = nk_false;
+    struct nk_context *ctx = draw_mode->ctx;
+    nk_layout_row_begin(ctx, NK_STATIC, 25, 3);
+    nk_layout_row_push(ctx, 90);
+    nk_label(ctx, " ", NK_TEXT_RIGHT);
+    nk_layout_row_push(ctx, 55);
+    if (nk_button_label(ctx, "Delete"))
+        confirm = nk_true;
+    nk_label(ctx, " ", 1);
+    nk_layout_row_end(ctx);
+    if (confirm) {
+        struct nk_rect s = nk_rect(60, 370, 140, 80);
+        if (nk_popup_begin(ctx, NK_POPUP_STATIC, "confirm delete", 0, s)) {
+            nk_layout_row_dynamic(ctx, 25, 1);
+            nk_label(ctx, "Confirm", NK_TEXT_CENTERED);
+            nk_layout_row_dynamic(ctx, 25, 2);
+            if (nk_button_label(ctx, "OK")) {
+                remove_from_bank(draw_mode->bank, draw_mode->list_op);
+                confirm = nk_false;
+                nk_popup_close(ctx);
+            }
+            if (nk_button_label(ctx, "cancel")) {
+                confirm = nk_false;
+                nk_popup_close(ctx);
+            }
+            // hit enter to close the popup window
+            if (nk_input_is_key_pressed(&ctx->input, NK_KEY_ENTER)) {
+                confirm = nk_false;
+                nk_popup_close(ctx);
+            }
+            nk_popup_end(ctx);
+        }
+    } else confirm = nk_false;
 }
