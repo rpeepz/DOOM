@@ -322,7 +322,6 @@ void    edit_selected_thing(t_map_interface *draw_mode, t_item_node *item)
     }
     nk_layout_row_dynamic(ctx, 25, 1);
     nk_label(ctx, " ", 1);
-    nk_style_default(ctx);
 }
 
 void    list_wall_textures(t_map_interface *draw_mode, t_sidedef *side, t_resource_table *wall)
