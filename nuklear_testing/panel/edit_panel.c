@@ -327,18 +327,25 @@ void    edit_selected_thing(t_map_interface *draw_mode, t_item_node *item)
 void    list_wall_textures(t_map_interface *draw_mode, t_sidedef *side, t_resource_table *wall)
 {
     struct nk_context *ctx = draw_mode->ctx;
-    if (!(side == &draw_mode->bank->selected->line->sides[0]) && texture_side == 0)
+    if (side != &draw_mode->bank->selected->line->sides[0] && texture_side == 0)
         return ;
-    if (!(side == &draw_mode->bank->selected->line->sides[1]) && texture_side == 1)
+    if (side != &draw_mode->bank->selected->line->sides[1] && texture_side == 1)
         return ;
-    nk_layout_row_begin(ctx, NK_STATIC, 40, 5);
-    for (int i = 0; i < (int)wall->size; i++) {
+    static int low = 0;
+    nk_layout_row_begin(ctx, NK_STATIC, 34, 5);
+    if (wall->size < MAX_RESOURCE_COUNT && wall->size % 10) {
+        int nearest_ten = (int)wall->size % 10;
+        wall->size = wall->size + (10 - nearest_ten);
+    }
+    for (int i = low; i < low + 10 && i < (int)wall->size; i++) {
         t_resource texture = wall->table[i];
         nk_layout_row_push(ctx, 55);
         if (nk_button_label(ctx, "Select")) {
-            strcpy(side->textures[texture_set], texture.name);
-            texture_popup = nk_false;
-            nk_popup_close(ctx);
+            if (texture.name[0]) {
+                strcpy(side->textures[texture_set], texture.name);
+                texture_popup = nk_false;
+                nk_popup_close(ctx);
+            }
         }
         nk_layout_row_push(ctx, 10);
         nk_label(ctx, " ", 1);
@@ -353,11 +360,30 @@ void    list_wall_textures(t_map_interface *draw_mode, t_sidedef *side, t_resour
         /* cheap workaround for not knowing how to render a png in nuklear */
         nk_layout_row_push(ctx, 80);
         if (nk_button_label(ctx, "Preview")) {
-            char buffer[32] = "open assets/wall/";
-            strcat(buffer, texture.name);
-            system (buffer);
+            if (texture.name[0]) {
+                char buffer[32] = "open assets/wall/";
+                strcat(buffer, texture.name);
+                system (buffer);
+            }
         }
         memset(buffer, 0, sizeof(buffer));
+    }
+    nk_layout_row_end(ctx);
+
+    /* cycle thru 10 textures at a time */
+    nk_layout_row_begin(ctx, NK_STATIC, 20, 4);
+    nk_layout_row_push(ctx, 60);
+    nk_label(ctx, " ", 1);
+
+    nk_layout_row_push(ctx, 80);
+    if (nk_button_symbol_label(ctx, NK_SYMBOL_TRIANGLE_LEFT, "PREV", NK_TEXT_RIGHT)) {
+        if (low >= 10)
+            low -= 10;
+    }
+
+    if (nk_button_symbol_label(ctx, NK_SYMBOL_TRIANGLE_RIGHT, "NEXT", NK_TEXT_LEFT)) {
+        if (low < (int)wall->size - 10)
+            low += 10;
     }
     nk_layout_row_end(ctx);
 }
