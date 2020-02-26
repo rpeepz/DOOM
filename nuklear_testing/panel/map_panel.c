@@ -20,12 +20,15 @@ static int count = 0;
 static int count2 = 0;
 static int show_grid = nk_true;
 static int show_about = nk_false;
+static int save_as = nk_false;
+static int open_map = nk_false;
 
 void    draw_lines(t_map_interface *draw_mode);
 void    draw_things(t_map_interface *draw_mode);
 void    draw_grid(struct nk_rect size);
 void    draw_menu(t_map_interface *draw_mode);
 void    draw_about(struct nk_context *ctx);
+void    save_map_name(t_map_interface *draw_mode);
 
 void    map_pannel(t_map_interface *draw_mode)
 {
@@ -35,8 +38,9 @@ void    map_pannel(t_map_interface *draw_mode)
     size = nk_rect(WINDOW_OFFSET, WINDOW_OFFSET,
     WINDOW_WIDTH - (WINDOW_WIDTH / 4),
     WINDOW_HEIGHT - (WINDOW_OFFSET * 2));
-
-    if (nk_begin(draw_mode->ctx, "Map Maker", size,
+    char name[32] = "Map Maker - ";
+    strcat(name, draw_mode->map_name[0] ? draw_mode->map_name : "Unspecified");
+    if (nk_begin(draw_mode->ctx, name, size,
 		NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MINIMIZABLE))
 		{
 			canvas = nk_window_get_canvas(draw_mode->ctx);
@@ -65,6 +69,13 @@ void    map_pannel(t_map_interface *draw_mode)
         
 		}
 		nk_end(draw_mode->ctx);
+    /* Window for naming map file */
+    if (save_as)
+        save_map_name(draw_mode);
+    /* Window for opening mapfile */
+//    if (open_map)
+//        open_map_list();
+
 }
 
 void    draw_lines(t_map_interface *draw_mode)
@@ -209,40 +220,6 @@ void    draw_grid(struct nk_rect size)
         nk_stroke_line(canvas, size.x, y+size.y, size.x+size.w, y+size.y, 1.5f, grid_color_3);
 }
 
-void    draw_menu(t_map_interface *draw_mode)
-{
-    struct nk_context *ctx = draw_mode->ctx;
-    nk_menubar_begin(ctx);
-    nk_layout_row_begin(ctx, NK_STATIC, 25, 2);
-    nk_layout_row_push(ctx, 40);
-    if (nk_menu_begin_label(ctx, "MENU", NK_TEXT_LEFT, nk_vec2(120, 200)))
-    {
-        nk_layout_row_dynamic(ctx, 25, 1);
-        if (nk_menu_item_label(ctx, "Hide menu", NK_TEXT_LEFT)) {
-            draw_mode->tool_op = LINE;
-            count = -1;
-        }
-        if (nk_menu_item_label(ctx, "About", NK_TEXT_LEFT))
-            show_about = nk_true;
-        nk_checkbox_label(ctx, "Show grid", &show_grid);
-        nk_menu_end(ctx);
-    }
-    nk_layout_row_push(ctx, 60);
-    if (nk_menu_begin_label(ctx, "ADVANCED", NK_TEXT_LEFT,
-    nk_vec2(120, 200)))
-    {
-        nk_layout_row_dynamic(ctx, 25, 1);
-        if (nk_menu_item_label(ctx, "About", NK_TEXT_LEFT))
-            ;
-        if (nk_menu_item_label(ctx, "Template", NK_TEXT_LEFT))
-            ;
-        if (nk_menu_item_label(ctx, "Blank", NK_TEXT_LEFT))
-            ;
-        nk_menu_end(ctx);
-    }
-    nk_menubar_end(ctx);
-}
-
 void    draw_about(struct nk_context *ctx)
 {
     static struct nk_rect s = {20, 100, 300, 250};
@@ -271,4 +248,108 @@ void    draw_about(struct nk_context *ctx)
         nk_label_wrap(ctx, "nuklear is licensed under the public domain License.");
         nk_popup_end(ctx);
     } else show_about = nk_false;
+}
+
+int     check_exists(const char *name);
+void    draw_menu(t_map_interface *draw_mode)
+{
+    struct nk_context *ctx = draw_mode->ctx;
+    nk_menubar_begin(ctx);
+    nk_layout_row_begin(ctx, NK_STATIC, 25, 2);
+    nk_layout_row_push(ctx, 40);
+    if (nk_menu_begin_label(ctx, "MENU", NK_TEXT_LEFT, nk_vec2(120, 200)))
+    {
+        nk_layout_row_dynamic(ctx, 25, 1);
+        if (nk_menu_item_label(ctx, "Hide menu", NK_TEXT_LEFT)) {
+            draw_mode->tool_op = LINE;
+            count = -1;
+        }
+        if (nk_menu_item_label(ctx, "About", NK_TEXT_LEFT))
+            show_about = nk_true;
+        nk_checkbox_label(ctx, "Show grid", &show_grid);
+        nk_menu_end(ctx);
+    }
+    nk_layout_row_push(ctx, 60);
+    if (nk_menu_begin_label(ctx, "FILE", NK_TEXT_LEFT,
+    nk_vec2(120, 200)))
+    {
+        nk_layout_row_dynamic(ctx, 25, 1);
+        if (nk_menu_item_label(ctx, "New", NK_TEXT_LEFT)) {
+            /* do you want to save? */
+            if (check_exists(draw_mode->map_name) < 1)
+                printf("I hope you saved your work\n");
+            memset(draw_mode->map_name, 0, sizeof(draw_mode->map_name));
+        }
+        /* load in a file that was previously saved */
+        if (nk_menu_item_label(ctx, "Open", NK_TEXT_LEFT)) {
+            open_map = nk_true;
+            printf("Opening a test file\n");
+            strcpy(draw_mode->map_name, "map.dwd");
+        }
+        if (nk_menu_item_label(ctx, "Save", NK_TEXT_LEFT)) {
+            /* create new file name */
+            if (check_exists(draw_mode->map_name) < 0)
+                save_as = nk_true;
+            /* save bank contents into a file */
+            if (!save_as) {
+                // save(draw_mode);
+                printf("Saving to %s\n", draw_mode->map_name);
+            }
+        }
+        if (nk_menu_item_label(ctx, "Exit", NK_TEXT_LEFT)) {
+            if (check_exists(draw_mode->map_name))
+                printf("Exit program without saving\n... Sorry :(\n");
+            exit(0);
+        }
+        nk_menu_end(ctx);
+    }
+    nk_menubar_end(ctx);
+}
+
+int     check_exists(const char *name)
+{
+    if (!name[0]) return (-1);
+    DIR *dir = opendir(MAP_SAVE_PATH);
+    struct dirent *sd;
+    while ((sd = readdir(dir))) {
+        if (!strcmp(name, sd->d_name))
+            return (1);
+    }
+    if (dir) closedir(dir);
+    return (0);
+}
+
+void    save_map_name(t_map_interface *draw_mode)
+{
+    nk_window_set_focus(draw_mode->ctx, "Save as");
+    static struct nk_rect s = {(WINDOW_WIDTH * .05),
+    (WINDOW_HEIGHT * .15), 200, 125};
+    if (nk_begin(draw_mode->ctx, "Save as", s, NK_WINDOW_BORDER)) {
+        //submit buffer
+        static char buffer2[20];
+        //edit buffer
+        char buffer[20];
+        int len = snprintf(buffer, 20, "%s", buffer2);
+        nk_layout_row_dynamic(draw_mode->ctx, 25, 1);
+        nk_label(draw_mode->ctx, "Name Map", NK_TEXT_CENTERED);
+        nk_edit_string(draw_mode->ctx, NK_EDIT_SIMPLE, buffer, &len, 20, nk_filter_ascii);
+
+        buffer[len] = 0;
+        memcpy(buffer2, buffer, 20);
+        // spacing between rows
+        nk_layout_row_dynamic(draw_mode->ctx, 10, 1);
+        nk_label(draw_mode->ctx, " ", 1);
+        /* buttons to cancel, or add thing with or without name */
+        nk_layout_row_dynamic(draw_mode->ctx, 25, 2);
+        if (nk_button_label(draw_mode->ctx, "OK")) {
+            strcpy(draw_mode->map_name, buffer2);
+            memset(buffer2, 0, 16);
+            save_as = nk_false;
+        }
+        if (nk_button_label(draw_mode->ctx, "Cancel")) {
+            memset(buffer2, 0, 16);
+            save_as = nk_false;
+        }
+    }
+    nk_end(draw_mode->ctx);
 }

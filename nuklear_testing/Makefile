@@ -17,6 +17,7 @@ endif
 
 
 # Flags
+# CFLAGS += -g -fsanitize=address
 CFLAGS += -std=c99 -pedantic -O2
 CFLAGS += -I$(SDL2_INC_DIR)/SDL2 -I$(SDL2_INC_DIR)
 CFLAGS += -I$(GLEW_INC_DIR)/GL -I$(GLEW_INC_DIR)
@@ -55,6 +56,7 @@ all: $(BIN)
 re: clean all
 
 $(BIN): $(OBJ)
+	@mkdir -p maps
 #	@mkdir -p bin
 #	rm -f bin/$(BIN) $(OBJS)
 	@printf "[compile   src]\t[#######   ]\r" #print statement

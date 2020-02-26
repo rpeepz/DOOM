@@ -34,6 +34,7 @@
 # define LINE_COLOR nk_rgb(10, 10, 10)
 # define THING_COLOR nk_rgb(145, 145, 145)
 # define BUTTON_DEFAULT nk_rgb(50, 50, 50)
+# define MAP_SAVE_PATH "maps/"
 
 typedef struct	s_vec2f
 {
@@ -83,6 +84,7 @@ typedef struct			s_map_interface
 	t_resource_table	*wall;
 	int					tool_op;
 	int					list_op;
+	char				map_name[20];
 }						t_map_interface;
 
 void				map_pannel(t_map_interface *draw_mode);

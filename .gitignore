@@ -15,6 +15,7 @@ obj/
 make-a-map/
 notes.txt
 preprocess
+maps/
 
 # executables
 */map-maker
