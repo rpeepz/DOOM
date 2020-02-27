@@ -29,6 +29,7 @@ void    draw_grid(struct nk_rect size);
 void    draw_menu(t_map_interface *draw_mode);
 void    draw_about(struct nk_context *ctx);
 void    save_map_name(t_map_interface *draw_mode);
+void    open_map_list(t_map_interface *draw_mode);
 
 void    map_pannel(t_map_interface *draw_mode)
 {
@@ -73,8 +74,8 @@ void    map_pannel(t_map_interface *draw_mode)
     if (save_as)
         save_map_name(draw_mode);
     /* Window for opening mapfile */
-//    if (open_map)
-//        open_map_list();
+   if (open_map)
+       open_map_list(draw_mode);
 
 }
 
@@ -284,8 +285,6 @@ void    draw_menu(t_map_interface *draw_mode)
         /* load in a file that was previously saved */
         if (nk_menu_item_label(ctx, "Open", NK_TEXT_LEFT)) {
             open_map = nk_true;
-            printf("Opening a test file\n");
-            strcpy(draw_mode->map_name, "map.dwd");
         }
         if (nk_menu_item_label(ctx, "Save", NK_TEXT_LEFT)) {
             /* create new file name */
@@ -364,27 +363,28 @@ int     save(t_map_interface *draw_mode)
 
 void    save_map_name(t_map_interface *draw_mode)
 {
-    nk_window_set_focus(draw_mode->ctx, "Save as");
+    struct nk_context *ctx = draw_mode->ctx;
+    nk_window_set_focus(ctx, "Save as");
     static struct nk_rect s = {(WINDOW_WIDTH * .05),
     (WINDOW_HEIGHT * .15), 200, 125};
-    if (nk_begin(draw_mode->ctx, "Save as", s, NK_WINDOW_BORDER)) {
+    if (nk_begin(ctx, "Save as", s, NK_WINDOW_BORDER)) {
         //submit buffer
         static char buffer2[20];
         //edit buffer
         char buffer[20];
         int len = snprintf(buffer, 20, "%s", buffer2);
-        nk_layout_row_dynamic(draw_mode->ctx, 25, 1);
-        nk_label(draw_mode->ctx, "Name Map", NK_TEXT_CENTERED);
-        nk_edit_string(draw_mode->ctx, NK_EDIT_SIMPLE, buffer, &len, 20, nk_filter_ascii);
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_label(ctx, "Name Map", NK_TEXT_CENTERED);
+        nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 20, nk_filter_ascii);
 
         buffer[len] = 0;
         memcpy(buffer2, buffer, 20);
         // spacing between rows
-        nk_layout_row_dynamic(draw_mode->ctx, 10, 1);
-        nk_label(draw_mode->ctx, " ", 1);
+        nk_layout_row_dynamic(ctx, 10, 1);
+        nk_label(ctx, " ", 1);
         /* buttons to cancel, or add thing with or without name */
-        nk_layout_row_dynamic(draw_mode->ctx, 25, 2);
-        if (nk_button_label(draw_mode->ctx, "OK")) {
+        nk_layout_row_dynamic(ctx, 25, 2);
+        if (nk_button_label(ctx, "OK")) {
             if (buffer2[0]) {
                 strcpy(draw_mode->map_name, buffer2);
                 memset(buffer2, 0, 16);
@@ -393,10 +393,54 @@ void    save_map_name(t_map_interface *draw_mode)
                     printf("Saving to %s\n", draw_mode->map_name);
             }
         }
-        if (nk_button_label(draw_mode->ctx, "Cancel")) {
+        if (nk_button_label(ctx, "Cancel")) {
             memset(buffer2, 0, 16);
             save_as = nk_false;
         }
     }
-    nk_end(draw_mode->ctx);
+    nk_end(ctx);
+}
+
+int     load_map(t_map_interface *draw_mode, char *name)
+{
+    printf("Opening %s\n", name);
+    return (0);
+}
+
+void    open_map_list(t_map_interface *draw_mode)
+{
+    struct nk_context *ctx = draw_mode->ctx;
+    nk_window_set_focus(ctx, "Open");
+    static struct nk_rect s = {(WINDOW_WIDTH * .05),
+    (WINDOW_HEIGHT * .15), 200, (WINDOW_HEIGHT / 3)};
+    if (nk_begin(ctx, "Open", s, NK_WINDOW_BORDER)) {
+        nk_layout_row_dynamic(ctx, 25, 1);
+        nk_label(ctx, "Map select", NK_TEXT_CENTERED);
+        // spacing between rows
+        nk_layout_row_dynamic(ctx, 10, 1);
+        nk_label(ctx, " ", 1);
+        /* print out map selections */
+        nk_layout_row_dynamic(ctx, 25, 2);
+        DIR *dir = opendir(MAP_SAVE_PATH);
+        struct dirent *sd;
+        while (dir && (sd = readdir(dir))) {
+            if (sd->d_name[0] == '.') continue ;
+            if (nk_button_label(ctx, "Select")) {
+                if (!load_map(draw_mode, sd->d_name)) {
+                    printf("Opened %s\n", sd->d_name);
+                    strcpy(draw_mode->map_name, sd->d_name);
+                    open_map = nk_false;
+                    break ;
+                }
+            }
+            nk_label(ctx, sd->d_name, NK_TEXT_CENTERED);
+        }
+        if (dir) closedir(dir);
+        nk_layout_row_dynamic(ctx, 10, 1);
+        nk_label(ctx, " ", 1);
+        nk_layout_row_dynamic(ctx, 25, 1);
+        if (nk_button_label(ctx, "Cancel"))
+            open_map = nk_false;
+    }
+    nk_end(ctx);
 }
