@@ -251,6 +251,7 @@ void    draw_about(struct nk_context *ctx)
 }
 
 int     check_exists(const char *name);
+int     save(t_map_interface *draw_mode);
 void    draw_menu(t_map_interface *draw_mode)
 {
     struct nk_context *ctx = draw_mode->ctx;
@@ -292,8 +293,8 @@ void    draw_menu(t_map_interface *draw_mode)
                 save_as = nk_true;
             /* save bank contents into a file */
             if (!save_as) {
-                // save(draw_mode);
-                printf("Saving to %s\n", draw_mode->map_name);
+                if (!save(draw_mode))
+                    printf("Saving to %s\n", draw_mode->map_name);
             }
         }
         if (nk_menu_item_label(ctx, "Exit", NK_TEXT_LEFT)) {
@@ -311,11 +312,53 @@ int     check_exists(const char *name)
     if (!name[0]) return (-1);
     DIR *dir = opendir(MAP_SAVE_PATH);
     struct dirent *sd;
-    while ((sd = readdir(dir))) {
+    while (dir && (sd = readdir(dir))) {
         if (!strcmp(name, sd->d_name))
             return (1);
     }
     if (dir) closedir(dir);
+    return (0);
+}
+
+typedef struct  s_lumped
+{
+    t_header    head;
+    t_lump      lumps[2];
+}               t_lumped;
+
+int     save(t_map_interface *draw_mode)
+{
+    t_item_node *item;
+    t_bank      *bank = draw_mode->bank;
+    t_lumped    lumped = {0};
+    int         fd;
+    int         size = 0;
+    char path[strlen(MAP_SAVE_PATH) + sizeof(draw_mode->map_name)] = {0};
+    strcat(path, MAP_SAVE_PATH);
+    strcat(path, draw_mode->map_name);
+    fd = open(path, O_RDWR | O_CREAT, 0666);
+    if (fd < 3)
+        return (dprintf(2, "MAP PATH ERROR\n"));
+//  write header
+    lumped.head.num_lumps = 2;
+    lumped.head.lump_offset = 0;
+    size += write(fd, "DWD\n", 4);
+    size += write(fd, &lumped.head.num_lumps, sizeof(lumped.head.num_lumps));
+    size += write(fd, &lumped.head.lump_offset, sizeof(lumped.head.lump_offset));
+    for (int i = 0; i < 2; i++) {
+        int count = i ? bank->count_thing : bank->count_line;
+        if (count) {
+        //  write lump index
+            size+= write(fd, &i, sizeof(i));
+        //  write item count
+            size += write(fd, &count, sizeof(count));
+            item = i ? bank->head_thing : bank->head_line;
+            for ( ; item; item = item->next) {
+                size += write(fd, item, sizeof(*item));
+            }
+        }
+    }
+    close(fd);
     return (0);
 }
 
@@ -342,9 +385,13 @@ void    save_map_name(t_map_interface *draw_mode)
         /* buttons to cancel, or add thing with or without name */
         nk_layout_row_dynamic(draw_mode->ctx, 25, 2);
         if (nk_button_label(draw_mode->ctx, "OK")) {
-            strcpy(draw_mode->map_name, buffer2);
-            memset(buffer2, 0, 16);
-            save_as = nk_false;
+            if (buffer2[0]) {
+                strcpy(draw_mode->map_name, buffer2);
+                memset(buffer2, 0, 16);
+                save_as = nk_false;
+                if (!save(draw_mode))
+                    printf("Saving to %s\n", draw_mode->map_name);
+            }
         }
         if (nk_button_label(draw_mode->ctx, "Cancel")) {
             memset(buffer2, 0, 16);

@@ -25,7 +25,7 @@ typedef struct			s_lump
 {
 	uint32_t			offset;
 	uint32_t			size;
-	char				lump_name[8];
+	char				lump_name[16];
 }						t_lump;
 
 #endif

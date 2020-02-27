@@ -26,6 +26,7 @@
 # include "../../Nuklear/nuklear.h"
 # include "nuklear_sdl_gl3.h"
 # include "resource.h"
+# include "lump.h"
 
 # define WINDOW_WIDTH 1600
 # define WINDOW_HEIGHT 900
