@@ -433,7 +433,8 @@ int     load_map(t_map_interface *draw_mode, char *name)
         if (value) read(fd, &bank->count_thing, sizeof(bank->count_thing));
         else read(fd, &bank->count_line, sizeof(bank->count_line));
         int count = value ? bank->count_thing : bank->count_line;
-        for (int j = 0; j < count; j++) {
+        printf("index %d, count %d\n", value, count);
+        for (int j = 0; j < count + 1; j++) {
             t_item_node *item;
             read(fd, item, sizeof(*item));
 
