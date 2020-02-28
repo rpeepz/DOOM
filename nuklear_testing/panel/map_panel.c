@@ -280,6 +280,7 @@ void    draw_menu(t_map_interface *draw_mode)
             /* do you want to save? */
             if (check_exists(draw_mode->map_name) < 1)
                 printf("I hope you saved your work\n");
+            bzero(draw_mode->bank, sizeof(*draw_mode->bank));
             memset(draw_mode->map_name, 0, sizeof(draw_mode->map_name));
         }
         /* load in a file that was previously saved */
@@ -345,17 +346,20 @@ int     save(t_map_interface *draw_mode)
     size += write(fd, &lumped.head.num_lumps, sizeof(lumped.head.num_lumps));
     size += write(fd, &lumped.head.lump_offset, sizeof(lumped.head.lump_offset));
     for (int i = 0; i < 2; i++) {
+        strcpy(lumped.lumps[i].lump_name, i ? "Thing" : "Line");
+        lumped.lumps[i].offset = size;
         int count = i ? bank->count_thing : bank->count_line;
-        if (count) {
         //  write lump index
-            size+= write(fd, &i, sizeof(i));
+        size += write(fd, &i, sizeof(i));
         //  write item count
-            size += write(fd, &count, sizeof(count));
+        size += write(fd, &count, sizeof(count));
+        if (count) {
             item = i ? bank->head_thing : bank->head_line;
             for ( ; item; item = item->next) {
                 size += write(fd, item, sizeof(*item));
             }
         }
+        lumped.lumps[i].size = size - lumped.lumps[i].offset;
     }
     close(fd);
     return (0);
@@ -403,7 +407,39 @@ void    save_map_name(t_map_interface *draw_mode)
 
 int     load_map(t_map_interface *draw_mode, char *name)
 {
+    int     fd;
+    char    path[strlen(MAP_SAVE_PATH) + sizeof(draw_mode->map_name)] = {0};
+    strcat(path, MAP_SAVE_PATH);
+    strcat(path, name);
     printf("Opening %s\n", name);
+    fd = open(path, O_RDONLY);
+    if (fd < 3)
+        return (dprintf(2, "MAP PATH ERROR\n"));
+//  read header
+    t_lumped lumped = {0};
+    // uint32_t head;
+    read(fd, lumped.head.name, sizeof(lumped.head.name));
+    if (strncmp("DWD\n", lumped.head.name, 4))
+        return (dprintf(2, "Improper header\n"));
+//  read num lumps
+    read(fd, &lumped.head.num_lumps, sizeof(lumped.head.num_lumps));
+//  read lump offset
+    read(fd, &lumped.head.lump_offset, sizeof(lumped.head.lump_offset));
+    t_bank *bank = draw_mode->bank;
+    bzero(bank, sizeof(*bank));
+    for (int i = 0; i < 2; i++) {
+        int value;
+        read(fd, &value, sizeof(value));
+        if (value) read(fd, &bank->count_thing, sizeof(bank->count_thing));
+        else read(fd, &bank->count_line, sizeof(bank->count_line));
+        int count = value ? bank->count_thing : bank->count_line;
+        for (int j = 0; j < count; j++) {
+            t_item_node *item;
+            read(fd, item, sizeof(*item));
+
+            // add_line(bank, item->line->)
+        }
+    }
     return (0);
 }
 
@@ -443,4 +479,5 @@ void    open_map_list(t_map_interface *draw_mode)
             open_map = nk_false;
     }
     nk_end(ctx);
+
 }
