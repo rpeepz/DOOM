@@ -1,2 +1,2 @@
 # DOOM
-42 Dom Nukem graphics project
+42 Doom Nukem graphics project
