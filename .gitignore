@@ -1,0 +1,18 @@
+# Mac files
+*._*
+.DS_Store
+*.swp
+
+# Compile files
+obj/
+*.o
+*.a
+*.gch
+.dSYM
+
+# extra
+.vscode
+make-a-map/
+
+# executables
+./*/demo
