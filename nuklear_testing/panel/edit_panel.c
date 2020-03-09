@@ -40,7 +40,6 @@ void    edit_pannel(t_map_interface *draw_mode)
 
     if (nk_begin(draw_mode->ctx, "Edit", size, NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_MINIMIZABLE))
     {
-        ctx->style.window.border_color = nk_rgba(150, 150, 80, 120);
         if (draw_mode->list_op == ITEM_LINE)
             edit_selected_line(draw_mode, draw_mode->bank->selected->line);
         else if (draw_mode->list_op == ITEM_THING)
@@ -48,7 +47,8 @@ void    edit_pannel(t_map_interface *draw_mode)
         delete_button(draw_mode);
     }
     nk_end(ctx);
-    nk_style_default(ctx);
+    // ctx->style.button.normal = nk_style_item_color(BUTTON_DEFAULT);
+    // nk_style_default(ctx);
 }
 
 void    edit_selected_line(t_map_interface *draw_mode, t_linedef *line)
@@ -403,7 +403,6 @@ void    delete_button(t_map_interface *draw_mode)
     if (confirm) {
         struct nk_rect s = nk_rect(60, 370, 140, 80);
         if (nk_popup_begin(ctx, NK_POPUP_STATIC, "confirm delete", 0, s)) {
-            ctx->style.window.popup_border_color = nk_rgba(255, 40, 0, 120);
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_label(ctx, "Confirm", NK_TEXT_CENTERED);
             nk_layout_row_dynamic(ctx, 25, 2);
