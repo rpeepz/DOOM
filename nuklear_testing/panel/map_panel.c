@@ -336,27 +336,41 @@ int     save(t_map_interface *draw_mode)
 	char path[strlen(MAP_SAVE_PATH) + sizeof(draw_mode->map_name)] = {0};
 	strcat(path, MAP_SAVE_PATH);
 	strcat(path, draw_mode->map_name);
-	fd = open(path, O_RDWR | O_CREAT, 0666);
-	if (fd < 3)
-		return (dprintf(2, "MAP PATH ERROR\n"));
+	// fd = open(path, O_RDWR | O_CREAT, 0666);
+	FILE *f = fopen(path, "W");
+	// if (fd < 3)
+	if (!f) {
+		f = fopen(path, "A");
+		if (!f)
+			return (dprintf(2, "MAP PATH ERROR\n"));
+	}
 //  write header
 	lumped.head.num_lumps = 2;
 	lumped.head.lump_offset = 0;
+/*
 	size += write(fd, "DWD\n", 4);
 	size += write(fd, &lumped.head.num_lumps, sizeof(lumped.head.num_lumps));
 	size += write(fd, &lumped.head.lump_offset, sizeof(lumped.head.lump_offset));
+*/
+	size += fwrite("DWD\n", 4, 1, f);
 	for (int i = 0; i < 2; i++) {
 		strcpy(lumped.lumps[i].lump_name, i ? "Thing" : "Line");
 		lumped.lumps[i].offset = size;
 		int count = i ? bank->count_thing : bank->count_line;
 		//  write lump index
-		size += write(fd, &i, sizeof(i));
+/*		size += write(fd, &i, sizeof(i)); */
+		size += fwrite(&i, sizeof(i), 1, f);
+		printf("i = %d\n", i);
 	//  write item count
-		size += write(fd, &count, sizeof(count));
+/*		size += write(fd, &count, sizeof(count)); */
+		size += fwrite(&count, sizeof(count), 1, f);
+		printf("%s count %d\n", i ? "Thing" : "Line", count);
 		item = i ? bank->head_thing : bank->head_line;
-		for (int j = 0 ; j < count && item; j++ && (item = item->next)) {
-			size += write(fd, &item->color, sizeof(item->color));
-			if (i == 0) {
+		for (int j = 0 ; j < count; j++) {
+
+			// size += write(fd, &item->color, sizeof(item->color));
+			// printf("%x %x %x %x\n", item->color.a, item->color.r, item->color.g, item->color.b);
+			/*if (0 && i == 0) {
 				// write line data
 				size += write(fd, &item->line->start_vertex, sizeof(item->line->start_vertex));
 				size += write(fd, &item->line->end_vertex, sizeof(item->line->end_vertex));
@@ -374,7 +388,7 @@ int     save(t_map_interface *draw_mode)
 				size += write(fd, &item->line->sides[1].textures[2], sizeof(item->line->sides[1].textures[2]));
 				size += write(fd, &item->line->sides[1], sizeof(item->line->sides[1]));
 				// print sector info and sector number
-			} else {
+			} else if (0) {
 				// write thing data
 				size += write(fd, &item->thing->pos, sizeof(item->thing->pos));
 				size += write(fd, &item->thing->angle, sizeof(item->thing->angle));
@@ -382,8 +396,9 @@ int     save(t_map_interface *draw_mode)
 				size += write(fd, &item->thing->name, sizeof(item->thing->name));
 				size += write(fd, &item->thing->flags, sizeof(item->thing->flags));
 				size += write(fd, &item->thing->color, sizeof(item->thing->color));
-			}
-			// size += write(fd, item, sizeof(*item));
+			}*/
+			size += write(fd, item->line, sizeof(*item->line));
+			item = item->next;
 		}
 		lumped.lumps[i].size = size - lumped.lumps[i].offset;
 	}
@@ -438,67 +453,72 @@ int     load_map(t_map_interface *draw_mode, char *name)
 	strcat(path, MAP_SAVE_PATH);
 	strcat(path, name);
 	printf("Opening %s\n", name);
-	fd = open(path, O_RDONLY);
-	if (fd < 3)
+	// fd = open(path, O_RDONLY);
+	FILE *f = fopen(path, "r");
+	// if (fd < 3)
+	if (!f)
 		return (dprintf(2, "MAP PATH ERROR\n"));
 //  read header
 	t_lumped lumped = {0};
 	// uint32_t head;
-	read(fd, lumped.head.name, sizeof(lumped.head.name));
+/*	read(fd, lumped.head.name, sizeof(lumped.head.name)); */
+	fread(lumped.head.name, 4, 1, f);
 	if (strncmp("DWD\n", lumped.head.name, 4))
 		return (dprintf(2, "Improper header\n"));
 //  read num lumps
-	read(fd, &lumped.head.num_lumps, sizeof(lumped.head.num_lumps));
+/*	read(fd, &lumped.head.num_lumps, sizeof(lumped.head.num_lumps)); */
+	fread(&lumped.head.num_lumps, sizeof(lumped.head.num_lumps), 1, f);
 //  read lump offset
-	read(fd, &lumped.head.lump_offset, sizeof(lumped.head.lump_offset));
+/*	read(fd, &lumped.head.lump_offset, sizeof(lumped.head.lump_offset)); */
+	fread(&lumped.head.lump_offset, sizeof(lumped.head.lump_offset), 1, f);
 	t_bank *bank = draw_mode->bank;
 	bzero(bank, sizeof(*bank));
 	for (int i = 0; i < 2; i++) {
-		int index;
-	// read lump index
-		read(fd, &index, sizeof(index));
-	int count;
-	// read item count
-	read(fd, &count, sizeof(count));
+		// read lump index
+/*		read(fd, &i, sizeof(i)); */
+		fread(&i, sizeof(i), 1, f);
+		int count;
+		// read item count
+/*		read(fd, &count, sizeof(count)); */
+		fread(&count, sizeof(count), 1, f);
+//		printf("%s count %d\n", i ? "Thing" : "Line", count);
+		if (count < 0 || count > 4096)
+			return (dprintf(2, "Invalid %s bank count %d\n", i ? "thing" : "line", count));
+		if (i) bank->count_thing = count;
+		else bank->count_line = count;
+		for (int j = 0; j < count; j++) {
+			t_item_node *item;
+			// read(fd, &item->color, sizeof(item->color));
+			// printf("%x %x %x %x\n", item->color.a, item->color.r, item->color.g, item->color.b);
+			/*if (0 && i == 0) {
+			// read line data
+				read(fd, &item->line->start_vertex, sizeof(item->line->start_vertex));
+				read(fd, &item->line->end_vertex, sizeof(item->line->end_vertex));
+				read(fd, &item->line->special, sizeof(item->line->special));
+				read(fd, &item->line->tag, sizeof(item->line->tag));
+				read(fd, &item->line->flags, sizeof(item->line->flags));
+				read(fd, &item->line->sides[0].offset, sizeof(item->line->sides[0].offset));
+				read(fd, &item->line->sides[0].textures[0], sizeof(item->line->sides[0].textures[0]));
+				read(fd, &item->line->sides[0].textures[1], sizeof(item->line->sides[0].textures[1]));
+				read(fd, &item->line->sides[0].textures[2], sizeof(item->line->sides[0].textures[2]));
+				read(fd, &item->line->sides[1].offset, sizeof(item->line->sides[1].offset));
+				// read sector info and sector number
+				read(fd, &item->line->sides[1].textures[0], sizeof(item->line->sides[1].textures[0]));
+				read(fd, &item->line->sides[1].textures[1], sizeof(item->line->sides[1].textures[1]));
+				read(fd, &item->line->sides[1].textures[2], sizeof(item->line->sides[1].textures[2]));
+				read(fd, &item->line->sides[1], sizeof(item->line->sides[1]));
+				// read sector info and sector number
+			} else if (0) {
+				// read thing data
+				read(fd, &item->thing->pos, sizeof(item->thing->pos));
+				read(fd, &item->thing->angle, sizeof(item->thing->angle));
+				read(fd, &item->thing->type, sizeof(item->thing->type));
+				read(fd, &item->thing->name, sizeof(item->thing->name));
+				read(fd, &item->thing->flags, sizeof(item->thing->flags));
+				read(fd, &item->thing->color, sizeof(item->thing->color));
+			}*/
 
-	if (index) bank->count_thing = count;
-	else bank->count_line = count;
-	
-	if (count < 0)
-		return (dprintf(2, "Invalid %s bank count\n", index ? "thing" : "line"));
-
-	printf("%s count %d\n", index ? "Thing" : "Line", count);
-	for (int j = 0; j < count; j++) {
-		t_item_node *item;
-		read(fd, &item->color, sizeof(item->color));
-		if (i == 0) {
-		// read line data
-			read(fd, &item->line->start_vertex, sizeof(item->line->start_vertex));
-			read(fd, &item->line->end_vertex, sizeof(item->line->end_vertex));
-			read(fd, &item->line->special, sizeof(item->line->special));
-			read(fd, &item->line->tag, sizeof(item->line->tag));
-			read(fd, &item->line->flags, sizeof(item->line->flags));
-			read(fd, &item->line->sides[0].offset, sizeof(item->line->sides[0].offset));
-			read(fd, &item->line->sides[0].textures[0], sizeof(item->line->sides[0].textures[0]));
-			read(fd, &item->line->sides[0].textures[1], sizeof(item->line->sides[0].textures[1]));
-			read(fd, &item->line->sides[0].textures[2], sizeof(item->line->sides[0].textures[2]));
-			read(fd, &item->line->sides[1].offset, sizeof(item->line->sides[1].offset));
-			// read sector info and sector number
-			read(fd, &item->line->sides[1].textures[0], sizeof(item->line->sides[1].textures[0]));
-			read(fd, &item->line->sides[1].textures[1], sizeof(item->line->sides[1].textures[1]));
-			read(fd, &item->line->sides[1].textures[2], sizeof(item->line->sides[1].textures[2]));
-			read(fd, &item->line->sides[1], sizeof(item->line->sides[1]));
-			// read sector info and sector number
-		} else {
-			// read thing data
-			read(fd, &item->thing->pos, sizeof(item->thing->pos));
-			read(fd, &item->thing->angle, sizeof(item->thing->angle));
-			read(fd, &item->thing->type, sizeof(item->thing->type));
-			read(fd, &item->thing->name, sizeof(item->thing->name));
-			read(fd, &item->thing->flags, sizeof(item->thing->flags));
-			read(fd, &item->thing->color, sizeof(item->thing->color));
-		}
-
+			read(fd, item->line, sizeof(*item->line));
 			// add_line(bank, item->line->)
 		}
 	}
