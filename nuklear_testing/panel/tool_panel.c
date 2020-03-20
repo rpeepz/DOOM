@@ -33,10 +33,10 @@ void tool_pannel(t_map_interface *draw_mode)
 
 	struct nk_rect size = nk_rect(WINDOW_WIDTH - (WINDOW_WIDTH / 4) + (WINDOW_OFFSET * 2),
 	WINDOW_HEIGHT - ((WINDOW_HEIGHT * 5) / 9) + (WINDOW_OFFSET * 2),
-	(WINDOW_WIDTH / 8), WINDOW_HEIGHT - (WINDOW_HEIGHT * 6.5) / 9 );
+	(WINDOW_WIDTH / 7), WINDOW_HEIGHT / 2.75);
 	
     if (nk_begin(draw_mode->ctx, "Tools", size,
-		NK_WINDOW_BORDER|NK_WINDOW_NO_SCROLLBAR|NK_WINDOW_MINIMIZABLE))
+		NK_WINDOW_BORDER|NK_WINDOW_MINIMIZABLE))
 		{
 			nk_layout_row_static(ctx, 30, 60, 1);
 

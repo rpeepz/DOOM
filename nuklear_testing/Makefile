@@ -1,15 +1,15 @@
 # Install
 
 BIN = map-maker
-CC = clang
+CC = clang -g
 INC = includes/
 OBJ_PATH = obj
 
 ifeq ($(shell uname -s), Darwin)
-	SDL2_DIR = $(HOME)/.brew/Cellar/sdl2/2.0.10/lib
-	SDL2_INC_DIR = $(HOME)/.brew/Cellar/sdl2/2.0.10/include
-	GLEW_DIR = $(HOME)/.brew/Cellar/glew/2.1.0_1/lib
-	GLEW_INC_DIR = $(HOME)/.brew/Cellar/glew/2.1.0_1/include
+	SDL2_DIR = /usr/local/Cellar/sdl2/2.0.12/lib
+	SDL2_INC_DIR = /usr/local/Cellar/sdl2/2.0.12/include
+	GLEW_DIR = /usr/local/Cellar/glew/2.1.0_1/lib
+	GLEW_INC_DIR = /usr/local/Cellar/glew/2.1.0_1/include
 else
 	SDL2_DIR =.
 	SDL2_INC_DIR =.
