@@ -331,73 +331,61 @@ int     save(t_map_interface *draw_mode)
 	t_item_node *item;
 	t_bank      *bank = draw_mode->bank;
 	t_lumped    lumped = {0};
+		lumped.head.num_lumps = 2;
+		lumped.head.lump_offset = 0;
 	int         fd;
 	int         size = 0;
 	char path[strlen(MAP_SAVE_PATH) + sizeof(draw_mode->map_name)] = {0};
 	strcat(path, MAP_SAVE_PATH);
 	strcat(path, draw_mode->map_name);
-	// fd = open(path, O_RDWR | O_CREAT, 0666);
-	FILE *f = fopen(path, "W");
-	// if (fd < 3)
-	if (!f) {
-		f = fopen(path, "A");
-		if (!f)
-			return (dprintf(2, "MAP PATH ERROR\n"));
-	}
-//  write header
-	lumped.head.num_lumps = 2;
-	lumped.head.lump_offset = 0;
-/*
+	fd = open(path, O_RDWR | O_CREAT, 0666);
+	if (fd < 3)
+		return (dprintf(2, "MAP PATH ERROR\n"));
+	/* write header */
 	size += write(fd, "DWD\n", 4);
 	size += write(fd, &lumped.head.num_lumps, sizeof(lumped.head.num_lumps));
 	size += write(fd, &lumped.head.lump_offset, sizeof(lumped.head.lump_offset));
-*/
-	size += fwrite("DWD\n", 4, 1, f);
+	/* write item info */
 	for (int i = 0; i < 2; i++) {
 		strcpy(lumped.lumps[i].lump_name, i ? "Thing" : "Line");
 		lumped.lumps[i].offset = size;
 		int count = i ? bank->count_thing : bank->count_line;
-		//  write lump index
-/*		size += write(fd, &i, sizeof(i)); */
-		size += fwrite(&i, sizeof(i), 1, f);
-		printf("i = %d\n", i);
-	//  write item count
-/*		size += write(fd, &count, sizeof(count)); */
-		size += fwrite(&count, sizeof(count), 1, f);
-		printf("%s count %d\n", i ? "Thing" : "Line", count);
+		/* write lump index */
+		size += write(fd, &i, sizeof(i));
+		/* write item count */
+		size += write(fd, &count, sizeof(count));
 		item = i ? bank->head_thing : bank->head_line;
 		for (int j = 0 ; j < count; j++) {
-
-			// size += write(fd, &item->color, sizeof(item->color));
-			// printf("%x %x %x %x\n", item->color.a, item->color.r, item->color.g, item->color.b);
-			/*if (0 && i == 0) {
-				// write line data
+			size += write(fd, &item->color, sizeof(item->color));
+			if (i == 0) {
+				/* write line data */
 				size += write(fd, &item->line->start_vertex, sizeof(item->line->start_vertex));
 				size += write(fd, &item->line->end_vertex, sizeof(item->line->end_vertex));
 				size += write(fd, &item->line->special, sizeof(item->line->special));
 				size += write(fd, &item->line->tag, sizeof(item->line->tag));
 				size += write(fd, &item->line->flags, sizeof(item->line->flags));
-				size += write(fd, &item->line->sides[0].offset, sizeof(item->line->sides[0].offset));
-				size += write(fd, &item->line->sides[0].textures[0], sizeof(item->line->sides[0].textures[0]));
-				size += write(fd, &item->line->sides[0].textures[1], sizeof(item->line->sides[0].textures[1]));
-				size += write(fd, &item->line->sides[0].textures[2], sizeof(item->line->sides[0].textures[2]));
-				size += write(fd, &item->line->sides[1].offset, sizeof(item->line->sides[1].offset));
-				// print sector info and sector number
-				size += write(fd, &item->line->sides[1].textures[0], sizeof(item->line->sides[1].textures[0]));
-				size += write(fd, &item->line->sides[1].textures[1], sizeof(item->line->sides[1].textures[1]));
-				size += write(fd, &item->line->sides[1].textures[2], sizeof(item->line->sides[1].textures[2]));
-				size += write(fd, &item->line->sides[1], sizeof(item->line->sides[1]));
-				// print sector info and sector number
-			} else if (0) {
+				for (int k = 0; k < 2; k++) {
+					size += write(fd, &item->line->sides[k].offset, sizeof(item->line->sides[0].offset));
+					size += write(fd, &item->line->sides[k].textures, sizeof(item->line->sides[0].textures));
+				/*
+					size += write(fd, &item->line->sides[k].sector_info.flats[0], sizeof(item->line->sides[k].sector_info.flats[0]));
+					size += write(fd, &item->line->sides[k].sector_info.flats[1], sizeof(item->line->sides[k].sector_info.flats[1]));
+					size += write(fd, &item->line->sides[k].sector_info.light, sizeof(item->line->sides[k].sector_info.light));
+					size += write(fd, &item->line->sides[k].sector_info.special, sizeof(item->line->sides[k].sector_info.special));
+					size += write(fd, &item->line->sides[k].sector_info.tag, sizeof(item->line->sides[k].sector_info.tag));
+					size += write(fd, &item->line->sides[k].sector_num, sizeof(item->line->sides[k].sector_num));
+				*/
+				}
+			} else {
 				// write thing data
-				size += write(fd, &item->thing->pos, sizeof(item->thing->pos));
-				size += write(fd, &item->thing->angle, sizeof(item->thing->angle));
-				size += write(fd, &item->thing->type, sizeof(item->thing->type));
-				size += write(fd, &item->thing->name, sizeof(item->thing->name));
-				size += write(fd, &item->thing->flags, sizeof(item->thing->flags));
-				size += write(fd, &item->thing->color, sizeof(item->thing->color));
-			}*/
-			size += write(fd, item->line, sizeof(*item->line));
+				size += write(fd, &item->thing->pos, sizeof((item->thing->pos)));
+				size += write(fd, &item->thing->angle, sizeof((item->thing->angle)));
+				size += write(fd, &item->thing->type, sizeof((item->thing->type)));
+				size += write(fd, &item->thing->name, sizeof((item->thing->name)));
+				size += write(fd, &item->thing->flags, sizeof((item->thing->flags)));
+				size += write(fd, &item->thing->color, sizeof((item->thing->color)));
+
+			}
 			item = item->next;
 		}
 		lumped.lumps[i].size = size - lumped.lumps[i].offset;
@@ -434,8 +422,10 @@ void    save_map_name(t_map_interface *draw_mode)
 				strcpy(draw_mode->map_name, buffer2);
 				memset(buffer2, 0, 16);
 				save_as = nk_false;
+				printf("\nSaving ...\n");
 				if (!save(draw_mode))
-					printf("Saving to %s\n", draw_mode->map_name);
+					printf("Saved to %s\n", draw_mode->map_name);
+				else printf("save error\n");
 			}
 		}
 		if (nk_button_label(ctx, "Cancel")) {
@@ -452,74 +442,76 @@ int     load_map(t_map_interface *draw_mode, char *name)
 	char    path[strlen(MAP_SAVE_PATH) + sizeof(draw_mode->map_name)] = {0};
 	strcat(path, MAP_SAVE_PATH);
 	strcat(path, name);
-	printf("Opening %s\n", name);
-	// fd = open(path, O_RDONLY);
-	FILE *f = fopen(path, "r");
-	// if (fd < 3)
-	if (!f)
+	printf("\nOpening %s ...\n", name);
+	fd = open(path, O_RDONLY);
+	if (fd < 3)
 		return (dprintf(2, "MAP PATH ERROR\n"));
-//  read header
 	t_lumped lumped = {0};
-	// uint32_t head;
-/*	read(fd, lumped.head.name, sizeof(lumped.head.name)); */
-	fread(lumped.head.name, 4, 1, f);
+	/* read header */
+	read(fd, lumped.head.name, sizeof(lumped.head.name));
 	if (strncmp("DWD\n", lumped.head.name, 4))
 		return (dprintf(2, "Improper header\n"));
-//  read num lumps
-/*	read(fd, &lumped.head.num_lumps, sizeof(lumped.head.num_lumps)); */
-	fread(&lumped.head.num_lumps, sizeof(lumped.head.num_lumps), 1, f);
-//  read lump offset
-/*	read(fd, &lumped.head.lump_offset, sizeof(lumped.head.lump_offset)); */
-	fread(&lumped.head.lump_offset, sizeof(lumped.head.lump_offset), 1, f);
+	/* read num lumps */
+	read(fd, &lumped.head.num_lumps, sizeof(lumped.head.num_lumps));
+	/* read lump offset */
+	read(fd, &lumped.head.lump_offset, sizeof(lumped.head.lump_offset));
 	t_bank *bank = draw_mode->bank;
 	bzero(bank, sizeof(*bank));
 	for (int i = 0; i < 2; i++) {
-		// read lump index
-/*		read(fd, &i, sizeof(i)); */
-		fread(&i, sizeof(i), 1, f);
+		int index;
 		int count;
-		// read item count
-/*		read(fd, &count, sizeof(count)); */
-		fread(&count, sizeof(count), 1, f);
-//		printf("%s count %d\n", i ? "Thing" : "Line", count);
+		/* read lump index */
+		read(fd, &index, sizeof(index));
+		/* read item count */
+		read(fd, &count, sizeof(count));
 		if (count < 0 || count > 4096)
 			return (dprintf(2, "Invalid %s bank count %d\n", i ? "thing" : "line", count));
-		if (i) bank->count_thing = count;
-		else bank->count_line = count;
 		for (int j = 0; j < count; j++) {
-			t_item_node *item;
-			// read(fd, &item->color, sizeof(item->color));
-			// printf("%x %x %x %x\n", item->color.a, item->color.r, item->color.g, item->color.b);
-			/*if (0 && i == 0) {
-			// read line data
-				read(fd, &item->line->start_vertex, sizeof(item->line->start_vertex));
-				read(fd, &item->line->end_vertex, sizeof(item->line->end_vertex));
-				read(fd, &item->line->special, sizeof(item->line->special));
-				read(fd, &item->line->tag, sizeof(item->line->tag));
-				read(fd, &item->line->flags, sizeof(item->line->flags));
-				read(fd, &item->line->sides[0].offset, sizeof(item->line->sides[0].offset));
-				read(fd, &item->line->sides[0].textures[0], sizeof(item->line->sides[0].textures[0]));
-				read(fd, &item->line->sides[0].textures[1], sizeof(item->line->sides[0].textures[1]));
-				read(fd, &item->line->sides[0].textures[2], sizeof(item->line->sides[0].textures[2]));
-				read(fd, &item->line->sides[1].offset, sizeof(item->line->sides[1].offset));
-				// read sector info and sector number
-				read(fd, &item->line->sides[1].textures[0], sizeof(item->line->sides[1].textures[0]));
-				read(fd, &item->line->sides[1].textures[1], sizeof(item->line->sides[1].textures[1]));
-				read(fd, &item->line->sides[1].textures[2], sizeof(item->line->sides[1].textures[2]));
-				read(fd, &item->line->sides[1], sizeof(item->line->sides[1]));
-				// read sector info and sector number
-			} else if (0) {
-				// read thing data
-				read(fd, &item->thing->pos, sizeof(item->thing->pos));
-				read(fd, &item->thing->angle, sizeof(item->thing->angle));
-				read(fd, &item->thing->type, sizeof(item->thing->type));
-				read(fd, &item->thing->name, sizeof(item->thing->name));
-				read(fd, &item->thing->flags, sizeof(item->thing->flags));
-				read(fd, &item->thing->color, sizeof(item->thing->color));
-			}*/
-
-			read(fd, item->line, sizeof(*item->line));
-			// add_line(bank, item->line->)
+			struct nk_color color;
+			read(fd, &color, sizeof(color));
+			if (i == 0) {
+				struct nk_vec2 start;
+				struct nk_vec2 end;
+				/* read line data */
+				read(fd, &start, sizeof(start));
+				read(fd, &end, sizeof(end));
+				add_line(bank, start, end);
+				t_linedef *line = bank->tail_line->line;
+				read(fd, &line->special, sizeof(line->special));
+				read(fd, &line->tag, sizeof(line->tag));
+				read(fd, &line->flags, sizeof(line->flags));
+				for (int k = 0; k < 2; k++) {
+					read(fd, &line->sides[k].offset, sizeof(line->sides[0].offset));
+					read(fd, &line->sides[k].textures, sizeof(line->sides[0].textures));
+				/*
+					read(fd, &line->sides[k].sector_info.flats[0], sizeof(line->sides[k].sector_info.flats[0]));
+					read(fd, &line->sides[k].sector_info.flats[1], sizeof(line->sides[k].sector_info.flats[1]));
+					read(fd, &line->sides[k].sector_info.light, sizeof(line->sides[k].sector_info.light));
+					read(fd, &line->sides[k].sector_info.special, sizeof(line->sides[k].sector_info.special));
+					read(fd, &line->sides[k].sector_info.tag, sizeof(line->sides[k].sector_info.tag));
+					read(fd, &line->sides[k].sector_num, sizeof(line->sides[k].sector_num));
+				*/
+				}
+			} else {
+				/* read thing data */
+				struct nk_vec2 location;
+				char name[16];
+				read(fd, &location, sizeof((location)));
+				read(fd, name, sizeof((name)));
+				int q = 0;
+				for (int p = 0; p < 16; p++) {
+					if (name[p]) {
+						name[q++] = name[p];
+						name[p] = 0;
+					}
+				}
+				add_thing(bank, location, name);
+				t_thing *thing = bank->tail_thing->thing;
+				read(fd, &thing->angle, sizeof((thing->angle)));
+				read(fd, &thing->type, sizeof((thing->type)));
+				read(fd, &thing->flags, sizeof((thing->flags)));
+				read(fd, &thing->color, sizeof((thing->color)));
+			}
 		}
 	}
 	return (0);
