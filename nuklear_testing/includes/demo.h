@@ -28,14 +28,15 @@
 # include "resource.h"
 # include "lump.h"
 
-# define WINDOW_WIDTH 1280 
-# define WINDOW_HEIGHT 720
+# define WINDOW_WIDTH 1600 
+# define WINDOW_HEIGHT 900
 # define WINDOW_OFFSET 5
 # define HIGHLIGHT nk_rgb(255, 140, 60)
 # define LINE_COLOR nk_rgb(10, 10, 10)
 # define THING_COLOR nk_rgb(145, 145, 145)
 # define BUTTON_DEFAULT nk_rgb(50, 50, 50)
 # define MAP_SAVE_PATH "maps/"
+# define WAD_EXPORT_PATH "wads/"
 
 typedef struct	s_vec2f
 {
@@ -67,6 +68,9 @@ typedef struct	s_subsec
 	t_seg		*subsec_segments;
 }				t_subsec;
 
+/* current selected tool from tool panel
+
+*/
 typedef enum	e_mode
 {
 	LINE,

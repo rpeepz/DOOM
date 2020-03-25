@@ -33,7 +33,7 @@ void    map_pannel(t_map_interface *draw_mode)
 {
 	struct nk_rect size;
 
-	/* pannel size nk_rect(5, 5, 1200, 800) */
+	/* pannel size nk_rect(5, 5, 1200, 800) (size and offset for 1600 x 900 window) */
 	size = nk_rect(WINDOW_OFFSET, WINDOW_OFFSET,
 	WINDOW_WIDTH - (WINDOW_WIDTH / 4),
 	WINDOW_HEIGHT - (WINDOW_OFFSET * 2));
@@ -274,7 +274,7 @@ void    draw_menu(t_map_interface *draw_mode)
 		nk_layout_row_dynamic(ctx, 25, 1);
 		if (nk_menu_item_label(ctx, "New", NK_TEXT_LEFT)) {
 			/* do you want to save? */
-			if (check_exists(draw_mode->map_name) < 1)
+			if (check_exists(draw_mode->map_name, MAP) < 1)
 				printf("I hope you saved your work\n");
 			bzero(draw_mode->bank, sizeof(*draw_mode->bank));
 			memset(draw_mode->map_name, 0, sizeof(draw_mode->map_name));
@@ -285,7 +285,7 @@ void    draw_menu(t_map_interface *draw_mode)
 		}
 		if (nk_menu_item_label(ctx, "Save", NK_TEXT_LEFT)) {
 			/* create new file name */
-			if (check_exists(draw_mode->map_name) < 0)
+			if (check_exists(draw_mode->map_name, MAP) < 0)
 				save_as = nk_true;
 			/* save bank contents into a file */
 			if (!save_as) {
@@ -298,7 +298,7 @@ void    draw_menu(t_map_interface *draw_mode)
 				export_map(draw_mode);
 		}
 		if (nk_menu_item_label(ctx, "Exit", NK_TEXT_LEFT)) {
-			if (check_exists(draw_mode->map_name))
+			if (check_exists(draw_mode->map_name, MAP))
 				printf("Exit program without saving\n... Sorry :(\n");
 			exit(0);
 		}
@@ -307,10 +307,14 @@ void    draw_menu(t_map_interface *draw_mode)
 	nk_menubar_end(ctx);
 }
 
-int     check_exists(const char *name)
+int     check_exists(const char *name, int type)
 {
 	if (!name[0]) return (-1);
-	DIR *dir = opendir(MAP_SAVE_PATH);
+	DIR	*dir;
+	if (type == MAP)
+		dir = opendir(MAP_SAVE_PATH);
+	else if (type == WAD)
+		dir = opendir(WAD_EXPORT_PATH);
 	struct dirent *sd;
 	while (dir && (sd = readdir(dir))) {
 		if (!strcmp(name, sd->d_name))

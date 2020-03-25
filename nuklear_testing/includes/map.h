@@ -47,6 +47,9 @@ typedef struct	s_sector_info
 	uint32_t	tag;
 }				t_sector_info;
 
+/*	Info for each side of the given linedef
+
+*/
 typedef struct		s_sidedef
 {
 	t_float_pair	offset; //row, column
@@ -55,11 +58,13 @@ typedef struct		s_sidedef
 	uint32_t		sector_num;
 }					t_sidedef;
 
-/*	Flags in order for Linedefs
+/*	Info for lines to be drawn on the map
 
-	"Block", "Mblock", "2-Sided",
-	"Ftop", "Fbot", "Secret",
-	"Snd Block", "No Draw"
+
+	Flags:
+		"Block", "Mblock", "2-Sided",
+		"Ftop", "Fbot", "Secret",
+		"Snd Block", "No Draw"
 */
 typedef struct		s_linedef
 {
@@ -71,11 +76,13 @@ typedef struct		s_linedef
 	t_sidedef		sides[2];
 }					t_linedef;
 
-/*	Flags in order for Things
+/* Info for things that appear on the map
 
-	"Easy", "Normal", "Hard",
-	"Ambush", "Network", "Single Player",
-	"Co-op", "Friendly"
+
+	Flags:
+		"Easy", "Normal", "Hard",
+		"Ambush", "Network", "Single Player",
+		"Co-op", "Friendly"
 */
 typedef struct		s_thing {
 	t_float_pair	pos;
@@ -92,14 +99,24 @@ typedef struct  s_lumped
 	t_lump      lumps[2];
 }               t_lumped;
 
-int     check_exists(const char *name);
+typedef enum	e_exist_file
+{
+	MAP,
+	WAD
+}				t_exist_file;
 
+/* check given type path for existing file */
+int     check_exists(const char *name, int type);
+
+/* save current state of map maker to reopen later */
 void    save_map_name(t_map_interface *draw_mode, int *save_as);
 int     save(t_map_interface *draw_mode);
 
+/* open and load existing saved maps */
 void    open_map_list(t_map_interface *draw_mode, int *open_map);
 int     load_map(t_map_interface *draw_mode, char *name);
 
+/* create and export map info as bsp with lumps for engine to run */
 void	export_map(t_map_interface *draw_mode);
 
 #endif

@@ -24,7 +24,7 @@ void    save_map_name(t_map_interface *draw_mode, int *save_as)
 		nk_label(ctx, " ", 1);
 		/* buttons to cancel, or add thing with or without name */
 		nk_layout_row_dynamic(ctx, 25, 2);
-		if (nk_button_label(ctx, "OK")) {
+		if (nk_button_label(ctx, "OK") || (nk_input_is_key_pressed(&ctx->input, NK_KEY_ENTER))) {
 			if (buffer2[0]) {
 				strcpy(draw_mode->map_name, buffer2);
 				memset(buffer2, 0, 16);

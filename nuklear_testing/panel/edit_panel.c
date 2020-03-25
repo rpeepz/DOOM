@@ -32,7 +32,7 @@ void    edit_pannel(t_map_interface *draw_mode)
     struct nk_context *ctx = draw_mode->ctx;
     nk_window_set_focus(ctx, "Edit");
 
-    /* pannel size nk_rect(1310, 375, 275, 500); */
+    /* pannel size nk_rect(1310, 375, 275, 500); (size and offset for 1600 x 900 window) */
     struct nk_rect size = nk_rect(WINDOW_WIDTH - ((WINDOW_WIDTH / 15) * 3) + (WINDOW_OFFSET * 2),
     ((WINDOW_HEIGHT * 2) / 5) + (WINDOW_OFFSET * 3),
     ((WINDOW_WIDTH * 5) / 32) + (WINDOW_OFFSET * 5),
@@ -361,7 +361,7 @@ void    list_wall_textures(t_map_interface *draw_mode, t_sidedef *side, t_resour
         nk_layout_row_push(ctx, 80);
         if (nk_button_label(ctx, "Preview")) {
             if (texture.name[0]) {
-                char buffer[32] = "open assets/wall/";
+                char buffer[32] = "open assets/wall/"; //open on macos
                 strcat(buffer, texture.name);
                 system (buffer);
             }

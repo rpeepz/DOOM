@@ -36,8 +36,8 @@ t_float_pair	snap(struct nk_vec2 v)
 	if (res.y < 30) res.y = 30;
 	if (res.x < 10) res.x = 10;
 	/* check upper bounds */
-	if (res.y >= WINDOW_HEIGHT - WINDOW_OFFSET) res.y = 890;
-	if (res.x >= (WINDOW_WIDTH - (WINDOW_WIDTH / 4)) - WINDOW_OFFSET) res.x = 1190;
+	if (res.y >= WINDOW_HEIGHT - WINDOW_OFFSET) res.y = WINDOW_HEIGHT - (WINDOW_OFFSET * 2);
+	if (res.x >= (WINDOW_WIDTH - (WINDOW_WIDTH / 4)) - WINDOW_OFFSET) res.x = WINDOW_WIDTH - (WINDOW_WIDTH / 4) - (WINDOW_OFFSET * 2);
 	return (res);
 }
 

@@ -121,7 +121,7 @@ void    list_pannel(t_map_interface *draw_mode)
 {
 	struct nk_context *ctx = draw_mode->ctx;
 	t_bank *bank = draw_mode->bank;
-	/* pannel size nk_rect(1210, 5, 385, 400) */
+	/* pannel size nk_rect(1210, 5, 385, 400) (size and offset for 1600 x 900 window) */
 	struct nk_rect size = nk_rect(WINDOW_WIDTH - (WINDOW_WIDTH / 4) + (WINDOW_OFFSET * 2),
 	WINDOW_OFFSET, WINDOW_WIDTH - ((WINDOW_WIDTH / 4) * 3) - (WINDOW_OFFSET * 3),
     WINDOW_HEIGHT - ((WINDOW_HEIGHT * 5) / 9));
