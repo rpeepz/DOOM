@@ -17,7 +17,7 @@ endif
 
 
 # Flags
-# CFLAGS += -g -fsanitize=address
+CFLAGS += -g -fsanitize=address
 CFLAGS += -std=c99 -pedantic -O2
 CFLAGS += -I$(SDL2_INC_DIR)/SDL2 -I$(SDL2_INC_DIR)
 CFLAGS += -I$(GLEW_INC_DIR)/GL -I$(GLEW_INC_DIR)
@@ -30,9 +30,15 @@ PANEL = tool_panel.c\
 	list_panel.c\
 	map_panel.c\
 	edit_panel.c
+SAVE = save.c
+LOAD = load.c
+EXPORT = export.c
 
 OBJ = $(addprefix $(OBJ_PATH)/,$(SRC:.c=.o))
 OBJ += $(addprefix $(OBJ_PATH)/,$(PANEL:.c=.o))
+OBJ += $(addprefix $(OBJ_PATH)/,$(SAVE:.c=.o))
+OBJ += $(addprefix $(OBJ_PATH)/,$(LOAD:.c=.o))
+OBJ += $(addprefix $(OBJ_PATH)/,$(EXPORT:.c=.o))
 
 ifeq ($(OS),Windows_NT)
 BIN := $(BIN).exe
@@ -59,7 +65,7 @@ $(BIN): $(OBJ)
 	@mkdir -p maps
 #	@mkdir -p bin
 #	rm -f bin/$(BIN) $(OBJS)
-	@printf "[compile   src]\t[#######   ]\r" #print statement
+#	@printf "[compile   src]\t[#######   ]\r" #print statement
 	@$(CC) $(OBJ_PATH)/*.o $(CFLAGS) -o $(BIN) $(LIBS)
 	@printf "[$(GREEN)  complete!  $(NC)]\t[##########]\n" #print statement
 	@printf "Usage: ./$(BIN)\n"
@@ -69,10 +75,19 @@ $(OBJ_PATH):
 	@mkdir -p $@
 
 $(OBJ_PATH)/%.o: ./%.c $(INC)/*.h| $(OBJ_PATH)
-	@printf "[compile   obj]\t[###       ]\r" #print statement
+	@printf "[compile   obj]\t[##        ]\r" #print statement
 	@$(CC) -I$(INC) $(CFLAGS) -o $@ -c $<
 $(OBJ_PATH)/%.o: panel/%.c $(INC)/*.h | $(OBJ_PATH)
+	@printf "[compile   obj]\t[###       ]\r" #print statement
+	@$(CC) -I$(INC) $(CFLAGS) -o $@ -c $<
+$(OBJ_PATH)/%.o: panel/load/%.c $(INC)/*.h | $(OBJ_PATH)
 	@printf "[compile   obj]\t[#####     ]\r" #print statement
+	@$(CC) -I$(INC) $(CFLAGS) -o $@ -c $<
+$(OBJ_PATH)/%.o: panel/save/%.c $(INC)/*.h | $(OBJ_PATH)
+	@printf "[compile   obj]\t[####      ]\r" #print statement
+	@$(CC) -I$(INC) $(CFLAGS) -o $@ -c $<
+$(OBJ_PATH)/%.o: panel/export/%.c $(INC)/*.h | $(OBJ_PATH)
+	@printf "[compile   obj]\t[######    ]\r" #print statement
 	@$(CC) -I$(INC) $(CFLAGS) -o $@ -c $<
 
 clean:

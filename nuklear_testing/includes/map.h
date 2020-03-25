@@ -86,4 +86,20 @@ typedef struct		s_thing {
 	struct nk_color	color;
 }					t_thing;
 
+typedef struct  s_lumped
+{
+	t_header    head;
+	t_lump      lumps[2];
+}               t_lumped;
+
+int     check_exists(const char *name);
+
+void    save_map_name(t_map_interface *draw_mode, int *save_as);
+int     save(t_map_interface *draw_mode);
+
+void    open_map_list(t_map_interface *draw_mode, int *open_map);
+int     load_map(t_map_interface *draw_mode, char *name);
+
+void	export_map(t_map_interface *draw_mode);
+
 #endif
