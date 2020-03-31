@@ -87,6 +87,8 @@ typedef struct			s_map_interface
 	struct s_bank		*bank;
 	t_resource_table	*floor;
 	t_resource_table	*wall;
+	t_resource_table	*sounds;
+	t_resource_table	*music;
 	int					tool_op;
 	int					list_op;
 	char				map_name[20];

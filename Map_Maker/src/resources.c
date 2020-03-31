@@ -31,7 +31,10 @@ t_resource_table    *gather_assets(int mode)
     memset(table, 0, sizeof(t_resource_table));
     /* assign asset path */
     if (mode == 0) asset_path = "assets/floor/";
-    else asset_path = "assets/wall/";
+    else if (mode == 1) asset_path = "assets/wall/";
+    else if (mode == 2) asset_path = "assets/allsounds/";
+    else if (mode == 3) asset_path = "assets/allmusic/";
+    else return NULL;
     dir = opendir(asset_path);
     /* itterate entries */
     while ((sd = readdir(dir)) != NULL)

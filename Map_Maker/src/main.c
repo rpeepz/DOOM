@@ -89,6 +89,8 @@ int     main(void)
     draw_mode.bank = &bank;
     draw_mode.floor = gather_assets(0);
     draw_mode.wall = gather_assets(1);
+    draw_mode.sounds = gather_assets(2);
+    draw_mode.music = gather_assets(3);
     draw_mode.tool_op = LINE;// Tools pannel selected tool
     draw_mode.list_op = ITEM_LINE;
 
