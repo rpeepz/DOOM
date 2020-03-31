@@ -93,12 +93,6 @@ typedef struct		s_thing {
 	struct nk_color	color;
 }					t_thing;
 
-typedef struct  s_lumped
-{
-	t_header    head;
-	t_lump      lumps[2];
-}               t_lumped;
-
 typedef enum	e_exist_file
 {
 	MAP,
