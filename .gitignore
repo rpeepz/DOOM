@@ -18,5 +18,5 @@ preprocess
 maps/
 
 # executables
-*/map-maker
+Map_Maker/Map_Maker
 */demo*
