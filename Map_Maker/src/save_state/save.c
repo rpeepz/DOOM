@@ -47,9 +47,6 @@ int     save(t_map_interface *draw_mode)
 {
 	t_item_node *item;
 	t_bank      *bank = draw_mode->bank;
-	t_lumped    lumped = {0};
-		lumped.head.num_lumps = 2;
-		lumped.head.lump_offset = sizeof(lumped.head) + sizeof(lumped.head.lump_offset);
 	int         fd;
 	int         size = 0;
 	char path[strlen(MAP_SAVE_PATH) + sizeof(draw_mode->map_name)] = {0};
@@ -60,12 +57,8 @@ int     save(t_map_interface *draw_mode)
 		return (dprintf(2, "MAP PATH ERROR\n"));
 	/* write header */
 	size += write(fd, "DWD\n", 4);
-	size += write(fd, &lumped.head.num_lumps, sizeof(lumped.head.num_lumps));
-	size += write(fd, &lumped.head.lump_offset, sizeof(lumped.head.lump_offset));
 	/* write item info */
 	for (int i = 0; i < 2; i++) {
-		strcpy(lumped.lumps[i].lump_name, i ? "Thing" : "Line");
-		lumped.lumps[i].offset = size;
 		int count = i ? bank->count_thing : bank->count_line;
 		/* write lump index */
 		size += write(fd, &i, sizeof(i));
@@ -105,7 +98,6 @@ int     save(t_map_interface *draw_mode)
 			}
 			item = item->next;
 		}
-		lumped.lumps[i].size = size - lumped.lumps[i].offset;
 	}
 	close(fd);
 	return (0);

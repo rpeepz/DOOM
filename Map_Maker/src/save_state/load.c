@@ -50,15 +50,11 @@ int     load_map(t_map_interface *draw_mode, char *name)
 	fd = open(path, O_RDONLY);
 	if (fd < 3)
 		return (dprintf(2, "MAP PATH ERROR\n"));
-	t_lumped lumped = {0};
 	/* read header */
-	read(fd, lumped.head.name, sizeof(lumped.head.name));
-	if (strncmp("DWD\n", lumped.head.name, 4))
+	char head[4];
+	read(fd, &head, sizeof(head));
+	if (strncmp("DWD\n", head, 4))
 		return (dprintf(2, "Improper header\n"));
-	/* read num lumps */
-	read(fd, &lumped.head.num_lumps, sizeof(lumped.head.num_lumps));
-	/* read lump offset */
-	read(fd, &lumped.head.lump_offset, sizeof(lumped.head.lump_offset));
 	t_bank *bank = draw_mode->bank;
 	bzero(bank, sizeof(*bank));
 	for (int i = 0; i < 2; i++) {
