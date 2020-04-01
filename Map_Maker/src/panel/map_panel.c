@@ -20,6 +20,7 @@ static int count = 0;
 static int count2 = 0;
 static int show_grid = nk_true;
 static int show_about = nk_false;
+static int show_help = nk_true;
 static int save_as = nk_false;
 static int open_map = nk_false;
 
@@ -28,6 +29,7 @@ void    draw_things(t_map_interface *draw_mode);
 void    draw_grid(struct nk_rect size);
 void    draw_menu(t_map_interface *draw_mode);
 void    draw_about(struct nk_context *ctx);
+void    draw_help(t_map_interface *draw_mode);
 
 void    map_pannel(t_map_interface *draw_mode)
 {
@@ -65,6 +67,8 @@ void    map_pannel(t_map_interface *draw_mode)
 			if (draw_mode->tool_op == NK_FILE) draw_menu(draw_mode);
 			/* about map-maker */
 			if (show_about) draw_about(draw_mode->ctx);
+			/* help info */
+			if (show_help) draw_help(draw_mode);
 		
 		}
 		nk_end(draw_mode->ctx);
@@ -229,7 +233,7 @@ void    draw_about(struct nk_context *ctx)
 		nk_label(ctx, " ", NK_TEXT_CENTERED);
 		nk_layout_row_push(ctx, 70);
 		nk_label_colored(ctx, "DOOM ", NK_TEXT_RIGHT, nk_rgb(255,0,0));
-		nk_label(ctx, " Map-Maker", NK_TEXT_LEFT);
+		nk_label(ctx, " Map Maker", NK_TEXT_LEFT);
 		nk_layout_row_end(ctx);
 		nk_layout_row_dynamic(ctx, 20, 2);
 		nk_label(ctx, "Leader:", NK_TEXT_LEFT);
@@ -249,6 +253,73 @@ void    draw_about(struct nk_context *ctx)
 	} else show_about = nk_false;
 }
 
+void	draw_help(t_map_interface *draw_mode)
+{
+	struct nk_context *ctx = draw_mode->ctx;
+	struct nk_rect s = {(draw_mode->win_w / 3), (draw_mode->win_h / 4), 250, 350};
+	if (nk_popup_begin(ctx, NK_POPUP_STATIC, "Help", NK_WINDOW_CLOSABLE, s))
+	{
+		nk_layout_row_dynamic(ctx, 6, 1);
+		nk_label(ctx, " ", 1);
+		nk_layout_row_dynamic(ctx, 60, 1);
+		nk_label_colored_wrap(ctx, "Help can always be accessed in the MENU dropdown which appears after selecting FILE in the tool panel.", nk_rgb(255,255,0));
+
+		nk_layout_row_dynamic(ctx, 25, 1);
+		nk_label(ctx, "Map:", NK_TEXT_LEFT);
+		nk_layout_row_dynamic(ctx, 30, 1);
+		nk_label_wrap(ctx, "Displays Lines and Things in the current map.");
+		nk_layout_row_dynamic(ctx, 45, 1);
+		nk_label_wrap(ctx, "Lines are drawn in black and things varry by color, but are gray by default.");
+		nk_layout_row_dynamic(ctx, 55, 1);
+		nk_label_wrap(ctx, "A single item will be highlighted in oragne to indicate the current selection for later editing.");
+
+		nk_layout_row_dynamic(ctx, 25, 1);
+		nk_label(ctx, "Tools:", NK_TEXT_LEFT);
+			nk_label(ctx, "- Move -", NK_TEXT_LEFT);
+				nk_layout_row_dynamic(ctx, 40, 1);
+				nk_label_wrap(ctx, "Unused at this time of development");
+			nk_layout_row_dynamic(ctx, 25, 1);
+			nk_label(ctx, "- Edit -", NK_TEXT_LEFT);
+				nk_layout_row_dynamic(ctx, 80, 1);
+				nk_label_wrap(ctx, "Opens a window that allows for editing data regarding the current slected item, identified by the selected orange item, or in list panel on the right.");
+			nk_layout_row_dynamic(ctx, 25, 1);
+			nk_label(ctx, "- Line -", NK_TEXT_LEFT);
+				nk_layout_row_dynamic(ctx, 60, 1);
+				nk_label_wrap(ctx, "Changes the cursor to a red dot while hovering in the map window. Left click to select the start and and end points.");
+				nk_layout_row_dynamic(ctx, 50, 1);
+				nk_label_wrap(ctx, "The purple dot indicates when the second point is ready to be selected.");
+				nk_layout_row_dynamic(ctx, 60, 1);
+				nk_label_wrap(ctx, "When the second point has been selected, a line will appear in the map panel showing the current position of the line.");
+				nk_label_wrap(ctx, "An entry will appear in the List pannel, along with any other lines that have been created.");
+				nk_layout_row_dynamic(ctx, 45, 1);
+				nk_label_wrap(ctx, "Right click can be used to cancel the placement of the starting point.");
+			nk_layout_row_dynamic(ctx, 25, 1);
+			nk_label(ctx, "- Thing -", NK_TEXT_LEFT);
+				nk_layout_row_dynamic(ctx, 60, 1);
+				nk_label_wrap(ctx, "Changes the cursor to a green dot while hovering in the map window. Click to select the position.");
+				nk_label_wrap(ctx, "A popup will appear with options to give a name or continue with no name, or cancel the placement.");
+			nk_layout_row_dynamic(ctx, 25, 1);
+			nk_label(ctx, "- Sector -", NK_TEXT_LEFT);
+				nk_layout_row_dynamic(ctx, 40, 1);
+				nk_label_wrap(ctx, "Unused at this time of development");
+			nk_layout_row_dynamic(ctx, 25, 1);
+			nk_label(ctx, "- File -", NK_TEXT_LEFT);
+				nk_layout_row_dynamic(ctx, 45, 1);
+				nk_label_wrap(ctx, "A menu bar appears at the top left corner with the Menu and File options.");
+				nk_layout_row_dynamic(ctx, 85, 1);
+				nk_label_wrap(ctx, "The Menu tab is where you can view the info about this map maker, this very help screen, the option to hide the map grid, and to close the menu bar and revert to the Line tool.");
+				nk_layout_row_dynamic(ctx, 110, 1);
+				nk_label_wrap(ctx, "The File tab is where you can 'save' your current progress in the map editor, 'open' other maps that have been made with this program, start a 'new' map, 'export' your map as a finished WAD file, or 'exit' the program.");
+		nk_layout_row_dynamic(ctx, 25, 1);
+		nk_label(ctx, "List:", NK_TEXT_LEFT);
+			nk_layout_row_dynamic(ctx, 80, 1);
+			nk_label_wrap(ctx, "Just as it sounds, the list panel lists all items in the current map. There are two tabs which you can click to view items in each category.");
+		nk_layout_row_dynamic(ctx, 25, 1);
+		nk_popup_end(ctx);
+	} else show_help = nk_false;
+
+}
+
 void    draw_menu(t_map_interface *draw_mode)
 {
 	struct nk_context *ctx = draw_mode->ctx;
@@ -258,13 +329,15 @@ void    draw_menu(t_map_interface *draw_mode)
 	if (nk_menu_begin_label(ctx, "MENU", NK_TEXT_LEFT, nk_vec2(120, 200)))
 	{
 		nk_layout_row_dynamic(ctx, 25, 1);
+		if (nk_menu_item_label(ctx, "About", NK_TEXT_LEFT))
+			show_about = nk_true;
+		if (nk_menu_item_label(ctx, "Help", NK_TEXT_LEFT))
+			show_help = nk_true;
+		nk_checkbox_label(ctx, "Show grid", &show_grid);
 		if (nk_menu_item_label(ctx, "Hide menu", NK_TEXT_LEFT)) {
 			draw_mode->tool_op = LINE;
 			count = -1;
 		}
-		if (nk_menu_item_label(ctx, "About", NK_TEXT_LEFT))
-			show_about = nk_true;
-		nk_checkbox_label(ctx, "Show grid", &show_grid);
 		nk_menu_end(ctx);
 	}
 	nk_layout_row_push(ctx, 60);

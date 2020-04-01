@@ -95,7 +95,7 @@ int     main(void)
     draw_mode.music = gather_assets(3);
     draw_mode.win_w = window_width;
     draw_mode.win_h = window_height;
-    draw_mode.tool_op = LINE;// Tools pannel selected tool
+    draw_mode.tool_op = NK_FILE;// Tools pannel selected tool
     draw_mode.list_op = ITEM_LINE;
 
     const struct nk_input *in = &ctx->input;

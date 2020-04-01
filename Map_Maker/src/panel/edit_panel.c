@@ -402,8 +402,8 @@ void    delete_button(t_map_interface *draw_mode)
     nk_label(ctx, " ", 1);
     nk_layout_row_end(ctx);
     if (confirm) {
-        struct nk_rect s = nk_rect((draw_mode->win_w * .0375),
-        (draw_mode->win_h * .37), 140, 80);
+        struct nk_rect s = nk_rect((draw_mode->win_w * .0375) - 25,
+        (draw_mode->win_h * .37) - 25, 140, 80);
         if (nk_popup_begin(ctx, NK_POPUP_STATIC, "confirm delete", 0, s)) {
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_label(ctx, "Confirm", NK_TEXT_CENTERED);
