@@ -45,6 +45,8 @@ void    pannels(void)
 
 int     main(void)
 {
+    int window_width = 1600, window_height = 900;
+    define_window_size(&window_width, &window_height);
     /* Platform */
     SDL_Window *win;
     SDL_GLContext glContext;
@@ -62,11 +64,11 @@ int     main(void)
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     win = SDL_CreateWindow("Map Maker",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN|SDL_WINDOW_ALLOW_HIGHDPI);
+        window_width, window_height, SDL_WINDOW_OPENGL|SDL_WINDOW_SHOWN|SDL_WINDOW_ALLOW_HIGHDPI);
     glContext = SDL_GL_CreateContext(win);
     SDL_GetWindowSize(win, &win_width, &win_height);
     /* OpenGL setup */
-    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+    glViewport(0, 0, window_width, window_height);
     glewExperimental = 1;
     if (glewInit() != GLEW_OK) {
         fprintf(stderr, "Failed to setup GLEW\n");
@@ -91,6 +93,8 @@ int     main(void)
     draw_mode.wall = gather_assets(1);
     draw_mode.sounds = gather_assets(2);
     draw_mode.music = gather_assets(3);
+    draw_mode.win_w = window_width;
+    draw_mode.win_h = window_height;
     draw_mode.tool_op = LINE;// Tools pannel selected tool
     draw_mode.list_op = ITEM_LINE;
 

@@ -33,10 +33,10 @@ void    edit_pannel(t_map_interface *draw_mode)
     nk_window_set_focus(ctx, "Edit");
 
     /* pannel size nk_rect(1310, 375, 275, 500); (size and offset for 1600 x 900 window) */
-    struct nk_rect size = nk_rect(WINDOW_WIDTH - ((WINDOW_WIDTH / 15) * 3) + (WINDOW_OFFSET * 2),
-    ((WINDOW_HEIGHT * 2) / 5) + (WINDOW_OFFSET * 3),
-    ((WINDOW_WIDTH * 5) / 32) + (WINDOW_OFFSET * 5),
-    (WINDOW_HEIGHT * 5) / 9);
+    struct nk_rect size = nk_rect(draw_mode->win_w - ((draw_mode->win_w / 15) * 3) + (WINDOW_OFFSET * 2),
+    ((draw_mode->win_h * 2) / 5) + (WINDOW_OFFSET * 3),
+    ((draw_mode->win_w * 5) / 32) + (WINDOW_OFFSET * 5),
+    (draw_mode->win_h * 5) / 9);
 
     if (nk_begin(draw_mode->ctx, "Edit", size, NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_MINIMIZABLE))
     {
@@ -81,8 +81,9 @@ void    edit_selected_line(t_map_interface *draw_mode, t_linedef *line)
         buffer[len] = 0;
         y = atof(buffer);
 
-        if (!i) line->start_vertex = snap((struct nk_vec2){x, y});
-        else line->end_vertex = snap((struct nk_vec2){x, y});
+        t_int_pair win_size = {draw_mode->win_w, draw_mode->win_h};
+        if (!i) line->start_vertex = snap(win_size, (struct nk_vec2){x, y});
+        else line->end_vertex = snap(win_size, (struct nk_vec2){x, y});
     }
     /* Edit special and tag values */
     nk_layout_row_push(ctx, 70);
@@ -192,7 +193,7 @@ void    sidedef_edit(t_map_interface *draw_mode, t_sidedef *side)
     /* Texture Select window */
     if (texture_popup) {
         struct nk_rect s = {-40, -20,
-        WINDOW_WIDTH / 5, WINDOW_HEIGHT / 2};
+        draw_mode->win_w / 5, draw_mode->win_h / 2};
         if (nk_popup_begin(ctx, NK_POPUP_STATIC, "Texture Select", 0, s))
         {
             nk_menubar_begin(ctx);
@@ -401,8 +402,8 @@ void    delete_button(t_map_interface *draw_mode)
     nk_label(ctx, " ", 1);
     nk_layout_row_end(ctx);
     if (confirm) {
-        struct nk_rect s = nk_rect((WINDOW_WIDTH * .0375),
-        (WINDOW_HEIGHT * .37), 140, 80);
+        struct nk_rect s = nk_rect((draw_mode->win_w * .0375),
+        (draw_mode->win_h * .37), 140, 80);
         if (nk_popup_begin(ctx, NK_POPUP_STATIC, "confirm delete", 0, s)) {
             nk_layout_row_dynamic(ctx, 25, 1);
             nk_label(ctx, "Confirm", NK_TEXT_CENTERED);

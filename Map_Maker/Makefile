@@ -17,12 +17,13 @@ endif
 
 
 # Flags
-# CFLAGS += -g -fsanitize=address
+CFLAGS += -g -fsanitize=address
 CFLAGS += -std=c99 -pedantic -O2
 CFLAGS += -I$(SDL2_INC_DIR)/SDL2 -I$(SDL2_INC_DIR)
 CFLAGS += -I$(GLEW_INC_DIR)/GL -I$(GLEW_INC_DIR)
 
 SRC = main.c\
+	launch.c\
 	bank_functions.c\
 	resources.c
 

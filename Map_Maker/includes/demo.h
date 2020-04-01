@@ -28,8 +28,6 @@
 # include "resource.h"
 # include "lump.h"
 
-# define WINDOW_WIDTH 1600 
-# define WINDOW_HEIGHT 900
 # define WINDOW_OFFSET 5
 # define HIGHLIGHT nk_rgb(255, 140, 60)
 # define LINE_COLOR nk_rgb(10, 10, 10)
@@ -89,11 +87,14 @@ typedef struct			s_map_interface
 	t_resource_table	*wall;
 	t_resource_table	*sounds;
 	t_resource_table	*music;
+	int					win_w;
+	int					win_h;
 	int					tool_op;
 	int					list_op;
 	char				map_name[20];
 }						t_map_interface;
 
+void				define_window_size(int *window_width, int *window_height);
 void				map_pannel(t_map_interface *draw_mode);
 void				tool_pannel(t_map_interface *draw_mode);
 t_resource_table    *gather_assets(int mode);

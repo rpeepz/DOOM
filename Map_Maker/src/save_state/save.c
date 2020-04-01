@@ -5,8 +5,8 @@ void    save_map_name(t_map_interface *draw_mode, int *save_as)
 {
 	struct nk_context *ctx = draw_mode->ctx;
 	nk_window_set_focus(ctx, "Save as");
-	static struct nk_rect s = {(WINDOW_WIDTH * .05),
-	(WINDOW_HEIGHT * .15), 200, 125};
+	struct nk_rect s = nk_rect((draw_mode->win_w * .05),
+	(draw_mode->win_h * .15), 200, 125);
 	if (nk_begin(ctx, "Save as", s, NK_WINDOW_BORDER)) {
 		//submit buffer
 		static char buffer2[20];

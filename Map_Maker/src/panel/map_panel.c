@@ -35,8 +35,8 @@ void    map_pannel(t_map_interface *draw_mode)
 
 	/* pannel size nk_rect(5, 5, 1200, 800) (size and offset for 1600 x 900 window) */
 	size = nk_rect(WINDOW_OFFSET, WINDOW_OFFSET,
-	WINDOW_WIDTH - (WINDOW_WIDTH / 4),
-	WINDOW_HEIGHT - (WINDOW_OFFSET * 2));
+	draw_mode->win_w - (draw_mode->win_w / 4),
+	draw_mode->win_h - (WINDOW_OFFSET * 2));
 	char name[32] = "Map Maker - ";
 	strcat(name, draw_mode->map_name[0] ? draw_mode->map_name : "Unspecified");
 	if (nk_begin(draw_mode->ctx, name, size,
@@ -84,10 +84,10 @@ void    draw_lines(t_map_interface *draw_mode)
 
 	if (draw_mode->ctx->input.mouse.pos.x >= 5 &&
 	draw_mode->ctx->input.mouse.pos.x <=
-	(WINDOW_WIDTH - (WINDOW_WIDTH / 4) + WINDOW_OFFSET) &&
+	(draw_mode->win_w - (draw_mode->win_w / 4) + WINDOW_OFFSET) &&
 	draw_mode->ctx->input.mouse.pos.y >= 33 &&
 	draw_mode->ctx->input.mouse.pos.y <=
-	(WINDOW_HEIGHT - (WINDOW_OFFSET * 2)) + WINDOW_OFFSET) {
+	(draw_mode->win_h - (WINDOW_OFFSET * 2)) + WINDOW_OFFSET) {
 		SDL_ShowCursor(SDL_DISABLE);
 
 		if (nk_input_mouse_clicked(&draw_mode->ctx->input,
@@ -111,7 +111,7 @@ void    draw_lines(t_map_interface *draw_mode)
 			nk_fill_circle(canvas, end_point, nk_rgb(171, 128, 255));
 		}
 		if (count == 2) {
-			add_line(draw_mode->bank, line_start, line_end);
+			add_line(draw_mode, line_start, line_end);
 			count = 0;
 		}
 	}
@@ -121,14 +121,14 @@ void    draw_things(t_map_interface *draw_mode)
 {
 	static struct nk_vec2 thing_pos;
 	struct nk_rect s = nk_rect(
-	(WINDOW_WIDTH / 2) - 150, (WINDOW_HEIGHT / 2) - 100, 250, 120);
+	(draw_mode->win_w / 2) - 150, (draw_mode->win_h / 2) - 100, 250, 120);
 
 	if (draw_mode->ctx->input.mouse.pos.x >= 5 &&
 	draw_mode->ctx->input.mouse.pos.x <=
-	(WINDOW_WIDTH - (WINDOW_WIDTH / 4) + WINDOW_OFFSET) &&
+	(draw_mode->win_w - (draw_mode->win_w / 4) + WINDOW_OFFSET) &&
 	draw_mode->ctx->input.mouse.pos.y >= 33 &&
 	draw_mode->ctx->input.mouse.pos.y <=
-	(WINDOW_HEIGHT - (WINDOW_OFFSET * 2)) + WINDOW_OFFSET) {
+	(draw_mode->win_h - (WINDOW_OFFSET * 2)) + WINDOW_OFFSET) {
 		SDL_ShowCursor(SDL_DISABLE);
 		// set coordinates for thing
 		if (count2 == 0) {
@@ -173,12 +173,12 @@ void    draw_things(t_map_interface *draw_mode)
 				/* buttons to cancel, or add thing with or without name */
 				nk_layout_row_dynamic(draw_mode->ctx, 25, 3);
 				if (nk_button_label(draw_mode->ctx, "OK")) {
-					add_thing(draw_mode->bank, thing_pos, buffer2);
+					add_thing(draw_mode, thing_pos, buffer2);
 					memset(buffer2, 0, 16);
 					count2 = -1;
 				}
 				if (nk_button_label(draw_mode->ctx, "No Name")) {
-					add_thing(draw_mode->bank, thing_pos, "");
+					add_thing(draw_mode, thing_pos, "");
 					memset(buffer2, 0, 16);
 					count2 = -1;
 				}

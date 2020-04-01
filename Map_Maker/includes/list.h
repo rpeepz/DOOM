@@ -59,13 +59,13 @@ void	edit_pannel(t_map_interface *draw_mode);
 void	list_pannel(t_map_interface *draw_mode);
 
 /*	Snap coordinates to a grid and convert from nk_vec2 to float pair */
-t_float_pair	snap(struct nk_vec2 v);
+t_float_pair	snap(t_int_pair win_size, struct nk_vec2 v);
 
 /* Given the end points of a line, insert new node at the end of the list. */
-void	add_line(t_bank *bank, struct nk_vec2 start, struct nk_vec2 end);
+void	add_line(t_map_interface *draw_mode, struct nk_vec2 start, struct nk_vec2 end);
 
 /* Given the location of a thing, insert new node at the end of the list. */
-void	add_thing(t_bank *bank, struct nk_vec2 location, char *name);
+void	add_thing(t_map_interface *draw_mode, struct nk_vec2 location, char *name);
 
 /* Remove and free the selected item */
 void	remove_from_bank(t_bank *bank, int item);

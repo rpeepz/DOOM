@@ -31,9 +31,9 @@ void tool_pannel(t_map_interface *draw_mode)
 
 	int num_options = sizeof(options) / sizeof(options[0]);
 
-	struct nk_rect size = nk_rect(WINDOW_WIDTH - (WINDOW_WIDTH / 4) + (WINDOW_OFFSET * 2),
-	WINDOW_HEIGHT - ((WINDOW_HEIGHT * 5) / 9) + (WINDOW_OFFSET * 2),
-	(WINDOW_WIDTH / 7), WINDOW_HEIGHT / 2.75);
+	struct nk_rect size = nk_rect(draw_mode->win_w - (draw_mode->win_w / 4) + (WINDOW_OFFSET * 2),
+	draw_mode->win_h - ((draw_mode->win_h * 5) / 9) + (WINDOW_OFFSET * 2),
+	(draw_mode->win_w / 7), draw_mode->win_h / 2.75);
 	
     if (nk_begin(draw_mode->ctx, "Tools", size,
 		NK_WINDOW_BORDER|NK_WINDOW_MINIMIZABLE))

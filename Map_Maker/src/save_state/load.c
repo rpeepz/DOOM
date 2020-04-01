@@ -5,8 +5,8 @@ void    open_map_list(t_map_interface *draw_mode, int *open_map)
 {
 	struct nk_context *ctx = draw_mode->ctx;
 	nk_window_set_focus(ctx, "Open");
-	static struct nk_rect s = {(WINDOW_WIDTH * .05),
-	(WINDOW_HEIGHT * .15), 200, (WINDOW_HEIGHT / 3)};
+	struct nk_rect s = nk_rect((draw_mode->win_w * .05),
+	(draw_mode->win_h * .15), 200, (draw_mode->win_h / 3));
 	if (nk_begin(ctx, "Open", s, NK_WINDOW_BORDER)) {
 		nk_layout_row_dynamic(ctx, 25, 1);
 		nk_label(ctx, "Map select", NK_TEXT_CENTERED);
@@ -75,7 +75,7 @@ int     load_map(t_map_interface *draw_mode, char *name)
 				/* read line data */
 				read(fd, &start, sizeof(start));
 				read(fd, &end, sizeof(end));
-				add_line(bank, start, end);
+				add_line(draw_mode, start, end);
 				t_linedef *line = bank->tail_line->line;
 				read(fd, &line->special, sizeof(line->special));
 				read(fd, &line->tag, sizeof(line->tag));
@@ -105,7 +105,7 @@ int     load_map(t_map_interface *draw_mode, char *name)
 						name[p] = 0;
 					}
 				}
-				add_thing(bank, location, name);
+				add_thing(draw_mode, location, name);
 				t_thing *thing = bank->tail_thing->thing;
 				read(fd, &thing->angle, sizeof((thing->angle)));
 				read(fd, &thing->type, sizeof((thing->type)));

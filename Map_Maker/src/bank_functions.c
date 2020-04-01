@@ -3,12 +3,36 @@
 #define THICKNESS 1.0f
 #define SNAP 10
 
-int stroke_my_line( struct nk_command_buffer *b, t_item_node *line_node)
+void	stroke_line_side_indicator(struct nk_command_buffer *b, t_item_node *line_node)
+{
+	t_linedef  *line = line_node->line;
+	t_float_pair mid;
+	/* find mid point of line segment */
+	mid.x = ((line->start_vertex.x + 1) + (line->end_vertex.x + 1)) / 2;
+	mid.y = ((line->start_vertex.y + 2) + (line->end_vertex.y + 2)) / 2;
+	t_float_pair perpendicular;
+	/* subtract rotation point */
+	perpendicular.x = ((line->start_vertex.x + 1)) - mid.x;
+	perpendicular.y = (line->start_vertex.y + 2) - mid.y;
+	/* swap coordinates and change sign of x */
+	float tmp = perpendicular.x;
+	perpendicular.x = perpendicular.y;
+	perpendicular.y = tmp;
+	perpendicular.x *= -1;
+	/* add rotation point back */
+	perpendicular.x += mid.x;
+	perpendicular.y += mid.y;
+
+	nk_stroke_line(b, mid.x, mid.y, perpendicular.x, perpendicular.y, THICKNESS, line_node->color);
+
+}
+int		stroke_my_line( struct nk_command_buffer *b, t_item_node *line_node)
 {
 	nk_stroke_line(b,
 		line_node->line->start_vertex.x + 1, line_node->line->start_vertex.y + 2,
 		line_node->line->end_vertex.x + 1, line_node->line->end_vertex.y + 2,
 		THICKNESS, line_node->color);
+	stroke_line_side_indicator(b, line_node);
 	return(0);
 }
 
@@ -22,7 +46,7 @@ void stroke_box(struct nk_command_buffer *b, t_item_node *thing_node)
 	thing_node->color : thing_node->thing->color);
 }
 
-t_float_pair	snap(struct nk_vec2 v)
+t_float_pair	snap(t_int_pair win_size, struct nk_vec2 v)
 {
 	t_float_pair res;
 
@@ -36,17 +60,19 @@ t_float_pair	snap(struct nk_vec2 v)
 	if (res.y < 30) res.y = 30;
 	if (res.x < 10) res.x = 10;
 	/* check upper bounds */
-	if (res.y >= WINDOW_HEIGHT - WINDOW_OFFSET) res.y = WINDOW_HEIGHT - (WINDOW_OFFSET * 2);
-	if (res.x >= (WINDOW_WIDTH - (WINDOW_WIDTH / 4)) - WINDOW_OFFSET) res.x = WINDOW_WIDTH - (WINDOW_WIDTH / 4) - (WINDOW_OFFSET * 2);
+	if (res.y >= win_size.y - WINDOW_OFFSET) res.y = win_size.y - (WINDOW_OFFSET * 2);
+	if (res.x >= (win_size.x - (win_size.x / 4)) - WINDOW_OFFSET) res.x = win_size.x - (win_size.x / 4) - (WINDOW_OFFSET * 2);
 	return (res);
 }
 
-void	add_line(t_bank *bank, struct nk_vec2 start, struct nk_vec2 end)
+void	add_line(t_map_interface *draw_mode, struct nk_vec2 start, struct nk_vec2 end)
 {
+	t_bank		*bank = draw_mode->bank;
 	t_item_node *new;
 	/* snap input coordinates */
-	t_float_pair st = snap(start);
-	t_float_pair en = snap(end);
+	t_int_pair win_size = {draw_mode->win_w, draw_mode->win_h};
+	t_float_pair st = snap(win_size, start);
+	t_float_pair en = snap(win_size, end);
 	/* return if both points in same location */
 	if (st.x == en.x && st.y == en.y)
 		return ;
@@ -87,11 +113,13 @@ void	add_line(t_bank *bank, struct nk_vec2 start, struct nk_vec2 end)
 	bank->count_line++;
 }
 
-void	add_thing(t_bank *bank, struct nk_vec2 location, char *name)
+void	add_thing(t_map_interface *draw_mode, struct nk_vec2 location, char *name)
 {
+	t_bank		*bank = draw_mode->bank;
 	t_item_node	*new;
 	/* snap input coordinates */
-	t_float_pair pos = snap(location);
+	t_int_pair win_size = {draw_mode->win_w, draw_mode->win_h};
+	t_float_pair pos = snap(win_size, location);
 	/* return if duplicate thing found */
 	for (new = bank->head_thing; new; new = new->next)
 		if (pos.x == new->thing->pos.x && pos.y == new->thing->pos.y) return ;
