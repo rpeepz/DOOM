@@ -117,11 +117,11 @@ static void	things(struct nk_context *ctx, t_bank *bank)
 	}
 }
 
-void    list_pannel(t_map_interface *draw_mode)
+void    list_panel(t_map_interface *draw_mode)
 {
 	struct nk_context *ctx = draw_mode->ctx;
 	t_bank *bank = draw_mode->bank;
-	/* pannel size nk_rect(1210, 5, 385, 400) (size and offset for 1600 x 900 window) */
+	/* panel size nk_rect(1210, 5, 385, 400) (size and offset for 1600 x 900 window) */
 	struct nk_rect size = nk_rect(draw_mode->win_w - (draw_mode->win_w / 4) + (WINDOW_OFFSET * 2),
 	WINDOW_OFFSET, draw_mode->win_w - ((draw_mode->win_w / 4) * 3) - (WINDOW_OFFSET * 3),
     draw_mode->win_h - ((draw_mode->win_h * 5) / 9));
@@ -170,5 +170,6 @@ void    list_pannel(t_map_interface *draw_mode)
 			things(ctx, bank);
 		}
 	}
+	button->normal = nk_style_item_color(BUTTON_DEFAULT);
 	nk_end(ctx);
 }

@@ -18,6 +18,7 @@
 
 # include "../../Nuklear/nuklear.h"
 # include "nuklear_sdl_gl3.h"
+# define ITEM_SECTOR 3
 # define ITEM_LINE 2
 # define ITEM_THING 1
 
@@ -50,13 +51,13 @@ int		stroke_my_line(struct nk_command_buffer *b, t_item_node *node);
 	which holds the vector that will be the location of the thing */
 void	stroke_box(struct nk_command_buffer *b, t_item_node *thing_node);
 
-/*	Nuklear pannel allowing the user to view and edit information
-	on the current selected line withing the linkbank */
-void	edit_pannel(t_map_interface *draw_mode);
+/*	Nuklear panel allowing the user to view and edit information
+	on the current selected line within the linkbank */
+void	edit_panel(t_map_interface *draw_mode);
 
-/*	Nuklear pannel displaying information such as coordinates and flags
+/*	Nuklear panel displaying information such as coordinates and flags
 	of the lines that have been added to the map */
-void	list_pannel(t_map_interface *draw_mode);
+void	list_panel(t_map_interface *draw_mode);
 
 /*	Snap coordinates to a grid and convert from nk_vec2 to float pair */
 t_float_pair	snap(t_int_pair win_size, struct nk_vec2 v);

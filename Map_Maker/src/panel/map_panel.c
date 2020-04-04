@@ -31,11 +31,11 @@ void    draw_menu(t_map_interface *draw_mode);
 void    draw_about(struct nk_context *ctx);
 void    draw_help(t_map_interface *draw_mode);
 
-void    map_pannel(t_map_interface *draw_mode)
+void    map_panel(t_map_interface *draw_mode)
 {
 	struct nk_rect size;
 
-	/* pannel size nk_rect(5, 5, 1200, 800) (size and offset for 1600 x 900 window) */
+	/* panel size nk_rect(5, 5, 1200, 800) (size and offset for 1600 x 900 window) */
 	size = nk_rect(WINDOW_OFFSET, WINDOW_OFFSET,
 	draw_mode->win_w - (draw_mode->win_w / 4),
 	draw_mode->win_h - (WINDOW_OFFSET * 2));
@@ -290,7 +290,7 @@ void	draw_help(t_map_interface *draw_mode)
 				nk_label_wrap(ctx, "The purple dot indicates when the second point is ready to be selected.");
 				nk_layout_row_dynamic(ctx, 60, 1);
 				nk_label_wrap(ctx, "When the second point has been selected, a line will appear in the map panel showing the current position of the line.");
-				nk_label_wrap(ctx, "An entry will appear in the List pannel, along with any other lines that have been created.");
+				nk_label_wrap(ctx, "An entry will appear in the List panel, along with any other lines that have been created.");
 				nk_layout_row_dynamic(ctx, 45, 1);
 				nk_label_wrap(ctx, "Right click can be used to cancel the placement of the starting point.");
 			nk_layout_row_dynamic(ctx, 25, 1);

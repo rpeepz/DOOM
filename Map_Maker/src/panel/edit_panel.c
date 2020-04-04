@@ -23,7 +23,7 @@ void    edit_selected_thing(t_map_interface *draw_mode, t_item_node *item);
 void    list_wall_textures(t_map_interface *draw_mode, t_sidedef *side, t_resource_table *wall);
 void    delete_button(t_map_interface *draw_mode);
 
-void    edit_pannel(t_map_interface *draw_mode)
+void    edit_panel(t_map_interface *draw_mode)
 {
     if (!draw_mode->bank->selected ||
     ((draw_mode->list_op == ITEM_LINE && !draw_mode->bank->selected->line) ||
@@ -32,7 +32,7 @@ void    edit_pannel(t_map_interface *draw_mode)
     struct nk_context *ctx = draw_mode->ctx;
     nk_window_set_focus(ctx, "Edit");
 
-    /* pannel size nk_rect(1310, 375, 275, 500); (size and offset for 1600 x 900 window) */
+    /* panel size nk_rect(1310, 375, 275, 500); (size and offset for 1600 x 900 window) */
     struct nk_rect size = nk_rect(draw_mode->win_w - ((draw_mode->win_w / 15) * 3) + (WINDOW_OFFSET * 2),
     ((draw_mode->win_h * 2) / 5) + (WINDOW_OFFSET * 3),
     ((draw_mode->win_w * 5) / 32) + (WINDOW_OFFSET * 5),
