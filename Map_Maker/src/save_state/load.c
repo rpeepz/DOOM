@@ -81,8 +81,9 @@ int     load_map(t_map_interface *draw_mode, char *name)
 				read(fd, &line->tag, sizeof(line->tag));
 				read(fd, &line->flags, sizeof(line->flags));
 				for (int k = 0; k < 2; k++) {
-					read(fd, &line->sides[k].offset, sizeof(line->sides[0].offset));
-					read(fd, &line->sides[k].textures, sizeof(line->sides[0].textures));
+					read(fd, &line->sides[k].offset, sizeof(line->sides[k].offset));
+					read(fd, &line->sides[k].textures, sizeof(line->sides[k].textures));
+					read(fd, &line->sides[k].sector_num, sizeof(line->sides[k].sector_num));
 				/*
 					read(fd, &line->sides[k].sector_info.flats[0], sizeof(line->sides[k].sector_info.flats[0]));
 					read(fd, &line->sides[k].sector_info.flats[1], sizeof(line->sides[k].sector_info.flats[1]));

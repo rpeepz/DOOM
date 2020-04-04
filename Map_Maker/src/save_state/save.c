@@ -75,8 +75,9 @@ int     save(t_map_interface *draw_mode)
 				size += write(fd, &item->line->tag, sizeof(item->line->tag));
 				size += write(fd, &item->line->flags, sizeof(item->line->flags));
 				for (int k = 0; k < 2; k++) {
-					size += write(fd, &item->line->sides[k].offset, sizeof(item->line->sides[0].offset));
-					size += write(fd, &item->line->sides[k].textures, sizeof(item->line->sides[0].textures));
+					size += write(fd, &item->line->sides[k].offset, sizeof(item->line->sides[k].offset));
+					size += write(fd, &item->line->sides[k].textures, sizeof(item->line->sides[k].textures));
+					size += write(fd, &item->line->sides[k].sector_num, sizeof(item->line->sides[k].sector_num));
 				/*
 					size += write(fd, &item->line->sides[k].sector_info.flats[0], sizeof(item->line->sides[k].sector_info.flats[0]));
 					size += write(fd, &item->line->sides[k].sector_info.flats[1], sizeof(item->line->sides[k].sector_info.flats[1]));
