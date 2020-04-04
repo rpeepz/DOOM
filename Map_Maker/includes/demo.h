@@ -28,6 +28,8 @@
 # include "resource.h"
 # include "lump.h"
 
+# define WINDOW_WIDTH 1600
+# define WINDOW_HEIGHT 900
 # define WINDOW_OFFSET 5
 # define HIGHLIGHT nk_rgb(255, 140, 60)
 # define LINE_COLOR nk_rgb(10, 10, 10)
@@ -47,24 +49,6 @@ typedef struct	s_line
 	t_vec2f		start;
 	t_vec2f		end;
 }				t_line;
-
-typedef struct	s_sector
-{
-	t_line		*sector_lines;
-}				t_sector;
-
-typedef struct	s_seg
-{
-	t_line		*ptr_to_line_segmenting;
-	int			x;
-	int			y;
-}				t_seg;
-
-typedef struct	s_subsec
-{
-	// Im not sure what a subsector consists of besides segments
-	t_seg		*subsec_segments;
-}				t_subsec;
 
 /* current selected tool from tool panel
 
@@ -95,8 +79,8 @@ typedef struct			s_map_interface
 }						t_map_interface;
 
 void				define_window_size(int *window_width, int *window_height);
-void				map_pannel(t_map_interface *draw_mode);
-void				tool_pannel(t_map_interface *draw_mode);
+void				map_panel(t_map_interface *draw_mode);
+void				tool_panel(t_map_interface *draw_mode);
 t_resource_table    *gather_assets(int mode);
 
 #endif

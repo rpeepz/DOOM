@@ -18,7 +18,7 @@ struct s_option_label{
 	int  mode;
 };
 
-void tool_pannel(t_map_interface *draw_mode)
+void tool_panel(t_map_interface *draw_mode)
 {
 	struct nk_context *ctx = draw_mode->ctx;
 		struct s_option_label options[ ] = {
@@ -26,10 +26,10 @@ void tool_pannel(t_map_interface *draw_mode)
 		{ .label = "Edit", .tooltip = "Edit items on map", .mode = EDIT },
 		{ .label = "Line", .tooltip = "Add lines to map", .mode = LINE },
 		{ .label = "Thing", .tooltip = "Add things to map", .mode = THING },
-		{ .label = "Sector", .tooltip = "Sector tooltip", .mode = SECTOR },
-		{ .label = "File", .tooltip = "File tooltip", .mode = NK_FILE }};
+		{ .label = "Sector", .tooltip = "Identify and edit sectors", .mode = SECTOR },
+		{ .label = "File", .tooltip = "Opens the menu bar", .mode = NK_FILE }};
 
-	int num_options = sizeof(options) / sizeof(options[0]);
+	int num_options = NK_LEN(options);
 
 	struct nk_rect size = nk_rect(draw_mode->win_w - (draw_mode->win_w / 4) + (WINDOW_OFFSET * 2),
 	draw_mode->win_h - ((draw_mode->win_h * 5) / 9) + (WINDOW_OFFSET * 2),

@@ -6,8 +6,8 @@ INC = includes/
 OBJ_PATH = obj
 
 ifeq ($(shell uname -s), Darwin)
-	SDL2_DIR = /usr/local/Cellar/sdl2/2.0.12/lib
-	SDL2_INC_DIR = /usr/local/Cellar/sdl2/2.0.12/include
+	SDL2_DIR = /usr/local/Cellar/sdl2/2.0.12_1/lib
+	SDL2_INC_DIR = /usr/local/Cellar/sdl2/2.0.12_1/include
 	GLEW_DIR = /usr/local/Cellar/glew/2.1.0_1/lib
 	GLEW_INC_DIR = /usr/local/Cellar/glew/2.1.0_1/include
 else
@@ -30,7 +30,8 @@ SRC = main.c\
 PANEL = tool_panel.c\
 	list_panel.c\
 	map_panel.c\
-	edit_panel.c
+	edit_panel.c\
+	sector_panel.c
 
 SAVE = save.c \
 	load.c
