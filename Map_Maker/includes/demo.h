@@ -67,6 +67,7 @@ typedef struct			s_map_interface
 {
 	struct nk_context	*ctx;
 	struct s_bank		*bank;
+	struct s_sectors	*sectors;
 	t_resource_table	*floor;
 	t_resource_table	*wall;
 	t_resource_table	*sounds;

@@ -15,6 +15,7 @@
 
 # define SECTOR_ADD 0
 # define SECTOR_EDIT 1
+# define SECTOR_MAX 64
 
 # include "map.h"
 # include "demo.h"
@@ -34,6 +35,7 @@ typedef struct      s_sector_info
 typedef struct	    s_sector
 {
 	t_line		    *sector_lines;
+    int             line_count;
     t_sector_info   sector_info;
 }				    t_sector;
 
@@ -49,6 +51,12 @@ typedef struct	    s_subsec
 	// Im not sure what a subsector consists of besides segments
 	t_seg		    *subsec_segments;
 }				    t_subsec;
+
+typedef struct      s_sectors
+{
+    t_sector        sectors[SECTOR_MAX];
+    int             *selected;
+}                   t_sectors;
 
 /*	Nuklear panel allowing the user to view and edit information
 	on the sectors in the current map */

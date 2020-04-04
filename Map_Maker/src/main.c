@@ -22,6 +22,7 @@
 
 t_map_interface draw_mode;
 t_bank bank = {0};
+t_sectors sectors = {0};
 
 void    hooks(void)
 {
@@ -94,6 +95,7 @@ int     main(void)
 
 	draw_mode.ctx = ctx;
 	draw_mode.bank = &bank;
+	draw_mode.sectors = &sectors;
 	draw_mode.floor = gather_assets(0);
 	draw_mode.wall = gather_assets(1);
 	draw_mode.sounds = gather_assets(2);
