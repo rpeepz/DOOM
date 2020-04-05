@@ -34,8 +34,11 @@ t_resource_table    *gather_assets(int mode)
     else if (mode == 1) asset_path = "assets/wall/";
     else if (mode == 2) asset_path = "assets/allsounds/";
     else if (mode == 3) asset_path = "assets/allmusic/";
-    else return NULL;
     dir = opendir(asset_path);
+    if (!dir) {
+        dprintf(2, "Path '%s' not found\n", asset_path);
+        return NULL;
+    }
     /* itterate entries */
     while ((sd = readdir(dir)) != NULL)
     {
@@ -50,7 +53,6 @@ t_resource_table    *gather_assets(int mode)
         /* read and store asset data */
         get_file_info(&table->table[table->size]);
         table->size++;
-    }
-    if (dir) closedir(dir);
+    }closedir(dir);
     return (table);
 }

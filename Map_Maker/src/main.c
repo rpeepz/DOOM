@@ -101,6 +101,8 @@ int     main(void)
 	draw_mode.wall = gather_assets(1);
 	draw_mode.sounds = gather_assets(2);
 	draw_mode.music = gather_assets(3);
+	if (!draw_mode.floor || !draw_mode.wall || !draw_mode.sounds || !draw_mode.music)
+		exit(-1);
 	draw_mode.win_w = window_width;
 	draw_mode.win_h = window_height;
 	draw_mode.tool_op = launch_help ? NK_FILE : LINE;// Tools panel selected tool
