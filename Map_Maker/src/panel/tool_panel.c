@@ -34,9 +34,8 @@ void tool_panel(t_map_interface *draw_mode)
 	struct nk_rect size = nk_rect(draw_mode->win_w - (draw_mode->win_w / 4) + (WINDOW_OFFSET * 2),
 	draw_mode->win_h - ((draw_mode->win_h * 5) / 9) + (WINDOW_OFFSET * 2),
 	(draw_mode->win_w / 7), draw_mode->win_h / 2.75);
-	
     if (nk_begin(draw_mode->ctx, "Tools", size,
-		NK_WINDOW_BORDER|NK_WINDOW_MINIMIZABLE))
+		NK_WINDOW_BORDER|NK_WINDOW_MINIMIZABLE|NK_WINDOW_BACKGROUND))
 		{
 			nk_layout_row_static(ctx, 30, 60, 1);
 
