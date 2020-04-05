@@ -36,6 +36,7 @@ typedef struct	    s_sector
 {
 	t_line		    *sector_lines;
     int             line_count;
+	int				sector_num;
     t_sector_info   sector_info;
 }				    t_sector;
 
@@ -55,7 +56,7 @@ typedef struct	    s_subsec
 typedef struct      s_sectors
 {
     t_sector        sectors[SECTOR_MAX];
-    int             *selected;
+    int             selected;
 }                   t_sectors;
 
 /*	Nuklear panel allowing the user to view and edit information

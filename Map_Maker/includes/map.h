@@ -64,6 +64,7 @@ typedef struct		s_linedef
 	uint32_t		tag;
 	uint8_t			flags;
 	t_sidedef		sides[2];
+	int				sectorized[2];
 }					t_linedef;
 
 /* Info for things that appear on the map
