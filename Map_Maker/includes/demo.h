@@ -79,8 +79,8 @@ typedef struct			s_map_interface
 	char				map_name[20];
 }						t_map_interface;
 
-void				define_window_size(int *window_width, int *window_height);
-void				map_panel(t_map_interface *draw_mode);
+int					define_window_size(int *window_width, int *window_height);
+void				map_panel(t_map_interface *draw_mode, int *launch_help);
 void				tool_panel(t_map_interface *draw_mode);
 t_resource_table    *gather_assets(int mode);
 

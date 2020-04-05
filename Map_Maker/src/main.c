@@ -23,6 +23,7 @@
 t_map_interface draw_mode;
 t_bank bank = {0};
 t_sectors sectors = {0};
+int launch_help;
 
 void    hooks(void)
 {
@@ -37,7 +38,7 @@ void    hooks(void)
 void    panels(void)
 {
 	tool_panel(&draw_mode);
-	map_panel(&draw_mode);
+	map_panel(&draw_mode, &launch_help);
 	list_panel(&draw_mode);
 
 	if (draw_mode.tool_op == EDIT)
@@ -52,7 +53,7 @@ int     main(void)
 	//default window size
 	int window_width = WINDOW_WIDTH, window_height = WINDOW_HEIGHT;
 	/* open launcher to chose window size */
-//	define_window_size(&window_width, &window_height);
+	launch_help = define_window_size(&window_width, &window_height);
 	/* Platform */
 	SDL_Window *win;
 	SDL_GLContext glContext;
@@ -102,7 +103,7 @@ int     main(void)
 	draw_mode.music = gather_assets(3);
 	draw_mode.win_w = window_width;
 	draw_mode.win_h = window_height;
-	draw_mode.tool_op = NK_FILE;// Tools panel selected tool
+	draw_mode.tool_op = launch_help ? NK_FILE : LINE;// Tools panel selected tool
 	draw_mode.list_op = ITEM_LINE;
 
 	const struct nk_input *in = &ctx->input;

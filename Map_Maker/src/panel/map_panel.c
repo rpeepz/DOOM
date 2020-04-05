@@ -31,10 +31,10 @@ void    draw_menu(t_map_interface *draw_mode);
 void    draw_about(struct nk_context *ctx);
 void    draw_help(t_map_interface *draw_mode);
 
-void    map_panel(t_map_interface *draw_mode)
+void    map_panel(t_map_interface *draw_mode, int *launch_help)
 {
+	if (!(*launch_help)) show_help = nk_false;
 	struct nk_rect size;
-
 	/* panel size nk_rect(5, 5, 1200, 800) (size and offset for 1600 x 900 window) */
 	size = nk_rect(WINDOW_OFFSET, WINDOW_OFFSET,
 	draw_mode->win_w - (draw_mode->win_w / 4),
