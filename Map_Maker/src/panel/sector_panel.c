@@ -73,6 +73,8 @@ void	add_sector(t_map_interface *draw_mode)
 /* panel functions for editing sector info */
 void	edit_sector(t_map_interface *draw_mode)
 {
+	// TODO
+	// create panel to edit info on current sector
 	(void)draw_mode;
 }
 
