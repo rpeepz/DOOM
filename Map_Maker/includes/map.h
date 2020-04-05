@@ -35,18 +35,9 @@
 
 # include "generic_structs.h"
 # include "demo.h"
+# include "sector.h"
 
 /*	line data */
-
-/*	Info for each side of the given linedef
-
-*/
-typedef struct		s_sidedef
-{
-	t_float_pair	offset; //row, column
-	char			textures[3][16]; //top mid and bottom 0, 1, 2 respectively
-	uint32_t		sector_num;
-}					t_sidedef;
 
 /*	Info for lines to be drawn on the map
 

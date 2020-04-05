@@ -15,18 +15,17 @@ void	edit_sector(t_map_interface *draw_mode);
 
 void    sector_panel(t_map_interface *draw_mode)
 {
-	if (draw_mode->bank->selected) {
-		if (draw_mode->bank->selected->line)
-			draw_mode->bank->selected->color = LINE_COLOR;
-		else draw_mode->bank->selected->color = THING_COLOR;
-	}
+	// turn off highlight for things
+	if (draw_mode->bank->selected)
+		if (draw_mode->bank->selected->thing)
+			draw_mode->bank->selected->color = THING_COLOR;
+
 	size = nk_rect(draw_mode->win_w - ((draw_mode->win_w / 15) * 3) + (WINDOW_OFFSET * 2),
 	draw_mode->win_h - ((draw_mode->win_h * 5) / 9) + (WINDOW_OFFSET * 3),
 	((draw_mode->win_w * 5) / 32) + (WINDOW_OFFSET * 5),
 	100);
 
 	ctx = draw_mode->ctx;
-	// nk_window_set_focus(ctx, "Sector");
 	if (nk_begin(ctx, "Sector", size, NK_WINDOW_BORDER|NK_WINDOW_TITLE)) {
 		if (!draw_mode->bank->head_line ||
 		!draw_mode->bank->head_line->next ||
@@ -36,14 +35,13 @@ void    sector_panel(t_map_interface *draw_mode)
 			nk_end(ctx);
 			return ;
 		}
-		
-		nk_layout_row_dynamic(ctx, 20, 2);
 		/* color style for buttons */
 		button = &ctx->style.button;
 		button->active = nk_style_item_color(BUTTON_DEFAULT);
 		button->hover = nk_style_item_color(nk_rgba(150, 150, 150, 80));
 
-		// colors for selected item type
+		nk_layout_row_dynamic(ctx, 20, 2);
+		// colors for selected panel option
 		if (sector_panel_op == SECTOR_ADD) button->normal = nk_style_item_color(nk_rgba(170, 170, 170, 80));
 		else button->normal = nk_style_item_color(BUTTON_DEFAULT);
 		if (nk_button_label(ctx, "Add Sector"))
@@ -60,17 +58,19 @@ void    sector_panel(t_map_interface *draw_mode)
 	if (sector_panel_op == SECTOR_EDIT) edit_sector(draw_mode);
 }
 
+/* driver for sector panel functions */
 void	add_sector(t_map_interface *draw_mode)
 {
 	//fill lines
-	static t_sector	new_sector = {0};
 	fill_lines(draw_mode);
 	//get sector number
+	static t_sector	new_sector = {0};
 	new_sector.sector_num = suggest_sector_number(draw_mode);
 	//confirm valid sector and add to sector bank
 	finish_sector(draw_mode, &new_sector);
 }
 
+/* panel functions for editing sector info */
 void	edit_sector(t_map_interface *draw_mode)
 {
 	(void)draw_mode;
@@ -81,24 +81,29 @@ void	fill_lines(t_map_interface *draw_mode)
 {
 	size.y += 80;
 	size.h = draw_mode->win_h * 0.2;
+	// easier to scroll in window
 	nk_window_set_focus(ctx, "fill lines");
 	if (nk_begin(ctx, "fill lines", size, NK_WINDOW_BORDER)) {
 		char buffer[32];
 		int line_counter = 0;
 		for (t_item_node *list = draw_mode->bank->head_line; list; list = list->next) {
+			// remove highlight for lines
+			list->color = LINE_COLOR;
 			memset(buffer, 0, sizeof(buffer));
 			t_linedef *line = list->line;
 			nk_layout_row_begin(ctx, NK_STATIC, 20, 4);
+			// list line
 			sprintf(buffer, "line %d", line_counter++);
 			nk_layout_row_push(ctx, 50);
 			nk_label(ctx, buffer, NK_TEXT_LEFT);
-
+			// checkbox for either side of line if applicable
 			for (int i = 0; i < 2; i++) {
 				int used = line->sides[i].sector_num ? 1 : 0;
 				if (!(line->flags & L_TWO_SIDED) && i == 1) break ;
 				if (!used) {
 					if (nk_checkbox_label(ctx, "Use", &line->sectorized[i]))
 						line->sectorized[i ^ 1] = 0;
+					if (line->sectorized[i]) list->color = HIGHLIGHT;
 				} else nk_label(ctx, " ", NK_TEXT_CENTERED);
 			}
 		}
@@ -106,6 +111,7 @@ void	fill_lines(t_map_interface *draw_mode)
 	nk_end(ctx);
 }
 
+/* set sector number or suggest using an unused number */
 int		suggest_sector_number(t_map_interface *draw_mode)
 {
 	size.y += (draw_mode->win_h * 0.2);
@@ -145,18 +151,16 @@ int		suggest_sector_number(t_map_interface *draw_mode)
 	return sector_num;
 }
 
-void	line_realloc(t_sector *sector)
-{
-	if (sector->sector_lines) {
-		;
-	}
-}
-
+/* is it a valid enclosed sector */
 int		check_lines_for_convex(void)
 {
+	// TODO
+	// compare verticies of selected lines
+	// to confirm an enclosed sector
 	return 0;
 }
 
+/* various checks to see if the sector selection is valid */
 int		confirm_sector(t_item_node *head_line, t_sector *new_sector)
 {
 	for (t_item_node *lines = head_line; lines; lines = lines->next) {
@@ -190,13 +194,16 @@ int		confirm_sector(t_item_node *head_line, t_sector *new_sector)
 			}
 		}
 	}
-	// confirm valid enclosed sector
-	if (check_lines_for_convex())
+	if (check_lines_for_convex()) {
+		free(new_sector->sector_lines);
+		bzero(new_sector, sizeof(*new_sector));
 		return 2;
+	}
 	
 	return 0;
 }
 
+/* functionality for accepting and adding the new sector */
 void	finish_sector(t_map_interface *draw_mode, t_sector *new_sector)
 {
 	size.y += 50;
@@ -209,24 +216,33 @@ void	finish_sector(t_map_interface *draw_mode, t_sector *new_sector)
 		if (nk_button_label(ctx, "OK")) {
 			int ret;
 			if (!(ret = confirm_sector(draw_mode->bank->head_line, new_sector))) {
-				// add to sector bank
-				printf("\nyour sector\n");
-				for (int i = 0; i < new_sector->line_count; i++) {
-					t_line line = new_sector->sector_lines[i];
-					printf("line %d start:\nx = %4.0f y = %4.0f\nend:\nx = %4.0f y = %.0f\n\n", i, line.start.x, line.start.y, line.end.x, line.end.y);
+				int i;
+				for (i = 0; i < SECTOR_MAX; i++) {
+					if (draw_mode->sectors->sectors[i].line_count)
+						continue ;
+					// apply new sector to the next free slot in the sector array
+					memcpy(&draw_mode->sectors->sectors[i], new_sector, sizeof(*new_sector));
+					break ;
 				}
-				bzero(new_sector, sizeof(*new_sector));
+				if (i >= SECTOR_MAX)
+					dprintf(2, "UNABLE TO ADD MORE SECTORS\n");
 				for (t_item_node *list = draw_mode->bank->head_line; list; list = list->next) {
 					t_linedef *line = list->line;
-					for (int i = 0; i < 2; i++)
-						line->sectorized[i] = 0;
+					for (int j = 0; j < 2; j++) {
+						if (line->sectorized[j]) {
+							if (i < SECTOR_MAX)
+								line->sides[j].sector_num = new_sector->sector_num;
+							line->sectorized[j] = 0;
+						}
+					}
 				}
+				bzero(new_sector, sizeof(*new_sector));
 			} else {
+				// tell me why you cant
 				if (ret == 1)
 					dprintf(2, "Not enough lines selected to form a valid sector\n");
 				if (ret == 2)
 					dprintf(2, "Selected Lines do not form a valid sector\n");
-				// tell me why you cant
 			}
 		}
 	}

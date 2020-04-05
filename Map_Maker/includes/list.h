@@ -15,6 +15,7 @@
 
 # include "map.h"
 # include "demo.h"
+# include "sector.h"
 
 # include "../../Nuklear/nuklear.h"
 # include "nuklear_sdl_gl3.h"

@@ -23,6 +23,16 @@
 # include "../../Nuklear/nuklear.h"
 # include "nuklear_sdl_gl3.h"
 
+/*	Info for each side of the given linedef
+
+*/
+typedef struct		s_sidedef
+{
+	t_float_pair	offset; //row, column
+	char			textures[3][16]; //top mid and bottom 0, 1, 2 respectively
+	uint32_t		sector_num;
+}					t_sidedef;
+
 typedef struct      s_sector_info
 {
 	t_int_pair	    room_heights;
