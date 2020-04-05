@@ -109,22 +109,6 @@ void    edit_selected_line(t_map_interface *draw_mode, t_linedef *line)
 
     /* linedef flag options */
     if (nk_tree_push(ctx, NK_TREE_TAB, "Flags", NK_MAXIMIZED)) {
-        struct nk_style_toggle *box = &ctx->style.checkbox;
-
-        box->border = 1.0f;
-        box->border_color = nk_rgb(80, 80, 80);
-    // full box when 0
-        /* no hover */
-        box->normal = nk_style_item_color(nk_rgb(80, 80, 80));
-        /* hover */
-        box->hover = nk_style_item_color(nk_rgb(150, 80, 80));
-
-    // inside of box when 1
-        /* no hover */
-        box->cursor_normal = nk_style_item_color(nk_rgb(140, 140, 140));
-        /* hover */
-        box->cursor_hover = nk_style_item_color(nk_rgb(140, 140, 140));
-
         nk_layout_row_dynamic(ctx, 20, 2);
 
         /* flags check boxes */

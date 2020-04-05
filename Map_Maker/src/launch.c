@@ -61,6 +61,21 @@ int     define_window_size(int *window_width, int *window_height)
 
 	bg.r = 0.18f, bg.g = 0.18f, bg.b = 0.18f, bg.a = 1.0f;
 
+	struct nk_style_toggle *box = &ctx->style.checkbox;
+	box->border = 1.0f;
+	box->border_color = nk_rgb(80, 80, 80);
+    // full box when 0
+	/* no hover */
+	box->normal = nk_style_item_color(nk_rgb(80, 80, 80));
+	/* hover */
+	box->hover = nk_style_item_color(nk_rgb(150, 80, 80));
+
+    // inside of box when 1
+	/* no hover */
+	box->cursor_normal = nk_style_item_color(nk_rgb(140, 140, 140));
+	/* hover */
+	box->cursor_hover = nk_style_item_color(nk_rgb(140, 140, 140));
+
 	const struct nk_input *in = &ctx->input;
 	while (running)
 	{
@@ -154,7 +169,7 @@ void	get_resolution(struct nk_context *ctx, int *window_width, int *window_heigh
 					break ;
 				case 2:
 					*window_width = 1600;
-					*window_height = 1080;
+					*window_height = 900;
 					break ;
 				case 3:
 					*window_width = 1280;

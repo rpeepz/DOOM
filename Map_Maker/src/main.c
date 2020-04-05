@@ -106,6 +106,21 @@ int     main(void)
 	draw_mode.tool_op = launch_help ? NK_FILE : LINE;// Tools panel selected tool
 	draw_mode.list_op = ITEM_LINE;
 
+	struct nk_style_toggle *box = &ctx->style.checkbox;
+	box->border = 1.0f;
+	box->border_color = nk_rgb(80, 80, 80);
+    // full box when 0
+	/* no hover */
+	box->normal = nk_style_item_color(nk_rgb(80, 80, 80));
+	/* hover */
+	box->hover = nk_style_item_color(nk_rgb(150, 80, 80));
+
+    // inside of box when 1
+	/* no hover */
+	box->cursor_normal = nk_style_item_color(nk_rgb(140, 140, 140));
+	/* hover */
+	box->cursor_hover = nk_style_item_color(nk_rgb(140, 140, 140));
+
 	const struct nk_input *in = &ctx->input;
 
 	while (running)
