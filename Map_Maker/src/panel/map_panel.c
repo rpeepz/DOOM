@@ -325,7 +325,8 @@ void    draw_menu(t_map_interface *draw_mode)
 	struct nk_context *ctx = draw_mode->ctx;
 	nk_menubar_begin(ctx);
 	nk_layout_row_begin(ctx, NK_STATIC, 25, 2);
-	nk_layout_row_push(ctx, 40);
+	nk_layout_row_push(ctx, 60);
+	nk_window_set_focus(ctx, "MENU");
 	if (nk_menu_begin_label(ctx, "MENU", NK_TEXT_LEFT, nk_vec2(120, 200)))
 	{
 		nk_layout_row_dynamic(ctx, 25, 1);
@@ -340,12 +341,13 @@ void    draw_menu(t_map_interface *draw_mode)
 		}
 		nk_menu_end(ctx);
 	}
-	nk_layout_row_push(ctx, 60);
 	if (nk_menu_begin_label(ctx, "FILE", NK_TEXT_LEFT,
 	nk_vec2(120, 200)))
 	{
 		nk_layout_row_dynamic(ctx, 25, 1);
 		if (nk_menu_item_label(ctx, "New", NK_TEXT_LEFT)) {
+			save_as = nk_false;
+			open_map = nk_false;
 			/* do you want to save? */
 			if (check_exists(draw_mode->map_name, MAP) < 1)
 				printf("I hope you saved your work\n");
@@ -354,9 +356,11 @@ void    draw_menu(t_map_interface *draw_mode)
 		}
 		/* load in a file that was previously saved */
 		if (nk_menu_item_label(ctx, "Open", NK_TEXT_LEFT)) {
+			save_as = nk_false;
 			open_map = nk_true;
 		}
 		if (nk_menu_item_label(ctx, "Save", NK_TEXT_LEFT)) {
+			open_map = nk_false;
 			/* create new file name */
 			if (check_exists(draw_mode->map_name, MAP) < 0)
 				save_as = nk_true;
