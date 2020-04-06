@@ -162,8 +162,9 @@ int		check_lines_for_convex(void)
 }
 
 /* various checks to see if the sector selection is valid */
-int		confirm_sector(t_item_node *head_line, t_sector *new_sector)
+int		confirm_sector(t_sector *sector, t_item_node *head_line, t_sector *new_sector)
 {
+	/* check if more than 3 lines are used */
 	for (t_item_node *lines = head_line; lines; lines = lines->next) {
 		t_linedef *line = lines->line;
 		for (int i = 0; i < 2; i++)
@@ -174,9 +175,15 @@ int		confirm_sector(t_item_node *head_line, t_sector *new_sector)
 		new_sector->line_count = 0;
 		return 1;
 	}
+	/* make sure no duplicate sector number */
+	for (int i = 0; i < SECTOR_MAX; i++) {
+		if (new_sector->sector_num == sector[i].sector_num)
+			return 3;
+	}
+	/* create new sector */
 	new_sector->sector_lines = malloc(sizeof(*new_sector->sector_lines) * new_sector->line_count);
-	int i = 0;
 	for (t_item_node *lines = head_line; lines; lines = lines->next) {
+		int i = 0;
 		t_linedef *line = lines->line;
 		for (int j = 0; j < 2; j++) {
 			if (line->sectorized[j]) {
@@ -195,6 +202,7 @@ int		confirm_sector(t_item_node *head_line, t_sector *new_sector)
 			}
 		}
 	}
+	/* validate sector */
 	if (check_lines_for_convex()) {
 		free(new_sector->sector_lines);
 		bzero(new_sector, sizeof(*new_sector));
@@ -216,7 +224,7 @@ void	finish_sector(t_map_interface *draw_mode, t_sector *new_sector)
 		nk_label(ctx, " ",  NK_TEXT_RIGHT);
 		if (nk_button_label(ctx, "OK")) {
 			int ret;
-			if (!(ret = confirm_sector(draw_mode->bank->head_line, new_sector))) {
+			if (!(ret = confirm_sector(draw_mode->sectors->sectors, draw_mode->bank->head_line, new_sector))) {
 				int i;
 				for (i = 0; i < SECTOR_MAX; i++) {
 					if (draw_mode->sectors->sectors[i].line_count)
@@ -244,6 +252,8 @@ void	finish_sector(t_map_interface *draw_mode, t_sector *new_sector)
 					dprintf(2, "Not enough lines selected to form a valid sector\n");
 				if (ret == 2)
 					dprintf(2, "Selected Lines do not form a valid sector\n");
+				if (ret == 3)
+					dprintf(2, "Sector Number duplicate found\n");
 			}
 		}
 	}
@@ -257,7 +267,7 @@ int		sector_number(void)
 	int		len;
 	nk_layout_row_begin(ctx, NK_STATIC, 20, 5);
 	nk_layout_row_push(ctx, 45);
-	nk_label(ctx, "Number ", NK_TEXT_RIGHT);
+	nk_label(ctx, "List ", NK_TEXT_RIGHT);
 	nk_layout_row_push(ctx, 30);
 	if (nk_button_symbol_label(ctx, NK_SYMBOL_TRIANGLE_LEFT, "", NK_TEXT_LEFT)) {
 		if (sector_num > 1) --sector_num;
@@ -297,6 +307,13 @@ void	edit_sector(t_map_interface *draw_mode)
 		char *sections[ ] = {"Ceiling: ", "Floor: "};
 		t_sector_info *info = &draw_mode->sectors->sectors[draw_mode->sectors->selected].sector_info;
 		/* Change height of sector floor and ceiling */
+		nk_layout_row_dynamic(ctx, 25, 2);
+		nk_label(ctx, "Sector :", NK_TEXT_LEFT);
+		{
+		char num[8];
+		sprintf(num, "%d", draw_mode->sectors->sectors[draw_mode->sectors->selected].sector_num);
+		nk_label(ctx, num, NK_TEXT_LEFT);
+		}
 		nk_layout_row_dynamic(ctx, 25, 1);
 		nk_label(ctx, "Sector heights", NK_TEXT_LEFT);
 		nk_layout_row_begin(ctx, NK_STATIC, 30, 2);
