@@ -2,6 +2,8 @@
 #include "list.h"
 #include "sector.h"
 
+static int  texture_popup = nk_false;
+static int  texture_set = 0;
 static int	sector_panel_op = 0;
 struct nk_style_button *button;
 struct nk_rect size;
@@ -12,6 +14,7 @@ void	fill_lines(t_map_interface *draw_mode);
 int		suggest_sector_number(t_map_interface *draw_mode);
 void	finish_sector(t_map_interface *draw_mode, t_sector *new_sector);
 void	edit_sector(t_map_interface *draw_mode);
+void    list_floor_textures(t_map_interface *draw_mode, t_sector_info *info, t_resource_table *floor);
 
 void    sector_panel(t_map_interface *draw_mode)
 {
@@ -68,14 +71,6 @@ void	add_sector(t_map_interface *draw_mode)
 	new_sector.sector_num = suggest_sector_number(draw_mode);
 	//confirm valid sector and add to sector bank
 	finish_sector(draw_mode, &new_sector);
-}
-
-/* panel functions for editing sector info */
-void	edit_sector(t_map_interface *draw_mode)
-{
-	// TODO
-	// create panel to edit info on current sector
-	(void)draw_mode;
 }
 
 /* choose the lines to add to the new sector */
@@ -249,4 +244,157 @@ void	finish_sector(t_map_interface *draw_mode, t_sector *new_sector)
 		}
 	}
 	nk_end(ctx);
+}
+
+/* panel functions for editing sector info */
+void	edit_sector(t_map_interface *draw_mode)
+{
+	char	buffer[8];
+	int		len;
+	size.y += 80;
+	size.h = draw_mode->win_h * 0.35;
+	nk_window_set_focus(ctx, "edit sector");
+	if (nk_begin(ctx, "edit sector", size, NK_WINDOW_BORDER)) {
+		// TODO
+		// menubar to choose which sector to edit
+		char *sections[ ] = {"Ceiling: ", "Floor: "};
+		t_sector_info *info = &draw_mode->sectors->sectors[draw_mode->sectors->selected].sector_info;
+		/* Change height of sector floor and ceiling */
+		nk_layout_row_dynamic(ctx, 25, 1);
+		nk_label(ctx, "Sector heights", NK_TEXT_LEFT);
+		nk_layout_row_begin(ctx, NK_STATIC, 30, 2);
+		for (int i = 0; i < 2; i++) {
+			nk_layout_row_push(ctx, 55);
+			nk_label(ctx, sections[i], NK_TEXT_LEFT);
+			nk_layout_row_push(ctx, 40);
+			len = snprintf(buffer, 8, "%d", !i ? info->room_heights.x : info->room_heights.y);
+			nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 7, nk_filter_decimal);
+			if (!i) info->room_heights.x = atoi(buffer);
+			else info->room_heights.y = atoi(buffer);
+		}
+		nk_layout_row_end(ctx);
+
+		/* add textures to floor and ceiling of sector */
+		nk_layout_row_dynamic(ctx, 25, 1);
+		nk_label(ctx, "Textures", NK_TEXT_LEFT);
+		nk_layout_row_begin(ctx, NK_STATIC, 30, 3);
+		for (int i = 0; i < 2; i++) {
+			nk_layout_row_push(ctx, 60);
+			nk_label(ctx, sections[i], NK_TEXT_LEFT);
+			nk_layout_row_push(ctx, 100);
+			if (nk_button_label(ctx, info->flats[i])) {
+				texture_popup = nk_true;
+				texture_set = i;
+			}
+			nk_layout_row_push(ctx, 50);
+			if (nk_button_label(ctx, "clear"))
+				memset(info->flats[i], 0, sizeof(info->flats[i]));
+		}
+		nk_layout_row_end(ctx);
+
+		/* Edit light special and tag values */
+		nk_layout_row_dynamic(ctx, 25, 1);
+		nk_label(ctx, "Additional info", NK_TEXT_LEFT);
+		nk_layout_row_begin(ctx, NK_STATIC, 30, 2);
+		char *infos[] = {"Light: ", "Special: ", "Tag: "};
+		for (int i = 0; i < 3; i++) {
+			nk_layout_row_push(ctx, 70);
+			nk_label(ctx, infos[i], NK_TEXT_LEFT);
+			nk_layout_row_push(ctx, 40);
+			len = snprintf(buffer, 7, "%d", info->light);
+			nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 23, nk_filter_decimal);
+			buffer[len] = 0;
+			if (i == 0) info->light = atoi(buffer);
+			else if (i == 1) info->special = atoi(buffer);
+			else info->tag = atoi(buffer);
+		}
+
+		/* Texture Select window */
+    	if (texture_popup) {
+			struct nk_rect s = {-40, -90,
+			draw_mode->win_w / 5, draw_mode->win_h / 2};
+			if (nk_popup_begin(ctx, NK_POPUP_STATIC, "Texture Select", 0, s))
+			{
+				nk_menubar_begin(ctx);
+				nk_layout_row_begin(ctx, NK_STATIC, 25, 3);
+				nk_layout_row_push(ctx, 130);
+				nk_label(ctx, "Select Texture for ", NK_TEXT_LEFT);
+				nk_layout_row_push(ctx, 60);
+				nk_label(ctx, sections[texture_set], NK_TEXT_LEFT);
+				if (nk_button_label(ctx, "Cancel")) {
+					texture_popup = nk_false;
+					nk_popup_close(ctx);
+				}
+				// hit enter to close the popup window
+				if (nk_input_is_key_pressed(&ctx->input, NK_KEY_ENTER)) {
+					texture_popup = nk_false;
+					nk_popup_close(ctx);
+				}
+				nk_menubar_end(ctx);
+				/* list texture options */
+				list_floor_textures(draw_mode, info, draw_mode->floor);
+				nk_popup_end(ctx);
+			} else texture_popup = nk_false;
+		}
+	}
+	nk_end(ctx);
+}
+
+void    list_floor_textures(t_map_interface *draw_mode, t_sector_info *info, t_resource_table *floor)
+{
+    static int low = 0;
+    nk_layout_row_begin(ctx, NK_STATIC, 34, 5);
+    if (floor->size < MAX_RESOURCE_COUNT && floor->size % 10) {
+        int nearest_ten = (int)floor->size % 10;
+        floor->size = floor->size + (10 - nearest_ten);
+    }
+    for (int i = low; i < low + 10 && i < (int)floor->size; i++) {
+        t_resource texture = floor->table[i];
+        nk_layout_row_push(ctx, 55);
+        if (nk_button_label(ctx, "Select")) {
+            if (texture.name[0]) {
+                strcpy(info->flats[texture_set], texture.name);
+                texture_popup = nk_false;
+                nk_popup_close(ctx);
+            }
+        }
+        nk_layout_row_push(ctx, 10);
+        nk_label(ctx, " ", 1);
+
+        nk_layout_row_push(ctx, 80);
+        nk_label(ctx, texture.name, NK_TEXT_RIGHT);
+
+        nk_layout_row_push(ctx, 30);
+        nk_label(ctx, " ", 1);
+
+//      nk_label_wrap(ctx, "placeholder texture location"); //replace with image of texture
+        /* cheap workaround for not knowing how to render a png in nuklear */
+        nk_layout_row_push(ctx, 80);
+        if (nk_button_label(ctx, "Preview")) {
+            if (texture.name[0]) {
+                char buffer[32] = "open assets/floor/"; //open on macos
+                strcat(buffer, texture.name);
+                system (buffer);
+            }
+        }
+		// memset(buffer, 0, sizeof(buffer));   <-- DELETE THIS MAYBE
+    }
+    nk_layout_row_end(ctx);
+
+    /* cycle thru 10 textures at a time */
+    nk_layout_row_begin(ctx, NK_STATIC, 20, 4);
+    nk_layout_row_push(ctx, 60);
+    nk_label(ctx, " ", 1);
+
+    nk_layout_row_push(ctx, 80);
+    if (nk_button_symbol_label(ctx, NK_SYMBOL_TRIANGLE_LEFT, "PREV", NK_TEXT_RIGHT)) {
+        if (low >= 10)
+            low -= 10;
+    }
+
+    if (nk_button_symbol_label(ctx, NK_SYMBOL_TRIANGLE_RIGHT, "NEXT", NK_TEXT_LEFT)) {
+        if (low < (int)floor->size - 10)
+            low += 10;
+    }
+    nk_layout_row_end(ctx);
 }

@@ -35,8 +35,8 @@ typedef struct		s_sidedef
 
 typedef struct      s_sector_info
 {
-	t_int_pair	    room_heights;
-	char		    flats[2][16];
+	t_int_pair	    room_heights; //ceiling and floor
+	char		    flats[2][16]; //ceiling and floor
 	uint32_t	    light;
 	uint32_t	    special;
 	uint32_t	    tag;
