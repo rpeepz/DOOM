@@ -47,8 +47,12 @@ void    sector_panel(t_map_interface *draw_mode)
 		// colors for selected panel option
 		if (sector_panel_op == SECTOR_ADD) button->normal = nk_style_item_color(nk_rgba(170, 170, 170, 80));
 		else button->normal = nk_style_item_color(BUTTON_DEFAULT);
-		if (nk_button_label(ctx, "Add Sector"))
+		if (nk_button_label(ctx, "Add Sector")) {
+			// printf("sector pointer %p\n", (void*)draw_mode->sectors);
+			// printf("sector[0] %p\n", (void*)draw_mode->sectors->sectors);
+			// printf("selected %d\n", draw_mode->sectors->selected);
 			sector_panel_op = SECTOR_ADD;
+		}
 
 		if (sector_panel_op == SECTOR_EDIT) button->normal = nk_style_item_color(nk_rgba(170, 170, 170, 80));
 		else button->normal = nk_style_item_color(BUTTON_DEFAULT);
@@ -245,7 +249,34 @@ void	finish_sector(t_map_interface *draw_mode, t_sector *new_sector)
 	}
 	nk_end(ctx);
 }
+int		sector_number(void)
+{
 
+	static int sector_num = 0;
+	char	buffer[8];
+	int		len;
+	nk_layout_row_begin(ctx, NK_STATIC, 20, 5);
+	nk_layout_row_push(ctx, 45);
+	nk_label(ctx, "Number ", NK_TEXT_RIGHT);
+	nk_layout_row_push(ctx, 30);
+	if (nk_button_symbol_label(ctx, NK_SYMBOL_TRIANGLE_LEFT, "", NK_TEXT_LEFT)) {
+		if (sector_num > 0) --sector_num;
+	}
+	len = snprintf(buffer, 7, "%d", sector_num);
+	nk_layout_row_push(ctx, 40);
+	nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 4, nk_filter_decimal);
+	buffer[len] = 0;
+	sector_num = atoi(buffer);
+
+	nk_layout_row_push(ctx, 30);
+	if (nk_button_symbol_label(ctx, NK_SYMBOL_TRIANGLE_RIGHT, " ", NK_TEXT_RIGHT)) {
+		if (sector_num != (SECTOR_MAX - 1)) ++sector_num;
+	}
+	if (sector_num < 0) sector_num = 0;
+	if (sector_num >= SECTOR_MAX) sector_num = SECTOR_MAX - 1;
+	nk_layout_row_end(ctx);
+	return sector_num;
+}
 /* panel functions for editing sector info */
 void	edit_sector(t_map_interface *draw_mode)
 {
@@ -255,8 +286,14 @@ void	edit_sector(t_map_interface *draw_mode)
 	size.h = draw_mode->win_h * 0.35;
 	nk_window_set_focus(ctx, "edit sector");
 	if (nk_begin(ctx, "edit sector", size, NK_WINDOW_BORDER)) {
-		// TODO
-		// menubar to choose which sector to edit
+		/* menubar to choose which sector to edit */
+		nk_menubar_begin(ctx);
+		draw_mode->sectors->selected = sector_number();
+		nk_menubar_end(ctx);
+		if (!draw_mode->sectors->sectors[draw_mode->sectors->selected].line_count) {
+			nk_end(ctx);
+			return ;
+		}
 		char *sections[ ] = {"Ceiling: ", "Floor: "};
 		t_sector_info *info = &draw_mode->sectors->sectors[draw_mode->sectors->selected].sector_info;
 		/* Change height of sector floor and ceiling */
@@ -308,7 +345,15 @@ void	edit_sector(t_map_interface *draw_mode)
 			else if (i == 1) info->special = atoi(buffer);
 			else info->tag = atoi(buffer);
 		}
-
+		/* delete sector */
+		nk_layout_row_dynamic(ctx, 40, 1);
+		if (nk_button_label(ctx, "Clear")) {
+			free(draw_mode->sectors->sectors[draw_mode->sectors->selected].sector_lines);
+			bzero(&draw_mode->sectors->sectors[draw_mode->sectors->selected],
+			sizeof(draw_mode->sectors->sectors[draw_mode->sectors->selected]));
+			--draw_mode->sectors->selected;
+			if (draw_mode->sectors->selected < 0) draw_mode->sectors->selected = 0;
+		}
 		/* Texture Select window */
     	if (texture_popup) {
 			struct nk_rect s = {-40, -90,
