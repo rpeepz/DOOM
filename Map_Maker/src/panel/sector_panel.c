@@ -252,7 +252,7 @@ void	finish_sector(t_map_interface *draw_mode, t_sector *new_sector)
 int		sector_number(void)
 {
 
-	static int sector_num = 0;
+	static int sector_num = 1;
 	char	buffer[8];
 	int		len;
 	nk_layout_row_begin(ctx, NK_STATIC, 20, 5);
@@ -260,7 +260,7 @@ int		sector_number(void)
 	nk_label(ctx, "Number ", NK_TEXT_RIGHT);
 	nk_layout_row_push(ctx, 30);
 	if (nk_button_symbol_label(ctx, NK_SYMBOL_TRIANGLE_LEFT, "", NK_TEXT_LEFT)) {
-		if (sector_num > 0) --sector_num;
+		if (sector_num > 1) --sector_num;
 	}
 	len = snprintf(buffer, 7, "%d", sector_num);
 	nk_layout_row_push(ctx, 40);
@@ -270,12 +270,12 @@ int		sector_number(void)
 
 	nk_layout_row_push(ctx, 30);
 	if (nk_button_symbol_label(ctx, NK_SYMBOL_TRIANGLE_RIGHT, " ", NK_TEXT_RIGHT)) {
-		if (sector_num != (SECTOR_MAX - 1)) ++sector_num;
+		if (sector_num != (SECTOR_MAX)) ++sector_num;
 	}
-	if (sector_num < 0) sector_num = 0;
-	if (sector_num >= SECTOR_MAX) sector_num = SECTOR_MAX - 1;
+	if (sector_num < 1) sector_num = 1;
+	if (sector_num > SECTOR_MAX) sector_num = SECTOR_MAX;
 	nk_layout_row_end(ctx);
-	return sector_num;
+	return sector_num - 1;
 }
 /* panel functions for editing sector info */
 void	edit_sector(t_map_interface *draw_mode)
@@ -338,7 +338,9 @@ void	edit_sector(t_map_interface *draw_mode)
 			nk_layout_row_push(ctx, 70);
 			nk_label(ctx, infos[i], NK_TEXT_LEFT);
 			nk_layout_row_push(ctx, 40);
-			len = snprintf(buffer, 7, "%d", info->light);
+			if (i == 0) len = snprintf(buffer, 7, "%d", info->light);
+			else if (i == 1) len = snprintf(buffer, 7, "%d", info->special);
+			else len = snprintf(buffer, 7, "%d", info->tag);
 			nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 23, nk_filter_decimal);
 			buffer[len] = 0;
 			if (i == 0) info->light = atoi(buffer);
@@ -348,11 +350,32 @@ void	edit_sector(t_map_interface *draw_mode)
 		/* delete sector */
 		nk_layout_row_dynamic(ctx, 40, 1);
 		if (nk_button_label(ctx, "Clear")) {
-			free(draw_mode->sectors->sectors[draw_mode->sectors->selected].sector_lines);
-			bzero(&draw_mode->sectors->sectors[draw_mode->sectors->selected],
-			sizeof(draw_mode->sectors->sectors[draw_mode->sectors->selected]));
+			// unsectorize line choices from sector to clear
+			t_sector *to_clear = &draw_mode->sectors->sectors[draw_mode->sectors->selected];
+			for (int i = 0; i < to_clear->line_count; i++) {
+				for (t_item_node *list = draw_mode->bank->head_line; list; list = list->next) {
+					t_linedef *line = list->line;
+					if (line->start_vertex.x == to_clear->sector_lines[i].start.x &&
+					line->start_vertex.y == to_clear->sector_lines[i].start.y &&
+					line->end_vertex.x == to_clear->sector_lines[i].end.x &&
+					line->end_vertex.y == to_clear->sector_lines[i].end.y) {
+						line->sectorized[0] = 0;
+						line->sides[0].sector_num = 0;
+					}
+					if (line->start_vertex.x == to_clear->sector_lines[i].end.x &&
+					line->start_vertex.y == to_clear->sector_lines[i].end.y &&
+					line->end_vertex.x == to_clear->sector_lines[i].start.x &&
+					line->end_vertex.y == to_clear->sector_lines[i].start.y) {
+						line->sides[1].sector_num = 0;
+						line->sectorized[1] = 0;
+					}
+				}
+			}
+			// free sector
+			free(to_clear->sector_lines);
+			bzero(to_clear, sizeof(*to_clear));
 			--draw_mode->sectors->selected;
-			if (draw_mode->sectors->selected < 0) draw_mode->sectors->selected = 0;
+			if (draw_mode->sectors->selected < 1) draw_mode->sectors->selected = 1;
 		}
 		/* Texture Select window */
     	if (texture_popup) {
