@@ -115,9 +115,10 @@ int     load_map(t_map_interface *draw_mode, char *name)
 			}
 		}
 	}
-	for (int i = 0; draw_mode->sectors->sectors[i].line_count; i++) {
+	for (int i = 0; i < SECTOR_MAX; i++) {
 		t_sector *sector = &draw_mode->sectors->sectors[i];
 		read(fd, &sector->line_count, sizeof(sector->line_count));
+		sector->sector_lines = malloc(sizeof(*sector->sector_lines) * sector->line_count);
 		for (int k = 0; k < sector->line_count; k++) {
 			t_line *line = &sector->sector_lines[k];
 			read(fd, &line->start.x, sizeof(line->start.x));

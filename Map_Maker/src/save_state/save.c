@@ -92,7 +92,7 @@ int     save(t_map_interface *draw_mode)
 			item = item->next;
 		}
 	}
-	for (int i = 0; draw_mode->sectors->sectors[i].line_count; i++) {
+	for (int i = 0; i < SECTOR_MAX; i++) {
 		t_sector sector = draw_mode->sectors->sectors[i];
 		size += write(fd, &sector.line_count, sizeof(sector.line_count));
 		for (int k = 0; k < sector.line_count; k++) {

@@ -351,8 +351,18 @@ void    draw_menu(t_map_interface *draw_mode)
 			/* do you want to save? */
 			if (check_exists(draw_mode->map_name, MAP) < 1)
 				printf("I hope you saved your work\n");
+			// clear bank
 			bzero(draw_mode->bank, sizeof(*draw_mode->bank));
+			// clear name
 			memset(draw_mode->map_name, 0, sizeof(draw_mode->map_name));
+			// clear sectors
+			for (int i = 0; i < SECTOR_MAX; i++) {
+				if (draw_mode->sectors->sectors[i].sector_num) {
+					free(draw_mode->sectors->sectors[i].sector_lines);
+					bzero(&draw_mode->sectors->sectors[i], sizeof(draw_mode->sectors->sectors[i]));
+				}
+			}
+			draw_mode->sectors->selected = 1;
 		}
 		/* load in a file that was previously saved */
 		if (nk_menu_item_label(ctx, "Open", NK_TEXT_LEFT)) {
