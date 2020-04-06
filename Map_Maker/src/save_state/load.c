@@ -115,5 +115,24 @@ int     load_map(t_map_interface *draw_mode, char *name)
 			}
 		}
 	}
+	for (int i = 0; draw_mode->sectors->sectors[i].line_count; i++) {
+		t_sector *sector = &draw_mode->sectors->sectors[i];
+		read(fd, &sector->line_count, sizeof(sector->line_count));
+		for (int k = 0; k < sector->line_count; k++) {
+			t_line *line = &sector->sector_lines[k];
+			read(fd, &line->start.x, sizeof(line->start.x));
+			read(fd, &line->start.y, sizeof(line->start.y));
+			read(fd, &line->end.x, sizeof(line->end.x));
+			read(fd, &line->end.y, sizeof(line->end.y));
+		}
+		read(fd, &sector->sector_num, sizeof(sector->sector_num));
+		read(fd, &sector->sector_info.room_heights.x, sizeof(sector->sector_info.room_heights.x));
+		read(fd, &sector->sector_info.room_heights.y, sizeof(sector->sector_info.room_heights.y));
+		read(fd, sector->sector_info.flats[0], sizeof(sector->sector_info.flats[0]));
+		read(fd, sector->sector_info.flats[1], sizeof(sector->sector_info.flats[1]));
+		read(fd, &sector->sector_info.light, sizeof(sector->sector_info.light));
+		read(fd, &sector->sector_info.special, sizeof(sector->sector_info.special));
+		read(fd, &sector->sector_info.tag, sizeof(sector->sector_info.tag));
+	}
 	return (0);
 }

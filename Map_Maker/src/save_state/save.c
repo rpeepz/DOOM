@@ -78,14 +78,6 @@ int     save(t_map_interface *draw_mode)
 					size += write(fd, &item->line->sides[k].offset, sizeof(item->line->sides[k].offset));
 					size += write(fd, &item->line->sides[k].textures, sizeof(item->line->sides[k].textures));
 					size += write(fd, &item->line->sides[k].sector_num, sizeof(item->line->sides[k].sector_num));
-				/*
-					size += write(fd, &item->line->sides[k].sector_info.flats[0], sizeof(item->line->sides[k].sector_info.flats[0]));
-					size += write(fd, &item->line->sides[k].sector_info.flats[1], sizeof(item->line->sides[k].sector_info.flats[1]));
-					size += write(fd, &item->line->sides[k].sector_info.light, sizeof(item->line->sides[k].sector_info.light));
-					size += write(fd, &item->line->sides[k].sector_info.special, sizeof(item->line->sides[k].sector_info.special));
-					size += write(fd, &item->line->sides[k].sector_info.tag, sizeof(item->line->sides[k].sector_info.tag));
-					size += write(fd, &item->line->sides[k].sector_num, sizeof(item->line->sides[k].sector_num));
-				*/
 				}
 			} else {
 				// write thing data
@@ -99,6 +91,25 @@ int     save(t_map_interface *draw_mode)
 			}
 			item = item->next;
 		}
+	}
+	for (int i = 0; draw_mode->sectors->sectors[i].line_count; i++) {
+		t_sector sector = draw_mode->sectors->sectors[i];
+		size += write(fd, &sector.line_count, sizeof(sector.line_count));
+		for (int k = 0; k < sector.line_count; k++) {
+			t_line line = sector.sector_lines[k];
+			size += write(fd, &line.start.x, sizeof(line.start.x));
+			size += write(fd, &line.start.y, sizeof(line.start.y));
+			size += write(fd, &line.end.x, sizeof(line.end.x));
+			size += write(fd, &line.end.y, sizeof(line.end.y));
+		}
+		size += write(fd, &sector.sector_num, sizeof(sector.sector_num));
+		size += write(fd, &sector.sector_info.room_heights.x, sizeof(sector.sector_info.room_heights.x));
+		size += write(fd, &sector.sector_info.room_heights.y, sizeof(sector.sector_info.room_heights.y));
+		size += write(fd, sector.sector_info.flats[0], sizeof(sector.sector_info.flats[0]));
+		size += write(fd, sector.sector_info.flats[1], sizeof(sector.sector_info.flats[1]));
+		size += write(fd, &sector.sector_info.light, sizeof(sector.sector_info.light));
+		size += write(fd, &sector.sector_info.special, sizeof(sector.sector_info.special));
+		size += write(fd, &sector.sector_info.tag, sizeof(sector.sector_info.tag));
 	}
 	close(fd);
 	return (0);
