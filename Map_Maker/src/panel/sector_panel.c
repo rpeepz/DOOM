@@ -181,24 +181,24 @@ int		confirm_sector(t_sector *sector, t_item_node *head_line, t_sector *new_sect
 			return 3;
 	}
 	/* create new sector */
+	int line_index = 0;
 	new_sector->sector_lines = malloc(sizeof(*new_sector->sector_lines) * new_sector->line_count);
 	for (t_item_node *lines = head_line; lines; lines = lines->next) {
-		int i = 0;
 		t_linedef *line = lines->line;
 		for (int j = 0; j < 2; j++) {
 			if (line->sectorized[j]) {
 				if (!j) {
-					new_sector->sector_lines[i].start.x = line->start_vertex.x;
-					new_sector->sector_lines[i].start.y = line->start_vertex.y;
-					new_sector->sector_lines[i].end.x = line->end_vertex.x;
-					new_sector->sector_lines[i].end.y = line->end_vertex.y;
+					new_sector->sector_lines[line_index].start.x = line->start_vertex.x;
+					new_sector->sector_lines[line_index].start.y = line->start_vertex.y;
+					new_sector->sector_lines[line_index].end.x = line->end_vertex.x;
+					new_sector->sector_lines[line_index].end.y = line->end_vertex.y;
 				} else {
-					new_sector->sector_lines[i].start.x = line->end_vertex.x;
-					new_sector->sector_lines[i].start.y = line->end_vertex.y;
-					new_sector->sector_lines[i].end.x = line->start_vertex.x;
-					new_sector->sector_lines[i].end.y = line->start_vertex.y;
+					new_sector->sector_lines[line_index].start.x = line->end_vertex.x;
+					new_sector->sector_lines[line_index].start.y = line->end_vertex.y;
+					new_sector->sector_lines[line_index].end.x = line->start_vertex.x;
+					new_sector->sector_lines[line_index].end.y = line->start_vertex.y;
 				}
-				i++;
+				++line_index;
 			}
 		}
 	}
@@ -369,23 +369,26 @@ void	edit_sector(t_map_interface *draw_mode)
 		if (nk_button_label(ctx, "Clear")) {
 			// unsectorize line choices from sector to clear
 			t_sector *to_clear = &draw_mode->sectors->sectors[draw_mode->sectors->selected];
-			for (int i = 0; i < to_clear->line_count; i++) {
-				for (t_item_node *list = draw_mode->bank->head_line; list; list = list->next) {
-					t_linedef *line = list->line;
-					if (line->start_vertex.x == to_clear->sector_lines[i].start.x &&
-					line->start_vertex.y == to_clear->sector_lines[i].start.y &&
-					line->end_vertex.x == to_clear->sector_lines[i].end.x &&
-					line->end_vertex.y == to_clear->sector_lines[i].end.y) {
-						line->sectorized[0] = 0;
-						line->sides[0].sector_num = 0;
-					}
-					if (line->start_vertex.x == to_clear->sector_lines[i].end.x &&
-					line->start_vertex.y == to_clear->sector_lines[i].end.y &&
-					line->end_vertex.x == to_clear->sector_lines[i].start.x &&
-					line->end_vertex.y == to_clear->sector_lines[i].start.y) {
-						line->sides[1].sector_num = 0;
-						line->sectorized[1] = 0;
-					}
+			int line_index = 0;
+			for (t_item_node *list = draw_mode->bank->head_line; list && line_index < to_clear->line_count; list = list->next) {
+				t_linedef *line = list->line;
+				// check right side of line
+				if (line->start_vertex.x == to_clear->sector_lines[line_index].start.x &&
+				line->start_vertex.y == to_clear->sector_lines[line_index].start.y &&
+				line->end_vertex.x == to_clear->sector_lines[line_index].end.x &&
+				line->end_vertex.y == to_clear->sector_lines[line_index].end.y) {
+					line->sectorized[0] = 0;
+					line->sides[0].sector_num = 0;
+					++line_index;
+				}
+				// check left side of line
+				else if (line->start_vertex.x == to_clear->sector_lines[line_index].end.x &&
+				line->start_vertex.y == to_clear->sector_lines[line_index].end.y &&
+				line->end_vertex.x == to_clear->sector_lines[line_index].start.x &&
+				line->end_vertex.y == to_clear->sector_lines[line_index].start.y) {
+					line->sides[1].sector_num = 0;
+					line->sectorized[1] = 0;
+					++line_index;
 				}
 			}
 			// free sector
