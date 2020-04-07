@@ -259,7 +259,7 @@ void	finish_sector(t_map_interface *draw_mode, t_sector *new_sector)
 	}
 	nk_end(ctx);
 }
-int		sector_number(void)
+int		sector_number(struct nk_input *input)
 {
 
 	static int sector_num = 1;
@@ -269,7 +269,8 @@ int		sector_number(void)
 	nk_layout_row_push(ctx, 45);
 	nk_label(ctx, "List ", NK_TEXT_RIGHT);
 	nk_layout_row_push(ctx, 30);
-	if (nk_button_symbol_label(ctx, NK_SYMBOL_TRIANGLE_LEFT, "", NK_TEXT_LEFT)) {
+	if ((nk_input_is_key_pressed(input, NK_KEY_LEFT)) ||
+	(nk_button_symbol_label(ctx, NK_SYMBOL_TRIANGLE_LEFT, "", NK_TEXT_LEFT))) {
 		if (sector_num > 1) --sector_num;
 	}
 	len = snprintf(buffer, 7, "%d", sector_num);
@@ -277,9 +278,9 @@ int		sector_number(void)
 	nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 4, nk_filter_decimal);
 	buffer[len] = 0;
 	sector_num = atoi(buffer);
-
 	nk_layout_row_push(ctx, 30);
-	if (nk_button_symbol_label(ctx, NK_SYMBOL_TRIANGLE_RIGHT, " ", NK_TEXT_RIGHT)) {
+	if ((nk_input_is_key_pressed(input, NK_KEY_RIGHT)) ||
+	(nk_button_symbol_label(ctx, NK_SYMBOL_TRIANGLE_RIGHT, " ", NK_TEXT_RIGHT))) {
 		if (sector_num != (SECTOR_MAX)) ++sector_num;
 	}
 	if (sector_num < 1) sector_num = 1;
@@ -298,7 +299,7 @@ void	edit_sector(t_map_interface *draw_mode)
 	if (nk_begin(ctx, "edit sector", size, NK_WINDOW_BORDER)) {
 		/* menubar to choose which sector to edit */
 		nk_menubar_begin(ctx);
-		draw_mode->sectors->selected = sector_number();
+		draw_mode->sectors->selected = sector_number(&draw_mode->ctx->input);
 		nk_menubar_end(ctx);
 		for (t_item_node *list = draw_mode->bank->head_line; list; list = list->next)
 			list->color = LINE_COLOR;
