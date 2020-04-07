@@ -300,9 +300,31 @@ void	edit_sector(t_map_interface *draw_mode)
 		nk_menubar_begin(ctx);
 		draw_mode->sectors->selected = sector_number();
 		nk_menubar_end(ctx);
+		for (t_item_node *list = draw_mode->bank->head_line; list; list = list->next)
+			list->color = LINE_COLOR;
 		if (!draw_mode->sectors->sectors[draw_mode->sectors->selected].line_count) {
 			nk_end(ctx);
 			return ;
+		}
+		// draw sector lines colored
+		int i = 0;
+		for (t_item_node *list = draw_mode->bank->head_line; list; list = list->next) {
+			if (i >= draw_mode->sectors->sectors[draw_mode->sectors->selected].line_count)
+				continue ;
+			t_line edge = draw_mode->sectors->sectors[draw_mode->sectors->selected].sector_lines[i];
+			t_linedef *line = list->line;
+			if ((line->start_vertex.x == edge.start.x &&
+			line->start_vertex.y == edge.start.y &&
+			line->end_vertex.x == edge.end.x &&
+			line->end_vertex.y == edge.end.y) ||
+			(line->start_vertex.x == edge.end.x &&
+			line->start_vertex.y == edge.end.y &&
+			line->end_vertex.x == edge.start.x &&
+			line->end_vertex.y == edge.start.y)) {
+				list->color = HIGHLIGHT;
+				++i;	
+			}
+			else list->color = LINE_COLOR;
 		}
 		char *sections[ ] = {"Ceiling: ", "Floor: "};
 		t_sector_info *info = &draw_mode->sectors->sectors[draw_mode->sectors->selected].sector_info;
