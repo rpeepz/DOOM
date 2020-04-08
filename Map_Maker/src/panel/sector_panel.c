@@ -269,8 +269,7 @@ int		sector_number(struct nk_input *input)
 	nk_layout_row_push(ctx, 45);
 	nk_label(ctx, "List ", NK_TEXT_RIGHT);
 	nk_layout_row_push(ctx, 30);
-	if ((nk_input_is_key_pressed(input, NK_KEY_LEFT)) ||
-	(nk_button_symbol_label(ctx, NK_SYMBOL_TRIANGLE_LEFT, "", NK_TEXT_LEFT))) {
+	if (nk_button_symbol_label(ctx, NK_SYMBOL_TRIANGLE_LEFT, "", NK_TEXT_LEFT)) {
 		if (sector_num > 1) --sector_num;
 	}
 	len = snprintf(buffer, 7, "%d", sector_num);
@@ -279,8 +278,7 @@ int		sector_number(struct nk_input *input)
 	buffer[len] = 0;
 	sector_num = atoi(buffer);
 	nk_layout_row_push(ctx, 30);
-	if ((nk_input_is_key_pressed(input, NK_KEY_RIGHT)) ||
-	(nk_button_symbol_label(ctx, NK_SYMBOL_TRIANGLE_RIGHT, " ", NK_TEXT_RIGHT))) {
+	if (nk_button_symbol_label(ctx, NK_SYMBOL_TRIANGLE_RIGHT, " ", NK_TEXT_RIGHT)) {
 		if (sector_num != (SECTOR_MAX)) ++sector_num;
 	}
 	if (sector_num < 1) sector_num = 1;
@@ -333,9 +331,9 @@ void	edit_sector(t_map_interface *draw_mode)
 		nk_layout_row_dynamic(ctx, 25, 2);
 		nk_label(ctx, "Sector :", NK_TEXT_LEFT);
 		{
-		char num[8];
-		sprintf(num, "%d", draw_mode->sectors->sectors[draw_mode->sectors->selected].sector_num);
-		nk_label(ctx, num, NK_TEXT_LEFT);
+			char num[8];
+			sprintf(num, "%d", draw_mode->sectors->sectors[draw_mode->sectors->selected].sector_num);
+			nk_label(ctx, num, NK_TEXT_LEFT);
 		}
 		nk_layout_row_dynamic(ctx, 25, 1);
 		nk_label(ctx, "Sector heights", NK_TEXT_LEFT);
@@ -343,11 +341,17 @@ void	edit_sector(t_map_interface *draw_mode)
 		for (int i = 0; i < 2; i++) {
 			nk_layout_row_push(ctx, 55);
 			nk_label(ctx, sections[i], NK_TEXT_LEFT);
-			nk_layout_row_push(ctx, 40);
-			len = snprintf(buffer, 8, "%d", !i ? info->room_heights.x : info->room_heights.y);
+			nk_layout_row_push(ctx, 70);
+			len = snprintf(buffer, sizeof(buffer), "%d", !i ? info->room_heights.x : info->room_heights.y);
 			nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 7, nk_filter_decimal);
-			if (!i) info->room_heights.x = atoi(buffer);
-			else info->room_heights.y = atoi(buffer);
+			buffer[len] = 0;
+			{
+				int tmp = atoi(buffer);
+				if (tmp > 127) tmp = 127;
+				if (tmp < -128) tmp = -128;
+				if (!i) info->room_heights.x = tmp;
+				else info->room_heights.y = tmp;
+			}
 		}
 		nk_layout_row_end(ctx);
 
@@ -378,14 +382,18 @@ void	edit_sector(t_map_interface *draw_mode)
 			nk_layout_row_push(ctx, 70);
 			nk_label(ctx, infos[i], NK_TEXT_LEFT);
 			nk_layout_row_push(ctx, 40);
-			if (i == 0) len = snprintf(buffer, 7, "%d", info->light);
-			else if (i == 1) len = snprintf(buffer, 7, "%d", info->special);
-			else len = snprintf(buffer, 7, "%d", info->tag);
-			nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 23, nk_filter_decimal);
+			if (i == 0) len = snprintf(buffer, sizeof(buffer), "%d", info->light);
+			else if (i == 1) len = snprintf(buffer, sizeof(buffer), "%d", info->special);
+			else len = snprintf(buffer, sizeof(buffer), "%d", info->tag);
+			nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 4, nk_filter_decimal);
 			buffer[len] = 0;
-			if (i == 0) info->light = atoi(buffer);
-			else if (i == 1) info->special = atoi(buffer);
-			else info->tag = atoi(buffer);
+			{
+				int tmp = atoi(buffer);
+				if (tmp < 0) tmp = 0;
+				if (i == 0) info->light = tmp;
+				else if (i == 1) info->special = tmp;
+				else info->tag = tmp;
+			}
 		}
 		/* delete sector */
 		nk_layout_row_dynamic(ctx, 40, 1);
