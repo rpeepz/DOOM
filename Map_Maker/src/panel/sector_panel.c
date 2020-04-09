@@ -156,15 +156,6 @@ int		suggest_sector_number(t_map_interface *draw_mode)
 	return sector_num;
 }
 
-/* is it a valid enclosed sector */
-int		check_lines_for_convex(void)
-{
-	// TODO
-	// compare verticies of selected lines
-	// to confirm an enclosed sector
-	return 0;
-}
-
 /* various checks to see if the sector selection is valid */
 int		confirm_sector(t_sector *sector, t_item_node *head_line, t_sector *new_sector)
 {
@@ -206,13 +197,24 @@ int		confirm_sector(t_sector *sector, t_item_node *head_line, t_sector *new_sect
 			}
 		}
 	}
-	/* validate sector */
-	if (check_lines_for_convex()) {
-		free(new_sector->sector_lines);
-		bzero(new_sector, sizeof(*new_sector));
-		return 2;
+	/* is it a valid enclosed sector */
+	{
+		char confirmed[new_sector->line_count];
+		bzero(confirmed, sizeof(confirmed));
+		for (int i = 0; i < new_sector->line_count; i++) {
+			for (int j = 0; j < new_sector->line_count; j++) {
+				if (new_sector->sector_lines[i].start.x == new_sector->sector_lines[j].end.x &&
+				new_sector->sector_lines[i].start.y == new_sector->sector_lines[j].end.y)
+					confirmed[i] = 1;
+			}
+		}
+		for (int i = 0; i < new_sector->line_count; i++)
+			if (!confirmed[i]){
+				free(new_sector->sector_lines);
+				bzero(new_sector, sizeof(*new_sector));
+				return 2;
+			}
 	}
-	
 	return 0;
 }
 
