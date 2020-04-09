@@ -137,11 +137,15 @@ int		suggest_sector_number(t_map_interface *draw_mode)
 		nk_layout_row_push(ctx, 62);
 		if (nk_button_label(ctx, "Suggest")) {
 			int suggest = 1;
-			for (t_item_node *lines = draw_mode->bank->head_line; lines; lines = lines->next) {
+			t_item_node *lines = draw_mode->bank->head_line;
+			for ( ; lines; lines = lines->next) {
 				t_linedef *line = lines->line;
 				for (int i = 0; i < 2; i++) {
 					if (!(line->flags & L_TWO_SIDED) && i == 1) break ;
-					if (line->sides[i].sector_num == suggest) ++suggest;
+					if (line->sides[i].sector_num == suggest) {
+						++suggest;
+						lines = draw_mode->bank->head_line;
+					}
 				}
 			}
 			sector_num = suggest;
