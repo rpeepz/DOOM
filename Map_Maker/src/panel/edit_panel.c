@@ -30,7 +30,7 @@ void    edit_panel(t_map_interface *draw_mode)
     (draw_mode->list_op == ITEM_THING && !draw_mode->bank->selected->thing)))
         return ;
     struct nk_context *ctx = draw_mode->ctx;
-    nk_window_set_focus(ctx, "Edit");
+    // nk_window_set_focus(ctx, "Edit");
 
     /* panel size nk_rect(1310, 375, 275, 500); (size and offset for 1600 x 900 window) */
     struct nk_rect size = nk_rect(draw_mode->win_w - ((draw_mode->win_w / 15) * 3) + (WINDOW_OFFSET * 2),
@@ -153,8 +153,8 @@ void    sidedef_edit(t_map_interface *draw_mode, t_sidedef *side)
     nk_layout_row_dynamic(ctx, 25, 1);
     nk_label(ctx, "Texture offset", NK_TEXT_LEFT);
     nk_layout_row_dynamic(ctx, 25, 2);
-    nk_property_float(ctx, "#x:", 0, &side->offset.x, max, 1.0f, 0.25f);
-    nk_property_float(ctx, "#y:", 0, &side->offset.y, max, 1.0f, 0.25f);
+    nk_property_int(ctx, "#x:", -100, (int *)&side->offset.x, max, 1, 0.25f);
+    nk_property_int(ctx, "#y:", -100, (int *)&side->offset.y, max, 1, 0.25f);
 
     /* add textures to sections of the linedef */
     nk_layout_row_dynamic(ctx, 25, 1);
@@ -175,7 +175,12 @@ void    sidedef_edit(t_map_interface *draw_mode, t_sidedef *side)
             memset(side->textures[i], 0, sizeof(side->textures[i]));
     }
     /* Texture Select window */
-    if (texture_popup) {
+    if (texture_popup && (
+        /* condition to fix the bug where too many popups were drawn
+        preventing interactions with a signle pop up window */
+        (texture_side == 0 && side == &draw_mode->bank->selected->line->sides[0]) ||
+        (texture_side == 1 && side == &draw_mode->bank->selected->line->sides[1]))
+        ) {
         struct nk_rect s = {-40, -20,
         draw_mode->win_w / 5, draw_mode->win_h / 2};
         if (nk_popup_begin(ctx, NK_POPUP_STATIC, "Texture Select", 0, s))
