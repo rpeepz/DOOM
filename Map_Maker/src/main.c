@@ -45,6 +45,12 @@ void    panels(void)
 		edit_panel(&draw_mode);
 	if (draw_mode.tool_op == SECTOR)
 		sector_panel(&draw_mode);
+	else
+	{
+		for (t_item_node *list = draw_mode.bank->head_line; list; list = list->next)
+			if (list != draw_mode.bank->selected)
+				list->color = LINE_COLOR;
+	}
 
 }
 
