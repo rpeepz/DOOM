@@ -30,7 +30,7 @@ void    edit_panel(t_map_interface *draw_mode)
     (draw_mode->list_op == ITEM_THING && !draw_mode->bank->selected->thing)))
         return ;
     struct nk_context *ctx = draw_mode->ctx;
-    // nk_window_set_focus(ctx, "Edit");
+    nk_window_set_focus(ctx, "Edit");
 
     /* panel size nk_rect(1310, 375, 275, 500); (size and offset for 1600 x 900 window) */
     struct nk_rect size = nk_rect(draw_mode->win_w - ((draw_mode->win_w / 15) * 3) + (WINDOW_OFFSET * 2),
@@ -299,7 +299,7 @@ void    edit_selected_thing(t_map_interface *draw_mode, t_item_node *item)
     nk_layout_row_dynamic(ctx, 20, 1);
     nk_label(ctx, " ", 1);
     /* slider color combobox */
-    if (nk_combo_begin_color(ctx, item->thing->color, nk_vec2(200,200))) {
+    if (nk_combo_begin_color(ctx, item->thing->color, nk_vec2(180,120))) {
         float ratios[] = {0.15f, 0.85f};
         nk_layout_row(ctx, NK_DYNAMIC, 30, 2, ratios);
         nk_label(ctx, "R:", NK_TEXT_LEFT);

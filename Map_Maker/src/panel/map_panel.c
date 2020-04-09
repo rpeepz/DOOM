@@ -325,7 +325,7 @@ void    draw_menu(t_map_interface *draw_mode)
 	struct nk_context *ctx = draw_mode->ctx;
 	nk_menubar_begin(ctx);
 	nk_layout_row_begin(ctx, NK_STATIC, 25, 2);
-	nk_layout_row_push(ctx, 60);
+	nk_layout_row_push(ctx, 45);
 	nk_window_set_focus(ctx, "MENU");
 	if (nk_menu_begin_label(ctx, "MENU", NK_TEXT_LEFT, nk_vec2(120, 200)))
 	{
@@ -341,6 +341,7 @@ void    draw_menu(t_map_interface *draw_mode)
 		}
 		nk_menu_end(ctx);
 	}
+	nk_layout_row_push(ctx, 60);
 	if (nk_menu_begin_label(ctx, "FILE", NK_TEXT_LEFT,
 	nk_vec2(120, 200)))
 	{
