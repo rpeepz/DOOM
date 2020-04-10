@@ -30,6 +30,7 @@ SRC = main.c\
 PANEL = tool_panel.c\
 	list_panel.c\
 	map_panel.c\
+	wave.c\
 	edit_panel.c\
 	sector_panel.c
 

@@ -23,6 +23,7 @@ static int show_about = nk_false;
 static int show_help = nk_true;
 static int save_as = nk_false;
 static int open_map = nk_false;
+static int show_resources = nk_false;
 
 void    draw_lines(t_map_interface *draw_mode);
 void    draw_things(t_map_interface *draw_mode);
@@ -30,6 +31,7 @@ void    draw_grid(struct nk_rect size);
 void    draw_menu(t_map_interface *draw_mode);
 void    draw_about(struct nk_context *ctx);
 void    draw_help(t_map_interface *draw_mode);
+void    draw_resources(t_map_interface *draw_mode);
 
 void    map_panel(t_map_interface *draw_mode, int *launch_help)
 {
@@ -69,6 +71,8 @@ void    map_panel(t_map_interface *draw_mode, int *launch_help)
 			if (show_about) draw_about(draw_mode->ctx);
 			/* help info */
 			if (show_help) draw_help(draw_mode);
+			/* all resources */
+			if (show_resources) draw_resources(draw_mode);
 		
 		}
 		nk_end(draw_mode->ctx);
@@ -256,8 +260,8 @@ void    draw_about(struct nk_context *ctx)
 void	draw_help(t_map_interface *draw_mode)
 {
 	struct nk_context *ctx = draw_mode->ctx;
-	struct nk_rect s = {(draw_mode->win_w / 3), (draw_mode->win_h / 4), 250, 350};
-	if (nk_popup_begin(ctx, NK_POPUP_STATIC, "Help", NK_WINDOW_CLOSABLE, s))
+	struct nk_rect s = {(draw_mode->win_w / 3), (150), 250, 350};
+	if (nk_popup_begin(ctx, NK_POPUP_STATIC, "Help", NK_WINDOW_CLOSABLE|NK_WINDOW_MOVABLE, s))
 	{
 		nk_layout_row_dynamic(ctx, 6, 1);
 		nk_label(ctx, " ", 1);
@@ -299,7 +303,7 @@ void	draw_help(t_map_interface *draw_mode)
 				nk_label_wrap(ctx, "Changes the cursor to a green dot while hovering in the map window. Click to select the position.");
 				nk_label_wrap(ctx, "A popup will appear with options to give a name or continue with no name, or cancel the placement.");
 			nk_layout_row_dynamic(ctx, 25, 1);
-			nk_label(ctx, "- Sector -", NK_TEXT_LEFT);
+			nk_label(ctx, "- Sector	 -", NK_TEXT_LEFT);
 				nk_layout_row_dynamic(ctx, 40, 1);
 				nk_label_wrap(ctx, "Unused at this time of development");
 			nk_layout_row_dynamic(ctx, 25, 1);
@@ -320,6 +324,195 @@ void	draw_help(t_map_interface *draw_mode)
 
 }
 
+void	my_callback(void *userdata, uint8_t *stream, int len);
+static uint8_t	*audio_pos;
+static uint32_t	audio_len;
+void	test_audio(t_resource *resource)
+{
+	static uint32_t	wav_length;
+	static uint8_t	*wav_buffer;
+	static SDL_AudioSpec wav_spec;
+	
+	wav_buffer = resource->raw_data + 44;
+	wav_length = resource->size - 44;
+	load_wav(resource);
+	// SDL_LoadWAV(resource->full_path, &wav_spec, &wav_buffer, &wav_length);
+	// printf("channel %hhd\nformat %hx\n freq %d\npadding %hd\nsamples %hd\nsilence %hhd\nsize %d",
+	// wav_spec.channels, 
+	// wav_spec.format, 
+	// wav_spec.freq, 
+	// wav_spec.padding, 
+	// wav_spec.samples, 
+	// wav_spec.silence, 
+	// wav_spec.size);
+	wav_spec.channels = 1;
+	wav_spec.format = 8;
+	wav_spec.freq = 11025;
+	wav_spec.padding = 0;
+	wav_spec.samples = 4096;
+	wav_spec.silence = -128;
+	wav_spec.size = 0;
+
+	wav_spec.callback = my_callback;
+	wav_spec.userdata = NULL;
+	audio_pos = wav_buffer;
+	audio_len = wav_length;
+	if (SDL_OpenAudio(&wav_spec, NULL) < 0) {
+		printf("Failed to open %s\n", SDL_GetError());
+		return ;
+	}
+	SDL_PauseAudio(0);
+
+	while (audio_len > 0)
+		SDL_Delay(100);
+	SDL_CloseAudio();
+	// SDL_FreeWAV(wav_buffer);
+}
+void	my_callback(void *userdata, uint8_t *stream, int len)
+{
+	if (audio_len == 0)
+		return ;
+	len = (len > audio_len ? audio_len : len);
+	SDL_MixAudio(stream, audio_pos, len, SDL_MIX_MAXVOLUME);
+	audio_pos += len;
+	audio_len -= len;
+}
+
+void    draw_resources(t_map_interface *draw_mode)
+{
+	struct nk_context *ctx = draw_mode->ctx;
+	struct nk_rect s = {draw_mode->win_w / 4, 100, 300, 400};
+	if (nk_popup_begin(ctx, NK_POPUP_STATIC, "All resources", NK_WINDOW_CLOSABLE, s)) {
+		char *resources[] = {"Floors", "Walls", "Sounds", "Music"};
+		const int len = NK_LEN(resources);
+		enum menu_state {MENU_NONE, MENU_FLOORS, MENU_WALLS, MENU_SOUNDS, MENU_MUSIC};
+		static enum menu_state menu_state = MENU_NONE;
+		enum nk_collapse_states state;
+		
+		static int index[NK_LEN(resources)];
+		state = (menu_state == MENU_FLOORS) ? NK_MAXIMIZED : NK_MINIMIZED;
+		if (nk_tree_state_push(ctx, NK_TREE_TAB, resources[0], &state)) {
+			menu_state = MENU_FLOORS;
+			nk_layout_row_static(ctx, 20, 45, 5);
+			nk_label(ctx, "Page: ", NK_TEXT_LEFT);
+			{
+				char num[8];
+				sprintf(num, "%d", index[0] + 1);
+				nk_label(ctx, num, NK_TEXT_CENTERED);
+			}
+			if (nk_button_symbol(ctx, NK_SYMBOL_TRIANGLE_LEFT)) {
+				if (index[0] > 0) --index[0];
+			}
+			if (nk_button_symbol(ctx, NK_SYMBOL_TRIANGLE_RIGHT)) {
+				if (index[0] < (MAX_RESOURCE_COUNT - 1) / 10) ++index[0];
+			}
+			nk_layout_row_dynamic(ctx, 25, 2);
+			t_resource_table *resource = draw_mode->floor;
+			for (int k = (index[0] * 10); k - (index[0] * 10) < 10; k++) {
+				nk_label(ctx, resource->table[k].name, NK_TEXT_LEFT);
+				if (nk_button_label(ctx, "preview")) {
+					char command[64] = "open ";
+					strcat(command, resource->table[k].full_path);
+					system(command);
+				}
+			}
+			nk_tree_pop(ctx);
+		} else menu_state = (menu_state == MENU_FLOORS) ? MENU_NONE : menu_state;
+
+		state = (menu_state == MENU_WALLS) ? NK_MAXIMIZED : NK_MINIMIZED;
+		if (nk_tree_state_push(ctx, NK_TREE_TAB, resources[1], &state)) {
+			menu_state = MENU_WALLS;
+			nk_layout_row_static(ctx, 20, 45, 5);
+			nk_label(ctx, "Page: ", NK_TEXT_LEFT);
+			{
+				char num[8];
+				sprintf(num, "%d", index[1] + 1);
+				nk_label(ctx, num, NK_TEXT_CENTERED);
+			}
+			if (nk_button_symbol(ctx, NK_SYMBOL_TRIANGLE_LEFT)) {
+				if (index[1] > 0) --index[1];
+			}
+			if (nk_button_symbol(ctx, NK_SYMBOL_TRIANGLE_RIGHT)) {
+				if (index[1] < (MAX_RESOURCE_COUNT - 1) / 10) ++index[1];
+			}
+			nk_layout_row_dynamic(ctx, 25, 2);
+			t_resource_table *resource = draw_mode->wall;
+			for (int k = (index[1] * 10); k - (index[1] * 10) < 10; k++) {
+				nk_label(ctx, resource->table[k].name, NK_TEXT_LEFT);
+				if (nk_button_label(ctx, "preview")) {
+					char command[64] = "open ";
+					strcat(command, resource->table[k].full_path);
+					system(command);
+				}
+			}
+			nk_tree_pop(ctx);
+		} else menu_state = (menu_state == MENU_WALLS) ? MENU_NONE : menu_state;
+			
+		state = (menu_state == MENU_SOUNDS) ? NK_MAXIMIZED : NK_MINIMIZED;
+		if (nk_tree_state_push(ctx, NK_TREE_TAB, resources[2], &state)) {
+			menu_state = MENU_SOUNDS;
+			nk_layout_row_static(ctx, 20, 45, 5);
+			nk_label(ctx, "Page: ", NK_TEXT_LEFT);
+			{
+				char num[8];
+				sprintf(num, "%d", index[2] + 1);
+				nk_label(ctx, num, NK_TEXT_CENTERED);
+			}
+			if (nk_button_symbol(ctx, NK_SYMBOL_TRIANGLE_LEFT)) {
+				if (index[2] > 0) --index[2];
+			}
+			if (nk_button_symbol(ctx, NK_SYMBOL_TRIANGLE_RIGHT)) {
+				if (index[2] < (MAX_RESOURCE_COUNT - 1) / 10) ++index[2];
+			}
+			nk_layout_row_dynamic(ctx, 25, 2);
+			t_resource_table *resource = draw_mode->sounds;
+			for (int k = (index[2] * 10); k - (index[2] * 10) < 10; k++) {
+				nk_label(ctx, resource->table[k].name, NK_TEXT_LEFT);
+				if (nk_button_label(ctx, "preview")) {
+					// display audio file in bytes skipping the header
+					// write(1, resource->table[k].raw_data + 44, resource->table[k].size - 44);
+					// write(1, "\n\n", 2);
+					test_audio(&resource->table[k]);
+					// char command[64] = "afplay ";
+					// strcat(command, resource->table[k].full_path);
+					// system(command);
+				}
+			}
+			nk_tree_pop(ctx);
+		} else menu_state = (menu_state == MENU_SOUNDS) ? MENU_NONE : menu_state;
+			
+		state = (menu_state == MENU_MUSIC) ? NK_MAXIMIZED : NK_MINIMIZED;
+		if (nk_tree_state_push(ctx, NK_TREE_TAB, resources[3], &state)) {
+			menu_state = MENU_MUSIC;
+			nk_layout_row_static(ctx, 20, 45, 5);
+			nk_label(ctx, "Page: ", NK_TEXT_LEFT);
+			{
+				char num[8];
+				sprintf(num, "%d", index[3] + 1);
+				nk_label(ctx, num, NK_TEXT_CENTERED);
+			}
+			if (nk_button_symbol(ctx, NK_SYMBOL_TRIANGLE_LEFT)) {
+				if (index[3] > 0) --index[3];
+			}
+			if (nk_button_symbol(ctx, NK_SYMBOL_TRIANGLE_RIGHT)) {
+				if (index[3] < (MAX_RESOURCE_COUNT - 1) / 10) ++index[3];
+			}
+			nk_layout_row_dynamic(ctx, 25, 2);
+			t_resource_table *resource = draw_mode->music;
+			for (int k = (index[3] * 10); k - (index[3] * 10) < 10; k++) {
+				nk_label(ctx, resource->table[k].name, NK_TEXT_LEFT);
+				if (nk_button_label(ctx, "preview")) {
+					char command[64] = "afplay ";
+					strcat(command, resource->table[k].full_path);
+					system(command);
+				}
+			}
+			nk_tree_pop(ctx);
+		} else menu_state = (menu_state == MENU_MUSIC) ? MENU_NONE : menu_state;
+		nk_popup_end(ctx);
+	} else show_resources = nk_false;
+}
+
 void    draw_menu(t_map_interface *draw_mode)
 {
 	struct nk_context *ctx = draw_mode->ctx;
@@ -338,6 +531,9 @@ void    draw_menu(t_map_interface *draw_mode)
 		if (nk_menu_item_label(ctx, "Hide menu", NK_TEXT_LEFT)) {
 			draw_mode->tool_op = LINE;
 			count = -1;
+		}
+		if (nk_menu_item_label(ctx, "Show resources", NK_TEXT_LEFT)) {
+			show_resources = nk_true;
 		}
 		nk_menu_end(ctx);
 	}

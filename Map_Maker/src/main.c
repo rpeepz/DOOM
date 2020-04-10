@@ -35,8 +35,10 @@ void    hooks(void)
 		change_selected(&bank, draw_mode.list_op, 0);
 
 }
+// #include "../../Nuklear/demo/overview.c"
 void    panels(void)
 {
+	// overview(draw_mode.ctx);
 	tool_panel(&draw_mode);
 	map_panel(&draw_mode, &launch_help);
 	list_panel(&draw_mode);
@@ -69,7 +71,7 @@ int     main(void)
 	
 	/* SDL setup */
 	SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "0");
-	SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER|SDL_INIT_EVENTS);
+	SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER|SDL_INIT_EVENTS|SDL_INIT_AUDIO);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
