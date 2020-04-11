@@ -584,8 +584,11 @@ int     check_exists(const char *name, int type)
 		dir = opendir(WAD_EXPORT_PATH);
 	struct dirent *sd;
 	while (dir && (sd = readdir(dir))) {
-		if (!strcmp(name, sd->d_name))
+		if (type == WAD) strcat(sd->d_name, ".wad");
+		if (!strcmp(name, sd->d_name)) {
+			closedir(dir);
 			return (1);
+		}
 	}
 	if (dir) closedir(dir);
 	return (0);

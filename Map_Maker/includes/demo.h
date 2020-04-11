@@ -36,7 +36,7 @@
 # define THING_COLOR nk_rgb(145, 145, 145)
 # define BUTTON_DEFAULT nk_rgb(50, 50, 50)
 # define MAP_SAVE_PATH "maps/"
-# define WAD_EXPORT_PATH "wads/"
+# define WAD_EXPORT_PATH "./"
 
 typedef struct	s_vec2f
 {
