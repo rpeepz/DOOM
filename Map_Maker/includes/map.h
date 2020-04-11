@@ -92,7 +92,7 @@ int     save(t_map_interface *draw_mode);
 void    open_map_list(t_map_interface *draw_mode, int *open_map);
 int     load_map(t_map_interface *draw_mode, char *name);
 
-/* create and export map info as bsp with lumps for engine to run */
-void	export_map(t_map_interface *draw_mode);
+/* create and export the map info as bsp with lumps for engine to run */
+void	export_wad(t_map_interface *draw_mode);
 
 #endif

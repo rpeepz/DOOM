@@ -562,7 +562,7 @@ void    draw_menu(t_map_interface *draw_mode)
 		}
 		if (nk_menu_item_label(ctx, "Export", NK_TEXT_LEFT)) {
 			/* export map as WAD */
-				export_map(draw_mode);
+				export_wad(draw_mode);
 		}
 		if (nk_menu_item_label(ctx, "Exit", NK_TEXT_LEFT)) {
 			if (check_exists(draw_mode->map_name, MAP))

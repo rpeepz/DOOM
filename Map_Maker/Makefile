@@ -37,7 +37,9 @@ PANEL = tool_panel.c\
 SAVE = save.c \
 	load.c
 
-EXPORT = export.c
+EXPORT = export.c\
+		assets.c\
+		map.c
 
 OBJ = $(addprefix $(OBJ_PATH)/,$(SRC:.c=.o))
 OBJ += $(addprefix $(OBJ_PATH)/,$(PANEL:.c=.o))

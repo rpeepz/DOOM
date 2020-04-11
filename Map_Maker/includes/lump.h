@@ -27,6 +27,10 @@ typedef struct			s_lump
 	uint32_t			size;
 	char				lump_name[16];
 }						t_lump;
+uint8_t					*export_assets(uint8_t *buffer, t_lump *lumps, \
+t_header *head, void *map_interface);
+uint8_t					*export_map(uint8_t *buffer, t_lump *lumps, \
+t_header *head, void *map_interface);
 
 #endif
 
