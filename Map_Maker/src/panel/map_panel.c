@@ -329,30 +329,14 @@ static uint8_t	*audio_pos;
 static uint32_t	audio_len;
 void	test_audio(t_resource *resource)
 {
-	static uint32_t	wav_length;
 	static uint8_t	*wav_buffer;
+	static uint32_t	wav_length;
 	static SDL_AudioSpec wav_spec;
 	
-	wav_buffer = resource->raw_data + 44;
-	wav_length = resource->size - 44;
-	load_wav(resource);
-	// SDL_LoadWAV(resource->full_path, &wav_spec, &wav_buffer, &wav_length);
-	// printf("channel %hhd\nformat %hx\n freq %d\npadding %hd\nsamples %hd\nsilence %hhd\nsize %d",
-	// wav_spec.channels, 
-	// wav_spec.format, 
-	// wav_spec.freq, 
-	// wav_spec.padding, 
-	// wav_spec.samples, 
-	// wav_spec.silence, 
-	// wav_spec.size);
-	wav_spec.channels = 1;
-	wav_spec.format = 8;
-	wav_spec.freq = 11025;
-	wav_spec.padding = 0;
-	wav_spec.samples = 4096;
-	wav_spec.silence = -128;
-	wav_spec.size = 0;
-
+	SDL_LoadWAV(resource->full_path, &wav_spec, &wav_buffer, &wav_length);
+	// wav_spec = load_wav(resource);
+	// wav_buffer = resource->raw_data + 44;
+	// wav_length = resource->size - 44;
 	wav_spec.callback = my_callback;
 	wav_spec.userdata = NULL;
 	audio_pos = wav_buffer;
@@ -366,7 +350,6 @@ void	test_audio(t_resource *resource)
 	while (audio_len > 0)
 		SDL_Delay(100);
 	SDL_CloseAudio();
-	// SDL_FreeWAV(wav_buffer);
 }
 void	my_callback(void *userdata, uint8_t *stream, int len)
 {

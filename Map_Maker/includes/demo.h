@@ -101,6 +101,6 @@ typedef struct HEADER_WAV {
 	unsigned int data_size;						// NumSamples * NumChannels * BitsPerSample/8 - size of the next chunk that will be read
 } WAV_HEADER;
 
-int	load_wav(t_resource *sound);
+SDL_AudioSpec	load_wav(t_resource *sound);
 
 #endif
