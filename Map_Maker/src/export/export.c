@@ -7,11 +7,11 @@ void	get_lumps(uint8_t *buffer, t_map_interface *draw_mode, t_lump *lumps, t_hea
 	buffer = export_assets(buffer, lumps, head, (void*)draw_mode);
 	buffer = export_map(buffer, lumps, head, (void*)draw_mode);
 //	LUMP OUTPUT TEST
-/*	dprintf(2, "writing current lump buffer to stdout\n");
+	dprintf(2, "writing current lump buffer to stdout\n");
 	for (uint32_t i = 0; i < head->lump_offset - sizeof(*head); i++) {
 		printf("%c", buffer[i]);
 	}
-*/
+
 	dprintf(2, "num lumps %u\n", head->num_lumps);
 	for (int i = 0; i < head->num_lumps; i++)
 		dprintf(2, "\t%s\n", lumps[i].lump_name);
@@ -29,12 +29,12 @@ void	fill_header(uint8_t *buffer, t_header *head)
 void    export_wad(t_map_interface *draw_mode)
 {
 	t_header	head;
-	t_lump		lumps[12];
+	t_lump		lumps[16];
 /*
 	asset lumps	[0 - 3]
 	lump_wall	lump_floor	lump_sound	lump_music
 	map lumps	[4 - 8]
-	vertexes	linedefs	sidedefs	sectors	things
+	linedefs	sidedefs	sectors	things
 	bsp lumps	[9 - 11]
 	nodes		segs		ssectors
 */
