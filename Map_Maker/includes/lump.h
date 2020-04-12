@@ -23,9 +23,9 @@ typedef struct			s_header
 
 typedef struct			s_lump
 {
+	char				lump_name[16];
 	uint32_t			offset;
 	uint32_t			size;
-	char				lump_name[16];
 }						t_lump;
 uint8_t					*export_assets(uint8_t *buffer, t_lump *lumps, \
 t_header *head, void *map_interface);

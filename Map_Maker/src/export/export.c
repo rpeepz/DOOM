@@ -38,6 +38,7 @@ void    export_wad(t_map_interface *draw_mode)
 	int			fd;
 
 	char map_name[sizeof(draw_mode->map_name) + 4];
+	bzero(map_name, sizeof(map_name));
 	strcat(map_name, draw_mode->map_name[0] ? draw_mode->map_name : "Unnamed");
 	strcat(map_name, ".wad");
 	if (check_exists(draw_mode->map_name, WAD))
@@ -54,4 +55,7 @@ void    export_wad(t_map_interface *draw_mode)
 
 	write(fd, &head, sizeof(head));
 	write(fd, lumps_buf, head.lump_offset - sizeof(head));
+	// free(lumps_buf);
+	for (int i = 0; i < head.num_lumps; i++)
+		write(fd, &lumps[i], sizeof(lumps[i]));
 }
