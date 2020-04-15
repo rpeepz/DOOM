@@ -33,6 +33,10 @@ uint32_t	fill_map(uint8_t *buffer, t_bank *bank)
 		memcpy(buffer + offset, item->line, sizeof(*item->line) - sector_size);
 		offset += sizeof(*item->line) - sector_size;
 	}
+	for (item = bank->head_line; item; item = item->next) {
+		memcpy(buffer + offset, item->line->sides, sizeof(item->line->sides));
+		offset += sizeof(item->line->sides);
+	}
 	memcpy(buffer + offset, &bank->count_thing, sizeof(bank->count_thing));
 	offset += sizeof(bank->count_thing);
 	for (item = bank->head_thing; item; item = item->next) {
