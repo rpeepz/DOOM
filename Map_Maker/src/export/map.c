@@ -80,7 +80,7 @@ uint8_t		*export_map(uint8_t *buffer, t_lump *lumps, t_header *head, void *map_i
 		lumps[head->num_lumps + i].offset = lumps[head->num_lumps + i - 1].offset + lumps[head->num_lumps + i - 1].size;
 	}
 	// second malloc on buffer
-	uint32_t offset = head->lump_offset - sizeof(*head);
+	uint32_t offset = head->lump_offset;
 	uint8_t	*tmp = malloc(size + offset); memset(tmp, 0, size + offset);
 	memcpy(tmp, buffer, offset);
 	free(buffer);

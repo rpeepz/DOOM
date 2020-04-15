@@ -44,7 +44,7 @@ uint8_t	    *export_assets(uint8_t *buffer, t_lump *lumps, t_header *head, void 
 		else asset = NULL;
 		lumps[i].size = asset_size(asset);
 		size += lumps[i].size;
-		if (!i) lumps[i].offset = sizeof(*head);
+		if (!i) lumps[i].offset = 0;
 		else lumps[i].offset = lumps[i - 1].offset + lumps[i - 1].size;
 	}
 	// first malloc on buffer

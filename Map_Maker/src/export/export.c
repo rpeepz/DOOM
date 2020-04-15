@@ -50,11 +50,11 @@ void    export_wad(t_map_interface *draw_mode)
 	}
 	memcpy(head.name, "IWAD", 4);
 	head.num_lumps = 0;
-	head.lump_offset = sizeof(head);
+	head.lump_offset = 0;
 	lumps_buf = get_lumps(lumps_buf, draw_mode, lumps, &head);
 
 	write(fd, &head, sizeof(head));
-	write(fd, lumps_buf, head.lump_offset - sizeof(head));
+	write(fd, lumps_buf, head.lump_offset);
 	// free(lumps_buf);
 	for (int i = 0; i < head.num_lumps; i++)
 		write(fd, &lumps[i], sizeof(lumps[i]));
