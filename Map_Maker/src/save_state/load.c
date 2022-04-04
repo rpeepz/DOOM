@@ -99,13 +99,6 @@ int     load_map(t_map_interface *draw_mode, char *name)
 				char name[16];
 				read(fd, &location, sizeof((location)));
 				read(fd, name, sizeof((name)));
-				int q = 0;
-				for (int p = 0; p < 16; p++) {
-					if (name[p]) {
-						name[q++] = name[p];
-						name[p] = 0;
-					}
-				}
 				add_thing(draw_mode, location, name);
 				t_thing *thing = bank->tail_thing->thing;
 				read(fd, &thing->angle, sizeof((thing->angle)));
