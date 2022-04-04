@@ -5,11 +5,14 @@ CC = clang -g
 INC = includes/
 OBJ_PATH = obj
 
+SDL2_V = 2.0.20
+GLEW_V = 2.2.0_1
+
 ifeq ($(shell uname -s), Darwin)
-	SDL2_DIR = /usr/local/Cellar/sdl2/2.0.12_1/lib
-	SDL2_INC_DIR = /usr/local/Cellar/sdl2/2.0.12_1/include
-	GLEW_DIR = /usr/local/Cellar/glew/2.1.0_1/lib
-	GLEW_INC_DIR = /usr/local/Cellar/glew/2.1.0_1/include
+	SDL2_DIR = /usr/local/Cellar/sdl2/$(SDL2_V)/lib
+	SDL2_INC_DIR = /usr/local/Cellar/sdl2/$(SDL2_V)/include
+	GLEW_DIR = /usr/local/Cellar/glew/$(GLEW_V)/lib
+	GLEW_INC_DIR = /usr/local/Cellar/glew/$(GLEW_V)/include
 else
 	SDL2_DIR =.
 	SDL2_INC_DIR =.
