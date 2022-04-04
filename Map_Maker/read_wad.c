@@ -58,7 +58,7 @@ int		main(int ac, char **av) {
 			memcpy(&count, line_data, sizeof(count));
 			printf("line count %d\n", count);
 			t_linedef line[count];
-			int size = sizeof(*line) - sizeof(line->sectorized) - sizeof(line->sides);
+			int size = sizeof(t_linedef) - sizeof(line->sectorized) - sizeof(line->sides);
 			for (int j = 0; j < count; j++) {
 				memcpy(&line[j], line_data + sizeof(count) + (j * size), size);
 				printf("start x %.0f start y %.0f\n", line[j].start_vertex.x, line[j].start_vertex.y);
@@ -74,7 +74,7 @@ int		main(int ac, char **av) {
 			t_sidedef sides[2];
 			int size = sizeof(sides);
 			for (int j = 0; j < count; j++) {
-				memcpy(sides, side_data + sizeof(count) + (j * size), size);
+				memcpy(sides, side_data + (j * size), size);
 				for (int k = 0; k < 2; k++) {
 					printf("side %d offset x %.0f y %.0f\n", k, sides[k].offset.x, sides[k].offset.y);
 					printf("side %d sector number %u\n", k, sides[k].sector_num);
@@ -91,7 +91,7 @@ int		main(int ac, char **av) {
 			memcpy(&count, thing_data, sizeof(count));
 			printf("thing count %d\n", count);
 			t_thing thing[count];
-			int size = sizeof(thing) - 4;
+			int size = sizeof(t_thing) - sizeof(struct nk_color);
 			for (int j = 0; j < count; j++) {
 				memcpy(&thing[j], thing_data + sizeof(count) + (j * size), size);
 				printf("name %s\n", thing[j].name);
