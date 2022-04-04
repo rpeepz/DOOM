@@ -260,7 +260,7 @@ void    draw_about(struct nk_context *ctx)
 void	draw_help(t_map_interface *draw_mode)
 {
 	struct nk_context *ctx = draw_mode->ctx;
-	struct nk_rect s = {(draw_mode->win_w / 3), (150), 250, 350};
+	struct nk_rect s = {(draw_mode->win_w / 3), (100), 250, 350};
 	if (nk_popup_begin(ctx, NK_POPUP_STATIC, "Help", NK_WINDOW_CLOSABLE|NK_WINDOW_MOVABLE, s))
 	{
 		nk_layout_row_dynamic(ctx, 6, 1);
@@ -303,9 +303,9 @@ void	draw_help(t_map_interface *draw_mode)
 				nk_label_wrap(ctx, "Changes the cursor to a green dot while hovering in the map window. Click to select the position.");
 				nk_label_wrap(ctx, "A popup will appear with options to give a name or continue with no name, or cancel the placement.");
 			nk_layout_row_dynamic(ctx, 25, 1);
-			nk_label(ctx, "- Sector	 -", NK_TEXT_LEFT);
+			nk_label(ctx, "- Sector -", NK_TEXT_LEFT);
 				nk_layout_row_dynamic(ctx, 40, 1);
-				nk_label_wrap(ctx, "Unused at this time of development");
+				nk_label_wrap(ctx, "The Sector tool is very minimal in its funciton. It allows the user to set up their own sectors.");
 			nk_layout_row_dynamic(ctx, 25, 1);
 			nk_label(ctx, "- File -", NK_TEXT_LEFT);
 				nk_layout_row_dynamic(ctx, 45, 1);
@@ -317,7 +317,7 @@ void	draw_help(t_map_interface *draw_mode)
 		nk_layout_row_dynamic(ctx, 25, 1);
 		nk_label(ctx, "List:", NK_TEXT_LEFT);
 			nk_layout_row_dynamic(ctx, 80, 1);
-			nk_label_wrap(ctx, "Just as it sounds, the list panel lists all items in the current map. There are two tabs which you can click to view items in each category.");
+			nk_label_wrap(ctx, "The list panel lists all items in the current map. There are two tabs which you can view items within the 'edit' tool.");
 		nk_layout_row_dynamic(ctx, 25, 1);
 		nk_popup_end(ctx);
 	} else show_help = nk_false;
@@ -528,6 +528,7 @@ void    draw_menu(t_map_interface *draw_mode)
 		if (nk_menu_item_label(ctx, "New", NK_TEXT_LEFT)) {
 			save_as = nk_false;
 			open_map = nk_false;
+			//TODO check if users wants to save
 			/* do you want to save? */
 			if (check_exists(draw_mode->map_name, MAP) < 1)
 				printf("I hope you saved your work\n");
@@ -566,7 +567,10 @@ void    draw_menu(t_map_interface *draw_mode)
 		}
 		if (nk_menu_item_label(ctx, "Exit", NK_TEXT_LEFT)) {
 			if (check_exists(draw_mode->map_name, MAP))
-				printf("Exit program without saving\n... Sorry :(\n");
+			{
+				//TODO check if user wants to save
+				printf("Exit program without saving\n");
+			}
 			exit(0);
 		}
 		nk_menu_end(ctx);
