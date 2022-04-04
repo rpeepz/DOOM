@@ -101,6 +101,20 @@ int		main(int ac, char **av) {
 				printf("type %d\n", thing[j].type);
 			}
 		}
+		else if (!strcmp(lump_names[i], "SECTORS")) {
+			unsigned char sector_data[lumps[i].size];
+			memcpy(sector_data, wad_data + lumps[i].offset, lumps[i].size);
+			memcpy(&count, sector_data, sizeof(count));
+			printf("sector count %d\n", count);
+			t_sector sector[count];
+			// Todo figure out size of sector
+			int size = sizeof(*sector);
+			for (int j = 0; j < count; j++) {
+				// Todo read in sector info
+				memcpy(&sector[j], sector_data + sizeof(count) + (j * size), size);
+				// printf()
+			}
+		}
 		else if (i < 4) printf("Skipping assets %s\n", lump_names[i]);
 	}
 	return 0;

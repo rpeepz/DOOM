@@ -51,6 +51,11 @@ void    export_wad(t_map_interface *draw_mode)
 	memcpy(head.name, "IWAD", 4);
 	head.num_lumps = 0;
 	head.lump_offset = 0;
+	// TODO read sectors
+	// create nodes
+	// create bsp creator
+	// create segments
+	// create sub sectors
 	lumps_buf = get_lumps(lumps_buf, draw_mode, lumps, &head);
 
 	write(fd, &head, sizeof(head));
