@@ -48,29 +48,31 @@ int		main(int ac, char **av) {
 		printf("\tsize %d\n", lumps[i].size);
 		printf("\toffset %d\n", lumps[i].offset);
 	}
-	char *lump_names[] = {"FLOORS", "WALLS", "SOUNDS", "MUSIC", "LINEDEFS", "SIDEDEFS", "THINGS", "SECTORS"};
+	char *lump_names[] = {"FLOORS", "WALLS", "SOUNDS", "MUSIC", "LINEDEFS", "SIDEDEFS", "THINGS", "SECTORS", "VERTEXES"};
 	int count;
+	printf("\n");
 	for (int i = 0; i < head.num_lumps; i++){
+		printf("\t___%s___\n", lump_names[i]);
 		if (!strcmp(lump_names[i], "LINEDEFS")) {
 			//read linedefs ( lumps[4] )
 			unsigned char line_data[lumps[i].size];
 			memcpy(line_data, wad_data + lumps[i].offset, lumps[i].size);
 			memcpy(&count, line_data, sizeof(count));
-			printf("line count %d\n", count);
+			printf("line count %d\n\n", count);
 			t_linedef line[count];
 			int size = sizeof(t_linedef) - sizeof(line->sectorized) - sizeof(line->sides);
 			for (int j = 0; j < count; j++) {
 				memcpy(&line[j], line_data + sizeof(count) + (j * size), size);
 				printf("start x %.0f start y %.0f\n", line[j].start_vertex.x, line[j].start_vertex.y);
 				printf("end x %.0f end y %.0f\n", line[j].end_vertex.x, line[j].end_vertex.y);
-				printf("flag %hhx, special %d, tag %d\n", line[j].flags, line[j].special, line[j].tag);
+				printf("flag %hhx, special %d, tag %d\n\n", line[j].flags, line[j].special, line[j].tag);
 			}
 		}
 		else if (!strcmp(lump_names[i], "SIDEDEFS")) {
 			//read sidedefs ( lumps[5] )
 			unsigned char side_data[lumps[i].size];
 			memcpy(side_data, wad_data + lumps[i].offset, lumps[i].size);
-			printf("side count %d\n", count);
+			printf("side count %d\n\n", count);
 			t_sidedef sides[2];
 			int size = sizeof(sides);
 			for (int j = 0; j < count; j++) {
@@ -80,7 +82,7 @@ int		main(int ac, char **av) {
 					printf("side %d sector number %u\n", k, sides[k].sector_num);
 					for (int tex = 0; tex < 3; tex++)
 						printf("side %d texture %s\n", k, sides[k].textures[tex]);
-
+					printf("\n");
 				}
 			}
 		}
@@ -89,7 +91,7 @@ int		main(int ac, char **av) {
 			unsigned char thing_data[lumps[i].size];
 			memcpy(thing_data, wad_data + lumps[i].offset, lumps[i].size);
 			memcpy(&count, thing_data, sizeof(count));
-			printf("thing count %d\n", count);
+			printf("thing count %d\n\n", count);
 			t_thing thing[count];
 			int size = sizeof(t_thing) - sizeof(struct nk_color);
 			for (int j = 0; j < count; j++) {
@@ -98,21 +100,25 @@ int		main(int ac, char **av) {
 				printf("angle %d\n", thing[j].angle);
 				printf("flags %hhx\n", thing[j].flags);
 				printf("x %.0f, y %.0f\n", thing[j].pos.x, thing[j].pos.y);
-				printf("type %d\n", thing[j].type);
+				printf("type %d\n\n", thing[j].type);
 			}
 		}
 		else if (!strcmp(lump_names[i], "SECTORS")) {
 			unsigned char sector_data[lumps[i].size];
 			memcpy(sector_data, wad_data + lumps[i].offset, lumps[i].size);
 			memcpy(&count, sector_data, sizeof(count));
-			printf("sector count %d\n", count);
+			printf("sector count %d\n\n", count);
 			t_sector sector[count];
-			// Todo figure out size of sector
-			int size = sizeof(*sector);
+			int size = sizeof(sector->sector_num) + sizeof(sector->sector_info);
 			for (int j = 0; j < count; j++) {
-				// Todo read in sector info
-				memcpy(&sector[j], sector_data + sizeof(count) + (j * size), size);
-				// printf()
+				memcpy(&(sector[j].sector_num), sector_data + sizeof(count) + (j * size), size);
+				printf("sector num %d\n", sector[j].sector_num);
+				printf("room height ceiling %d floor %d\n", sector[j].sector_info.room_heights.x, sector[j].sector_info.room_heights.y);
+				printf("ceiling texture %s\n", sector[j].sector_info.flats[0]);
+				printf("floor texture %s\n", sector[j].sector_info.flats[1]);
+				printf("light %d\n", sector[j].sector_info.light);
+				printf("special %d\n", sector[j].sector_info.special);
+				printf("tag %d\n\n", sector[j].sector_info.tag);
 			}
 		}
 		else if (i < 4) printf("Skipping assets %s\n", lump_names[i]);
