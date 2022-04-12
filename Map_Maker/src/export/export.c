@@ -30,8 +30,8 @@ void    export_wad(t_map_interface *draw_mode)
 	lump_wall	lump_floor	lump_sound	lump_music
 	map lumps	[4 - 8]
 	linedefs	sidedefs	sectors		things
-	bsp lumps	[9 - 11]
-	nodes		segs		ssectors
+	bsp lumps	[9 - 12]
+	vertexes	nodes		segs		ssectors
 */
 	t_lump		lumps[16];
 	uint8_t		*lumps_buf = 0;
