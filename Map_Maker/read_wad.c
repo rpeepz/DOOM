@@ -121,6 +121,18 @@ int		main(int ac, char **av) {
 				printf("tag %d\n\n", sector[j].sector_info.tag);
 			}
 		}
+		else if (!strcmp(lump_names[i], "VERTEXES")) {
+			unsigned char vertex_data[lumps[i].size];
+			memcpy(vertex_data, wad_data + lumps[i].offset, lumps[i].size);
+			memcpy(&count, vertex_data, sizeof(count));
+			printf("vertex count %d\n\n", count);
+			t_float_pair v[count];
+			int size = sizeof(t_float_pair);
+			for (int j = 0; j < count; j++) {
+				memcpy(&v[j], vertex_data + sizeof(count) + (j * size), size);
+				printf("vertex x %0.f, y %0.f\n\n", v[j].x, v[j].y);
+			}
+		}
 		else if (i < 4) printf("Skipping assets %s\n", lump_names[i]);
 	}
 	return 0;
