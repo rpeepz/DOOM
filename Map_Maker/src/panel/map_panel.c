@@ -380,7 +380,7 @@ void    draw_resources(t_map_interface *draw_mode)
 			nk_label(ctx, "Page: ", NK_TEXT_LEFT);
 			{
 				char num[8];
-				sprintf(num, "%d", index[0] + 1);
+				snprintf(num, sizeof(num), "%d", index[0] + 1);
 				nk_label(ctx, num, NK_TEXT_CENTERED);
 			}
 			if (nk_button_symbol(ctx, NK_SYMBOL_TRIANGLE_LEFT)) {
@@ -409,7 +409,7 @@ void    draw_resources(t_map_interface *draw_mode)
 			nk_label(ctx, "Page: ", NK_TEXT_LEFT);
 			{
 				char num[8];
-				sprintf(num, "%d", index[1] + 1);
+				snprintf(num, sizeof(num), "%d", index[1] + 1);
 				nk_label(ctx, num, NK_TEXT_CENTERED);
 			}
 			if (nk_button_symbol(ctx, NK_SYMBOL_TRIANGLE_LEFT)) {
@@ -438,7 +438,7 @@ void    draw_resources(t_map_interface *draw_mode)
 			nk_label(ctx, "Page: ", NK_TEXT_LEFT);
 			{
 				char num[8];
-				sprintf(num, "%d", index[2] + 1);
+				snprintf(num, sizeof(num), "%d", index[2] + 1);
 				nk_label(ctx, num, NK_TEXT_CENTERED);
 			}
 			if (nk_button_symbol(ctx, NK_SYMBOL_TRIANGLE_LEFT)) {
@@ -471,7 +471,7 @@ void    draw_resources(t_map_interface *draw_mode)
 			nk_label(ctx, "Page: ", NK_TEXT_LEFT);
 			{
 				char num[8];
-				sprintf(num, "%d", index[3] + 1);
+				snprintf(num, sizeof(num), "%d", index[3] + 1);
 				nk_label(ctx, num, NK_TEXT_CENTERED);
 			}
 			if (nk_button_symbol(ctx, NK_SYMBOL_TRIANGLE_LEFT)) {

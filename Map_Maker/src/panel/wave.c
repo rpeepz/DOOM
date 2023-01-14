@@ -228,7 +228,7 @@ if (c == 'Y' || c == 'y') {
   int hours, hours_residue, minutes, seconds, milliseconds;
   hms = (char*) malloc(100);
 
-  sprintf(hms, "%f", raw_seconds);
+  snprintf(hms, 100, "%f", raw_seconds);
 
   hours = (int) raw_seconds/3600;
   hours_residue = (int) raw_seconds % 3600;
@@ -246,6 +246,6 @@ if (c == 'Y' || c == 'y') {
   milliseconds = atoi(decimalpart);	
 
   
-  sprintf(hms, "%d:%d:%d.%d", hours, minutes, seconds, milliseconds);
+  snprintf(hms, 100, "%d:%d:%d.%d", hours, minutes, seconds, milliseconds);
   return hms;
 }

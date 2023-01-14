@@ -94,7 +94,7 @@ void	fill_lines(t_map_interface *draw_mode)
 			t_linedef *line = list->line;
 			nk_layout_row_begin(ctx, NK_STATIC, 20, 4);
 			// list line
-			sprintf(buffer, "line %d", line_counter++);
+			snprintf(buffer, sizeof(buffer), "line %d", line_counter++);
 			nk_layout_row_push(ctx, 50);
 			nk_label(ctx, buffer, NK_TEXT_LEFT);
 			// checkbox for either side of line if applicable
@@ -126,7 +126,7 @@ int		suggest_sector_number(t_map_interface *draw_mode)
 		nk_label(ctx, "Sector number: ", NK_TEXT_LEFT);
 		{
 		char buffer[8];
-		int len = sprintf(buffer, "%d", sector_num);
+		int len = snprintf(buffer, sizeof(buffer), "%d", sector_num);
 		nk_layout_row_push(ctx, 60);
 		nk_edit_string(ctx, NK_EDIT_SIMPLE, buffer, &len, 4, nk_filter_decimal);
 		buffer[len] = 0;
@@ -338,7 +338,7 @@ void	edit_sector(t_map_interface *draw_mode)
 		nk_label(ctx, "Sector :", NK_TEXT_LEFT);
 		{
 			char num[8];
-			sprintf(num, "%d", draw_mode->sectors->sectors[draw_mode->sectors->selected].sector_num);
+			snprintf(num, sizeof(num), "%d", draw_mode->sectors->sectors[draw_mode->sectors->selected].sector_num);
 			nk_label(ctx, num, NK_TEXT_LEFT);
 		}
 		nk_layout_row_dynamic(ctx, 25, 1);
