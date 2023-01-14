@@ -5,7 +5,7 @@ CC = clang -g
 INC = includes/
 OBJ_PATH = obj
 
-SDL2_V = 2.0.20
+SDL2_V = 2.26.2
 GLEW_V = 2.2.0_1
 
 ifeq ($(shell uname -s), Darwin)
