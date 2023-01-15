@@ -46,6 +46,14 @@
 		"Block", "Mblock", "2-Sided",
 		"Ftop", "Fbot", "Secret",
 		"Snd Block", "No Draw"
+
+	start_vertex = top of line
+	end_vertex = bottom of line
+
+
+	Sides:
+		sides[0] = right side
+		sides[1] = left side
 */
 typedef struct		s_linedef
 {
