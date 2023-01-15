@@ -34,7 +34,8 @@ t_header  			read_head(int fd);
 unsigned char 	*read_wad_data(int fd, t_header *head);
 t_lump  				*read_lumps(int fd, t_header *head);
 t_data					assign_data(t_header head, unsigned char *wad_data, t_lump *lumps);
-void						assign_extra_data(t_data data);
+void						assign_side_data_to_linedef(t_data data);
+void						assign_line_data_to_sectors(t_data data);
 void						print_head_and_lump_info(t_header head, t_lump *lumps);
 void						print_data(t_data data);
 void						die(t_data data);
@@ -71,7 +72,8 @@ void  run(char *wad)
 	free(wad_data);
 	free(lumps);
 
-	assign_extra_data(data);
+	assign_side_data_to_linedef(data);
+	assign_line_data_to_sectors(data);
 	print_data(data);
 	die(data);
 }
@@ -96,7 +98,7 @@ unsigned char *read_wad_data(int fd, t_header *head)
 t_lump  *read_lumps(int fd, t_header *head)
 {
 	t_lump *lumps = malloc(sizeof(t_lump) * head->num_lumps);
-	for (int i = 0; i < head->num_lumps; i++)
+	for (uint32_t i = 0; i < head->num_lumps; i++)
 		read(fd, &lumps[i], sizeof(t_lump));
   return (lumps);
 }
@@ -187,7 +189,7 @@ t_float_pair	*assign_vertex(unsigned char *wad_data, t_lump lump)
 t_data	assign_data(t_header head, unsigned char *wad_data, t_lump *lumps)
 {
 	t_data		data;
-	for (int i = 0; i < head.num_lumps; i++) {
+	for (uint32_t i = 0; i < head.num_lumps; i++) {
 		if (!strcmp(lump_names[i], "LINEDEFS")) {
 			data.lines = assign_linedefs(wad_data, lumps[i]);
 			memcpy(&data.line_count, wad_data + lumps[i].offset, sizeof(data.line_count));
@@ -213,9 +215,9 @@ t_data	assign_data(t_header head, unsigned char *wad_data, t_lump *lumps)
 	return (data);
 }
 
-void		assign_extra_data(t_data data)
+// assign side data to corresponding linedef
+void		assign_side_data_to_linedef(t_data data)
 {
-	// assign side data to corresponding linedef
 	for (int i = 0; i < data.line_count; i++) {
 		memcpy(data.lines[i].sides, data.sides[i], sizeof(data.lines->sides));
 		for (int j = 0; j < 2; j++) {
@@ -226,23 +228,36 @@ void		assign_extra_data(t_data data)
 		}
 	}
 	// assign data.lines->sectorized
+}
 
-	// assign line data of sectors to each array of `sector_lines`
+// assign line data of sectors to each array of `sector_lines`
+void		assign_line_data_to_sectors(t_data data)
+{
+	int found;
 	for (int i = 0; i < data.sector_count; i++) {
 		data.sectors[i].sector_lines = malloc(sizeof(t_line) * data.sectors[i].line_count);
+		found = 0;
+		/*
+		** for each of the sector's lines in sector[i]
+		** itterate through all lines
+		** find matching sector number on given line side
+		** assign line data to sector_lines
+		*/
 		for (int j = 0; j < data.sectors[i].line_count; j++) {
-			// itterate through all lines, find matching sector number, assign to sector line
-			for (int k = 0; k < data.line_count; k++) {
+			for (int k = found; k < data.line_count; k++) {
+				found = 0;
 				for (int l = 0; l < 2; l++) {
-					// TODO error in assigning vertex data
-					if (data.lines[k].sides[l].sector_num == data.sectors[i].sector_num) {
-						data.sectors[i].sector_lines[k].start.x = data.lines[k].start_vertex.x;
-						data.sectors[i].sector_lines[k].start.y = data.lines[k].start_vertex.y;
-						data.sectors[i].sector_lines[k].end.x = data.lines[k].end_vertex.x;
-						data.sectors[i].sector_lines[k].end.y = data.lines[k].end_vertex.y;
+					if (data.lines[k].sides[l].sector_num == (uint32_t)data.sectors[i].sector_num) {
+						found = k + 1;
+						data.sectors[i].sector_lines[j].start.x = data.lines[k].start_vertex.x;
+						data.sectors[i].sector_lines[j].start.y = data.lines[k].start_vertex.y;
+						data.sectors[i].sector_lines[j].end.x = data.lines[k].end_vertex.x;
+						data.sectors[i].sector_lines[j].end.y = data.lines[k].end_vertex.y;
 						break ;
 					}
 				}
+				if (found)
+					break ;
 			}
 		}
 	}
@@ -253,7 +268,7 @@ void	print_head_and_lump_info(t_header head, t_lump *lumps)
 	printf("number of lumps %u\n", head.num_lumps);
   printf("total wad size %u\n\n", head.lump_offset);
 
-	for (int i = 0; i < head.num_lumps; i++) {
+	for (uint32_t i = 0; i < head.num_lumps; i++) {
 		printf("%s\n", lumps[i].lump_name);
 		printf("\tsize %d\n", lumps[i].size);
 		printf("\toffset %d\n", lumps[i].offset);
