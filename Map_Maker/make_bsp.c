@@ -38,6 +38,7 @@ void						assign_side_data_to_linedef(t_data data);
 void						assign_line_data_to_sectors(t_data data);
 void						print_head_and_lump_info(t_header head, t_lump *lumps);
 void						print_data(t_data data);
+void						make_bsp(t_data data);
 void						die(t_data data);
 
 int   check_arg(char **av)
@@ -74,7 +75,9 @@ void  run(char *wad)
 
 	assign_side_data_to_linedef(data);
 	assign_line_data_to_sectors(data);
-	print_data(data);
+	// print_data(data);
+
+	make_bsp(data);
 	die(data);
 }
 
@@ -343,4 +346,9 @@ void	die(t_data data)
 	free(data.things);
 	free(data.sectors);
 	free(data.vertex);
+}
+
+void	make_bsp(t_data data)
+{
+	//TODO - split sectors
 }
